@@ -1,0 +1,43 @@
+<div
+  class="relative overflow-hidden rounded-2xl bg-sidebar-bg/80 p-6 md:p-8 text-white shadow-xl mb-6"
+>
+  <!-- Background Decorative Shapes -->
+  <div
+    class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-surface/10 blur-2xl pointer-events-none"
+  ></div>
+  <div
+    class="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-accent/20 blur-2xl pointer-events-none"
+  ></div>
+
+  <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <!-- Header Title & Description -->
+    <div class="flex items-start gap-4">
+      <div
+        class="flex lg:h-14 lg:w-14 md:h-12 md:w-12 h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-surface/15 backdrop-blur-md border border-white/20 shadow-inner"
+      >
+        <fa-icon
+          [icon]="faCalendarPlus"
+          class="text-lg md:text-xl lg:text-2xl text-accent"
+        ></fa-icon>
+      </div>
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <h1
+            class="text-base sm:text-lg font-semibold tracking-tight md:text-xl lg:text-2xl text-white"
+          >
+            حجز موعد جديد للمريض
+          </h1>
+          <span
+            class="inline-flex items-center gap-1 rounded-full bg-white/20 px-3 py-0.5 text-xs font-semibold text-white/90 border border-white/25"
+          >
+            <fa-icon [icon]="faHospitalUser" class="text-[8px] lg:text-[10px]"></fa-icon>
+            قسم الاستقبال
+          </span>
+        </div>
+        <p class="text-xs md:text-sm lg:text-base text-white/80 font-medium">
+          اختر الطبيب وتاريخ الموعد المتاح لتسجيل حجز مريض جديد بسهولة ودقة في النظام
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

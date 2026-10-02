@@ -1,0 +1,107 @@
+@if (facade.bookingSuccess()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black/60 backdrop-blur-sm p-4"
+  >
+    <!-- Modal Dialog Container -->
+    <div
+      class="relative w-full max-w-lg overflow-hidden rounded-3xl bg-surface shadow-2xl border border-primary/15"
+    >
+      <!-- Top Decorative Banner -->
+      <div class="bg-sidebar-bg p-6 text-center text-white relative overflow-hidden">
+        <!-- Decorative blurs -->
+        <div
+          class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl pointer-events-none"
+        ></div>
+        <div
+          class="absolute -left-8 -bottom-8 h-32 w-32 rounded-full bg-accent/20 blur-2xl pointer-events-none"
+        ></div>
+
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="absolute top-4 left-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white hover:bg-white/30 transition z-10"
+        >
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </button>
+
+        <div
+          class="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-success/20 backdrop-blur-md text-success border border-success/30 shadow-inner relative z-10"
+        >
+          <fa-icon [icon]="faCheckCircle" class="text-4xl text-success"></fa-icon>
+        </div>
+
+        <h3 class="text-2xl font-extrabold text-white relative z-10">تم حجز الموعد بنجاح!</h3>
+        <p class="text-xs text-accent mt-1 relative z-10">
+          تمت إضافة بيانات تذكرة الحجز إلى النظام بنجاح
+        </p>
+      </div>
+
+      <!-- Modal Body Details -->
+      <div class="p-6 space-y-4">
+        @if (appointment(); as app) {
+          <div class="rounded-2xl bg-main-bg p-4 border border-primary/10 space-y-3">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-muted">اسم المريض:</span>
+              <span class="font-semibold text-text">{{ app.patientName }}</span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-muted">رقم الهاتف:</span>
+              <span class="font-mono font-semibold text-primary" dir="ltr">{{
+                app.patientPhoneNumber
+              }}</span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-muted">قيمة الحجز:</span>
+              <span class="font-semibold text-warning">{{ app.consultationFee }} جنية</span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-muted">الخصم:</span>
+              <span class="font-semibold text-text"
+                >{{ app.discountAmount ?? 0 | number: '1.2-2' }} ج.م</span
+              >
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-muted">المطلوب من المريض بعد الخصم:</span>
+              <span class="font-semibold text-text"
+                >{{ app.consultationFee - (app.discountAmount ?? 0) | number: '1.2-2' }} ج.م</span
+              >
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-muted">حالة السداد:</span>
+              @if (app.isPaid) {
+                <span
+                  class="font-semibold text-success bg-success/10 px-2 py-0.5 rounded text-xs border border-success/20"
+                  >مدفوع</span
+                >
+              } @else {
+                <span
+                  class="font-semibold text-warning bg-warning/10 px-2 py-0.5 rounded text-xs border border-warning/20"
+                  >غير مدفوع</span
+                >
+              }
+            </div>
+          </div>
+        }
+
+        <p class="text-center text-xs text-text-muted">
+          يمكنك الآن طباعة التذكرة للمريض أو البدء بتسجيل حجز مريض جديد آخر
+        </p>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="flex-1 flex items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 hover:bg-primary-dark transition"
+          >
+            <fa-icon [icon]="faCalendarPlus"></fa-icon>
+            <span>حجز موعد جديد آخر</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

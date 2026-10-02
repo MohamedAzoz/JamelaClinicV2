@@ -1,0 +1,84 @@
+<aside
+  class="w-65 h-full flex flex-col bg-sidebar-bg ltr:border-r rtl:border-l border-text/8 transition-[width] duration-300 ease-in-out overflow-hidden relative group/sidebar"
+  [class.!w-[72px]]="isCollapsed()"
+  [class.collapsed]="isCollapsed()"
+>
+  <!-- Logo & Hospital Name -->
+  <div
+    class="p-5 px-4 border-b border-text/8 shrink-0 group-[.collapsed]/sidebar:p-5 group-[.collapsed]/sidebar:px-2 group-[.collapsed]/sidebar:flex group-[.collapsed]/sidebar:justify-center"
+  >
+    <!-- Mobile Close Button -->
+    <button
+      class="hidden max-[1023px]:flex bg-transparent border-none text-sidebar-text w-8 h-8 rounded-lg items-center justify-center cursor-pointer ltr:ml-auto rtl:mr-auto hover:bg-danger/10 hover:text-danger"
+      (click)="onNavItemClick()"
+    >
+      <fa-icon [icon]="faClose" [class.rotate-180]="isCollapsed()"></fa-icon>
+    </button>
+    <a
+      routerLink="/main"
+      class="flex items-center gap-3 no-underline text-sidebar-text transition-opacity duration-200 hover:opacity-85 group/brand group-[.collapsed]/sidebar:justify-center"
+      (click)="onNavItemClick()"
+    >
+      <img
+        [ngSrc]="logoSrc()"
+        width="50"
+        height="50"
+        priority
+        [alt]="hospitalName + ' شعار'"
+        class="rounded-full shrink-0 transition-all duration-300 ease-in-out group-hover/brand:scale-105"
+      />
+      @if (!isCollapsed()) {
+        <span
+          class="font-bold text-[1.05rem] text-primary whitespace-nowrap overflow-hidden text-ellipsis animate-fade-in"
+          >{{ hospitalName }}</span
+        >
+      }
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <nav
+    class="flex-1 overflow-y-auto overflow-x-hidden p-3 px-2 custom-scrollbar"
+    aria-label="القائمة الرئيسية"
+  >
+    <ul
+      class="list-none **:text-sm **:md:text-base **:lg:text-lg **:font-semibold m-0 p-0 flex flex-col gap-0.5"
+    >
+      @for (item of navItems(); track $index) {
+        <li class="relative">
+          <a
+            class="nav-link flex items-center gap-3 py-2.5 px-3 rounded-xl no-underline text-sidebar-text font-normal text-[0.9rem] whitespace-nowrap transition-all duration-200 ease-in-out relative overflow-hidden hover:text-primary group-[.collapsed]/sidebar:justify-center group-[.collapsed]/sidebar:p-2.5 group-[.collapsed]/sidebar:after:hidden"
+            [routerLink]="item.route"
+            [routerLinkActive]="['active', '!text-primary', '!font-extrabold']"
+            [routerLinkActiveOptions]="{ exact: true }"
+            [title]="item.label"
+            (click)="onNavItemClick()"
+          >
+            <span
+              class="flex items-center justify-center w-5.5 h-5.5 shrink-0 relative z-10"
+              [attr.data-icon]="item.icon"
+            >
+              <app-svg-icon [icon]="item.icon" />
+            </span>
+            @if (!isCollapsed()) {
+              <span class="relative z-10 animate-fade-in">{{ item.label }}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Toggle Button -->
+  <button
+    class="flex items-center justify-center w-full py-3.5 px-0 border-none border-t border-text/8 bg-transparent text-sidebar-text cursor-pointer transition-colors duration-200 shrink-0 hover:bg-primary/5 hover:text-primary max-[1023px]:hidden"
+    (click)="toggleSidebar()"
+  >
+    <fa-icon
+      [icon]="faAngleLeft"
+      class="transition-transform duration-300 ease-in-out"
+      [class.rotate-180]="isCollapsed()"
+    >
+    </fa-icon>
+  </button>
+</aside>

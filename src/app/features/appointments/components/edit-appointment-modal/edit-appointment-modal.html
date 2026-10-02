@@ -1,0 +1,423 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+  (click)="close()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="edit-modal-title"
+>
+  <!-- Modal Panel -->
+  <div
+    class="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl bg-main-bg shadow-2xl border border-primary/20"
+    (click)="$event.stopPropagation()"
+    dir="rtl"
+  >
+    <!-- Modal Header -->
+    <div
+      class="sticky top-0 z-10 flex items-center justify-between gap-3 rounded-t-2xl bg-sidebar-bg/90 px-6 py-4 border-b border-primary/20 backdrop-blur-md"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 border border-white/20"
+        >
+          <fa-icon [icon]="faEdit" class="text-accent text-lg"></fa-icon>
+        </div>
+        <div>
+          <h2 id="edit-modal-title" class="text-base font-bold text-white">تعديل بيانات الحجز</h2>
+          <p class="text-xs text-white/70">
+            تعديل حجز المريض:
+            <span class="font-bold text-accent">{{ appointment().patientName }}</span>
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white hover:bg-danger/20 hover:border-danger/40 hover:text-danger transition cursor-pointer"
+        aria-label="إغلاق"
+      >
+        <fa-icon [icon]="faTimes" class="text-sm"></fa-icon>
+      </button>
+    </div>
+
+    <!-- Modal Body: Edit Form -->
+    <div class="p-6">
+      <form [formRoot]="editForm" (submit)="onSubmit($event)" class="space-y-5">
+        <!-- SECTION 1: Doctor & Schedule Selection -->
+        <div class="rounded-2xl bg-surface p-5 shadow-sm border border-primary/10">
+          <div class="flex items-center gap-3 border-b border-primary/10 pb-3 mb-4">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary"
+            >
+              <fa-icon [icon]="faUserMd" class="text-base"></fa-icon>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-text">الطبيب والموعد</h3>
+              <p class="text-[11px] text-text-muted">تعديل الطبيب المعالج أو الموعد المحدد</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Doctor Selection -->
+            <div>
+              <label for="edit-doctorId" class="block text-xs font-semibold text-text mb-1">
+                الطبيب المعالج <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="edit-doctorId"
+                  [formField]="editForm.doctorId"
+                  (change)="onDoctorChange($event)"
+                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                >
+                  @if (facade.isLoadingDoctors()) {
+                    <option value="" disabled selected>جاري تحميل الأطباء...</option>
+                  } @else if (facade.doctors().length === 0) {
+                    <option value="" disabled selected>لا يوجد أطباء متاحون</option>
+                  } @else {
+                    <option value="">-- اختر الطبيب --</option>
+                  }
+                  @for (doc of facade.doctors(); track doc.userId) {
+                    <option [value]="doc.userId">
+                      د. {{ doc.fullName }} {{ doc.clinicName ? '(' + doc.clinicName + ')' : '' }}
+                    </option>
+                  }
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faUserMd"></fa-icon>
+                </div>
+                <div
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+                >
+                  @if (facade.isLoadingDoctors()) {
+                    <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+                  } @else {
+                    <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+                  }
+                </div>
+              </div>
+              @if (editForm.doctorId().touched() && editForm.doctorId().errors(); as errors) {
+                @for (err of errors; track err.kind) {
+                  <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+                }
+              }
+            </div>
+
+            <!-- Schedule Selection -->
+            <div>
+              <label for="edit-scheduleId" class="block text-xs font-semibold text-text mb-1">
+                موعد الحجز <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="edit-scheduleId"
+                  [formField]="editForm.doctorScheduleId"
+                  (change)="onScheduleChange($event)"
+                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  @if (!facade.selectedDoctorId()) {
+                    <option value="" disabled selected>-- اختر طبيباً أولاً لعرض مواعيده --</option>
+                  } @else if (facade.isLoadingSchedules()) {
+                    <option value="" disabled selected>جاري تحميل المواعيد المتاحة...</option>
+                  } @else if (facade.schedules().length === 0) {
+                    <option value="" disabled selected>لا توجد مواعيد متاحة لهذا الطبيب</option>
+                  } @else {
+                    <option value="">-- اختر الموعد --</option>
+                  }
+                  @for (sched of facade.schedules(); track sched.id) {
+                    <option [value]="sched.id">{{ sched.dayName }} - {{ sched.date }}</option>
+                  }
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faCalendarDay"></fa-icon>
+                </div>
+                <div
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+                >
+                  @if (facade.isLoadingSchedules()) {
+                    <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+                  } @else {
+                    <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+                  }
+                </div>
+              </div>
+              @if (
+                editForm.doctorScheduleId().touched() && editForm.doctorScheduleId().errors();
+                as errors
+              ) {
+                @for (err of errors; track err.kind) {
+                  <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+                }
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Patient Info -->
+        <div class="rounded-2xl bg-surface p-5 shadow-sm border border-primary/10">
+          <div class="flex items-center gap-3 border-b border-primary/10 pb-3 mb-4">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary"
+            >
+              <fa-icon [icon]="faUser" class="text-base"></fa-icon>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-text">بيانات المريض</h3>
+              <p class="text-[11px] text-text-muted">تعديل بيانات وتفاصيل المريض</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Patient Name -->
+            <div>
+              <label for="edit-patientName" class="block text-xs font-semibold text-text mb-1">
+                اسم المريض <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  id="edit-patientName"
+                  type="text"
+                  [formField]="editForm.patientName"
+                  placeholder="الاسم كاملاً"
+                  class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faUser" class="text-sm"></fa-icon>
+                </div>
+              </div>
+              @if (editForm.patientName().touched() && editForm.patientName().errors(); as errors) {
+                @for (err of errors; track err.kind) {
+                  <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+                }
+              }
+            </div>
+
+            <!-- Patient Phone -->
+            <div>
+              <label for="edit-patientPhone" class="block text-xs font-semibold text-text mb-1">
+                رقم الهاتف <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  id="edit-patientPhone"
+                  type="tel"
+                  dir="ltr"
+                  [formField]="editForm.patientPhoneNumber"
+                  placeholder="01XXXXXXXX"
+                  class="w-full text-right rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faPhone" class="text-sm"></fa-icon>
+                </div>
+              </div>
+              @if (
+                editForm.patientPhoneNumber().touched() && editForm.patientPhoneNumber().errors();
+                as errors
+              ) {
+                @for (err of errors; track err.kind) {
+                  <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+                }
+              }
+            </div>
+
+            <!-- Patient Address (full width) -->
+            <div class="md:col-span-2">
+              <label for="edit-patientAddress" class="block text-xs font-semibold text-text mb-1">
+                العنوان (اختياري)
+              </label>
+              <div class="relative">
+                <input
+                  id="edit-patientAddress"
+                  type="text"
+                  [formField]="editForm.patientAddress"
+                  placeholder="المدينة / الحي"
+                  class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faMapMarkerAlt" class="text-sm"></fa-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Visit Type & Fees -->
+        <div class="rounded-2xl bg-surface p-5 shadow-sm border border-primary/10">
+          <div class="flex items-center gap-3 border-b border-primary/10 pb-3 mb-4">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary"
+            >
+              <fa-icon [icon]="faMoneyBillWave" class="text-base"></fa-icon>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-text">نوع الزيارة والرسوم</h3>
+              <p class="text-[11px] text-text-muted">تحديد نوع الكشف وقيمة الرسوم</p>
+            </div>
+          </div>
+
+          <!-- Visit Type Selector -->
+          <div class="mb-4">
+            <label class="block text-xs font-semibold text-text mb-2">نوع الزيارة</label>
+            <div class="flex flex-wrap gap-2">
+              @for (vt of visitTypeOptions; track vt.value) {
+                <button
+                  type="button"
+                  (click)="onVisitTypeSelect(vt.value)"
+                  [class.bg-primary]="model().visitType === vt.value"
+                  [class.text-white]="model().visitType === vt.value"
+                  [class.border-primary]="model().visitType === vt.value"
+                  [class.bg-main-bg]="model().visitType !== vt.value"
+                  [class.text-text-muted]="model().visitType !== vt.value"
+                  class="rounded-xl border px-3 py-1.5 text-xs font-bold transition hover:bg-primary hover:text-white hover:border-primary cursor-pointer border-primary/20"
+                >
+                  {{ vt.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Consultation Fee -->
+            <div>
+              <label for="edit-consultationFee" class="block text-xs font-semibold text-text mb-1">
+                قيمة الكشف <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  id="edit-consultationFee"
+                  type="number"
+                  step="0.01"
+                  [formField]="editForm.consultationFee"
+                  placeholder="0"
+                  class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faCoins" class="text-sm"></fa-icon>
+                </div>
+              </div>
+              @if (
+                editForm.consultationFee().touched() && editForm.consultationFee().errors();
+                as errors
+              ) {
+                @for (err of errors; track err.kind) {
+                  <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+                }
+              }
+            </div>
+
+            <div>
+              <label for="edit-discount" class="mb-1.5 block text-sm font-semibold text-text"
+                >قيمة الخصم (ج.م)</label
+              >
+              <input
+                id="edit-discount"
+                type="number"
+                step="0.01"
+                inputmode="decimal"
+                [formField]="editForm.discountAmount"
+                [attr.aria-invalid]="editForm.discountAmount().invalid()"
+                [attr.aria-describedby]="
+                  editForm.discountAmount().invalid()
+                    ? 'edit-discount-help edit-discount-error'
+                    : 'edit-discount-help'
+                "
+                class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 text-sm font-semibold text-text focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+              />
+              <p id="edit-discount-help" class="mt-2 text-xs text-text">
+                الخصم من حصة الطبيب فقط. أدخل 0 للحجز دون خصم.
+                @if (maxDiscount() !== null) {
+                  <span class="block mt-1"
+                    >الحد الأقصى للخصم من حصة الطبيب:
+                    {{ maxDiscount() | number: '1.2-2' }} ج.م.</span
+                  >
+                }
+              </p>
+              @if (editForm.discountAmount().invalid()) {
+                <div
+                  id="edit-discount-error"
+                  role="alert"
+                  class="mt-2 text-xs font-semibold text-text"
+                >
+                  @for (error of editForm.discountAmount().errors(); track error.kind) {
+                    <p class="text-danger">{{ error.message }}</p>
+                  }
+                </div>
+              }
+            </div>
+            <!-- isPaid Toggle -->
+            <!-- <div class="flex items-center">
+              <label
+                class="flex items-center gap-3 cursor-pointer rounded-xl border border-primary/10 bg-main-bg px-4 py-2.5 w-full hover:bg-surface transition"
+              >
+                <input
+                  id="edit-isPaid"
+                  type="checkbox"
+                  [checked]="model().isPaid"
+                  (change)="onPaidToggle($event)"
+                  class="h-4 w-4 accent-primary rounded"
+                />
+                <div>
+                  <div class="text-xs font-bold text-text">سداد الكشفية</div>
+                  <div class="text-[11px] text-text-muted">هل تم دفع الرسوم؟</div>
+                </div>
+                <span
+                  class="mr-auto text-xs font-bold px-2.5 py-1 rounded-lg"
+                  [class.bg-success/10]="model().isPaid"
+                  [class.text-success]="model().isPaid"
+                  [class.bg-warning/10]="!model().isPaid"
+                  [class.text-warning]="!model().isPaid"
+                >
+                  {{ model().isPaid ? 'مدفوع' : 'غير مدفوع' }}
+                </span>
+              </label>
+            </div> -->
+          </div>
+        </div>
+
+        <app-appointment-fee-breakdown
+          [fee]="model().consultationFee"
+          [discount]="model().discountAmount"
+          [doctorPercentage]="selectedDoctor()?.doctorPercentage"
+        />
+
+        <!-- Submit & Cancel Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button
+            type="submit"
+            [disabled]="facade.isUpdating() || editForm().invalid()"
+            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary/30 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            @if (facade.isUpdating()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+              <span>جاري حفظ التعديلات...</span>
+            } @else {
+              <fa-icon [icon]="faCheckCircle"></fa-icon>
+              <span>حفظ التعديلات</span>
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="close()"
+            class="flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-surface px-6 py-3 text-sm font-bold text-text hover:bg-main-bg focus:outline-none transition cursor-pointer"
+          >
+            <fa-icon [icon]="faTimes" class="text-danger"></fa-icon>
+            <span>إلغاء</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

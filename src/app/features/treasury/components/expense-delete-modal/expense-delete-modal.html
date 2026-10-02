@@ -1,0 +1,13 @@
+<app-confirm-modal
+  [isOpen]="facade.isDeleteModalOpen()"
+  variant="danger"
+  title="تأكيد حذف المصروف"
+  [itemName]="facade.expenseToDelete()?.description"
+  message="هل أنت أصلًا متأكد من رغبتك في حذف سجل المصروف المحدد؟"
+  warningMessage="تحذير: هذا الإجراء سيزيل المصروف من الخزينة ولا يمكن التراجع عنه."
+  confirmText="حذف المصروف"
+  cancelText="إلغاء"
+  [isLoading]="facade.actionLoading()"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+/>

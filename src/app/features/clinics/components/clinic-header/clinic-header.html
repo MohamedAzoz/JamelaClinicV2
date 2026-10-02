@@ -1,0 +1,83 @@
+<header class="flex flex-col gap-6 w-full" dir="rtl">
+  <!-- Top Title Banner -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800/80 shadow-sm relative overflow-hidden"
+  >
+    <!-- Decorative background ambient glow -->
+    <div
+      class="absolute -inset-e-10 -top-10 w-40 h-40 bg-accent/10 rounded-full blur-2xl pointer-events-none"
+    ></div>
+
+    <div class="flex items-center gap-4 z-10">
+      <div
+        class="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary dark:text-accent shadow-inner shrink-0"
+      >
+        <fa-icon [icon]="faHospital" size="xl"></fa-icon>
+      </div>
+      <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-lg md:text-xl lg:text-2xl font-bold text-text tracking-tight">
+            إدارة العيادات الطبية
+          </h1>
+        </div>
+        <p class="text-[10px] sm:text-xs lg:text-sm text-text-muted mt-1">
+          إدارة وتعديل بيانات جميع العيادات الطبية المسجلة في النظام
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Action Buttons -->
+    <div class="flex items-center gap-3 z-10 self-start sm:self-auto">
+      <button
+        type="button"
+        (click)="facade.loadClinics()"
+        [disabled]="facade.loading()"
+        class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 cursor-pointer"
+        title="تحديث البيانات"
+      >
+        <fa-icon [icon]="faRotateRight" [class.animate-spin]="facade.loading()"></fa-icon>
+        <span>تحديث</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="facade.openCreateModal()"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-xs sm:text-sm shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all transform active:scale-95 cursor-pointer"
+      >
+        <fa-icon [icon]="faPlus"></fa-icon>
+        <span>إضافة عيادة</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Bar & Filters Section -->
+  <div
+    class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-xl bg-surface border border-slate-200/80 dark:border-slate-800/80 shadow-xs"
+  >
+    <!-- Search Box -->
+    <div class="relative flex-1 max-w-md">
+      <div
+        class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+      >
+        <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+      </div>
+      <input
+        type="text"
+        [value]="facade.searchTerm()"
+        (input)="onSearchInput($event)"
+        placeholder="البحث باسم العيادة ..."
+        class="w-full ps-10 pe-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text placeholder:text-text-muted text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+      />
+      @if (facade.searchTerm()) {
+        <button
+          type="button"
+          (click)="clearSearch()"
+          class="absolute inset-y-0 inset-e-0 flex items-center pe-3 text-text-muted hover:text-danger transition-colors cursor-pointer"
+          title="مسح البحث"
+        >
+          <fa-icon [icon]="faXmark"></fa-icon>
+        </button>
+      }
+    </div>
+  </div>
+</header>

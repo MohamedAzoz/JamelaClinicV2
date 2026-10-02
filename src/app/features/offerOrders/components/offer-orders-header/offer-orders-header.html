@@ -1,0 +1,53 @@
+ <header
+  class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 mb-2.5 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800/80 shadow-xs"
+  dir="rtl"
+>
+  <!-- Back + Title -->
+  <div class="flex items-center gap-4">
+    <a
+      routerLink="/main/companies"
+      class="w-10 h-10 rounded-xl bg-main-bg hover:bg-primary/10 text-text-muted hover:text-primary flex items-center justify-center transition-all shrink-0 border border-slate-200/80 dark:border-slate-700/40"
+      title="العودة لإدارة الشركات"
+    >
+      <fa-icon [icon]="faArrowRight"></fa-icon>
+    </a>
+
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span
+          class="px-1 py-0.5 md:px-2.5 md:py-0.5 rounded-full text-[10px] md:text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
+        >
+          سجل الأوردرات والطلبات
+        </span>
+      </div>
+      <h1
+        class="text-base sm:text-xl md:text-2xl font-bold text-text flex items-center gap-2"
+      >
+        <fa-icon [icon]="faBuilding" class="text-primary dark:text-accent text-lg"></fa-icon>
+        <span>طلبات شركة: {{ facade.companyName() || 'جاري التحميل...' }}</span>
+      </h1>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex items-center gap-2 shrink-0">
+    <button
+      type="button"
+      (click)="facade.refreshData()"
+      [disabled]="facade.loading()"
+      class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all text-xs font-medium cursor-pointer disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+    >
+      <fa-icon [icon]="faRotateRight" [class.animate-spin]="facade.loading()"></fa-icon>
+      <span>تحديث</span>
+    </button>
+
+    <button
+      type="button"
+      (click)="facade.openAddOrderModal()"
+      class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-semibold shadow-md shadow-primary/20 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40"
+    >
+      <fa-icon [icon]="faPlus"></fa-icon>
+      <span>إضافة طلب جديد</span>
+    </button>
+  </div>
+</header>

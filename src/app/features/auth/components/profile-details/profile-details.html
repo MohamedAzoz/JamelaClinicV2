@@ -1,0 +1,153 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full" dir="rtl">
+  <!-- Personal Info Card (2 Columns on Large Screens) -->
+  <div class="lg:col-span-2 flex flex-col gap-6">
+    <!-- Main Info Box -->
+    <div
+      class="bg-surface p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-5"
+    >
+      <div
+        class="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800 pb-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0"
+          >
+            <fa-icon [icon]="faAddressCard" size="lg"></fa-icon>
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-text">المعلومات الشخصية</h2>
+            <p class="text-xs text-text-muted">البيانات الأساسية المسجلة في حسابك بالنظام</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Full Name -->
+        <div
+          class="p-4 rounded-2xl bg-main-bg/60 border border-slate-200/60 dark:border-slate-800/80 flex flex-col gap-1"
+        >
+          <span class="text-xs text-text-muted font-medium">الاسم الكامل</span>
+          <span class="text-sm font-bold text-text">
+            {{ facade.userProfile()?.fullName || identity.userName() || '---' }}
+          </span>
+        </div>
+
+        <!-- Username -->
+        <div
+          class="p-4 rounded-2xl bg-main-bg/60 border border-slate-200/60 dark:border-slate-800/80 flex flex-col gap-1"
+        >
+          <span class="text-xs text-text-muted font-medium">اسم المستخدم (مُعرف الدخول)</span>
+          <span class="text-sm font-bold text-text">
+            {{ facade.userProfile()?.userName || identity.userName() || '---' }}
+          </span>
+        </div>
+
+        <!-- System Role -->
+        <div
+          class="p-4 rounded-2xl bg-main-bg/60 border border-slate-200/60 dark:border-slate-800/80 flex flex-col gap-1"
+        >
+          <span class="text-xs text-text-muted font-medium">الدور الوظيفي والصلاحية</span>
+          <span class="text-sm font-bold text-primary dark:text-accent">
+            {{ identity.userRole() || 'مستخدم' }}
+          </span>
+        </div>
+
+        <!-- Account Status -->
+        <div
+          class="p-4 rounded-2xl bg-main-bg/60 border border-slate-200/60 dark:border-slate-800/80 flex flex-col gap-1"
+        >
+          <span class="text-xs text-text-muted font-medium">حالة الحساب</span>
+          <div
+            class="flex items-center gap-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400"
+          >
+            <fa-icon [icon]="faCircleCheck"></fa-icon>
+            <span>مُفعل وجاهز للاستخدام</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security & Protection Tip Card -->
+    <div
+      class="bg-surface p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-4"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shrink-0"
+        >
+          <fa-icon [icon]="faShieldHalved" size="lg"></fa-icon>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-text">الأمان والحماية</h3>
+          <p class="text-xs text-text-muted">نصائح لحماية حسابك في مجمع جميلة الطبي</p>
+        </div>
+      </div>
+      <p class="text-xs sm:text-sm text-text-muted leading-relaxed">
+        <!-- لضمان سلامة بيانات المرضى والحجوزات، يُنصح بتغيير كلمة المرور بشكل دوري وعدم مشاركة بيانات تسجيل الدخول مع أي شخص آخر. -->
+        لا تشارك بيانات تسجيل الدخول الخاصة بك مع أي شخص آخر، وقم بتغيير كلمة المرور بشكل دوري.
+      </p>
+    </div>
+  </div>
+
+  <!-- Sidebar Actions & Quick Controls Card (1 Column) -->
+  <div class="flex flex-col gap-6">
+    <div
+      class="bg-surface p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col gap-5"
+    >
+      <div class="flex items-center gap-3 border-b border-slate-200/80 dark:border-slate-800 pb-4">
+        <div
+          class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0"
+        >
+          <fa-icon [icon]="faUserGear" size="lg"></fa-icon>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-text">الإجراءات السريعة</h3>
+          <p class="text-xs text-text-muted">إدارة خيارات الحساب والوصول</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Links -->
+      <div class="flex flex-col gap-3">
+        <!-- Change Password Link -->
+        <a
+          routerLink="/main/change-password"
+          class="flex items-center justify-between p-3.5 rounded-2xl bg-main-bg/60 border border-slate-200/60 dark:border-slate-800 hover:border-primary/40 hover:bg-primary/5 text-text hover:text-primary transition-all duration-200 no-underline cursor-pointer group"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold"
+            >
+              <fa-icon [icon]="faKey"></fa-icon>
+            </div>
+            <span class="text-xs sm:text-sm font-bold">تغيير كلمة المرور</span>
+          </div>
+          <span
+            class="text-xs font-semibold text-text-muted group-hover:text-primary transition-colors"
+            >الانتقال ←</span
+          >
+        </a>
+
+        <!-- Logout Link -->
+        <button
+          type="button"
+          (click)="logout()"
+          class="flex items-center justify-between p-3.5 rounded-2xl bg-danger/5 border border-danger/15 hover:bg-danger/10 text-danger transition-all duration-200 cursor-pointer w-full text-right group"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 rounded-xl bg-danger/10 text-danger flex items-center justify-center font-bold"
+            >
+              <fa-icon [icon]="faRightFromBracket"></fa-icon>
+            </div>
+            <span class="text-xs sm:text-sm font-bold">تسجيل الخروج</span>
+          </div>
+          <span
+            class="text-xs font-semibold text-danger group-hover:translate-x-0.5 transition-transform"
+            >خروج ←</span
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

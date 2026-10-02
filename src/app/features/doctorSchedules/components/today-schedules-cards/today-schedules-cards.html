@@ -1,0 +1,137 @@
+<div class="w-full" dir="rtl">
+  <!-- Loading State -->
+  @if (facade.isLoadingTodaySchedules()) {
+    <div
+      class="flex flex-col items-center justify-center py-16 text-text-muted bg-surface rounded-2xl border border-primary/10"
+    >
+      <fa-icon [icon]="faSpinner" class="animate-spin text-3xl text-primary mb-3"></fa-icon>
+      <p class="text-sm font-semibold">جاري تحميل قائمة أطباء اليوم...</p>
+    </div>
+  } @else if (facade.filteredTodaySchedules().length === 0) {
+    <!-- Empty State -->
+    <div
+      class="flex flex-col items-center justify-center py-16 px-4 text-center bg-surface rounded-2xl border border-primary/10"
+    >
+      <div
+        class="w-16 h-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center text-2xl mb-4 shadow-inner"
+      >
+        <fa-icon [icon]="faUserMd"></fa-icon>
+      </div>
+      <h3 class="text-lg font-bold text-text">لا يوجد أطباء متاحون اليوم</h3>
+      <p class="text-xs sm:text-sm text-text-muted max-w-md mt-1">
+        {{
+          facade.todaySearchQuery()
+            ? 'لم يتم العثور على أطباء يطابقون نتيجة البحث "' + facade.todaySearchQuery() + '"'
+            : 'لم يتم تسجيل مواعيد عمل للأطباء في هذا اليوم حتى الآن.'
+        }}
+      </p>
+    </div>
+  } @else {
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (item of facade.filteredTodaySchedules(); track item.id) {
+        <div
+          class="group relative flex flex-col justify-between rounded-3xl bg-surface p-6 shadow-sm hover:shadow-xl border border-primary/10 hover:border-primary/30 transition-all duration-300 overflow-hidden"
+        >
+          <!-- Top Decorative Accent Header -->
+          <div
+            class="absolute top-0 left-0 right-0 h-2 bg-linear-to-r from-primary via-accent to-primary"
+          ></div>
+
+          <div>
+            <!-- Card Top Bar: Doctor Avatar & Status -->
+            <div class="flex items-start justify-between gap-3 mb-4 pt-1">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-12 h-12 rounded-2xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white flex items-center justify-center font-bold text-xl transition-colors duration-300 shrink-0 shadow-inner"
+                >
+                  <fa-icon [icon]="faUserMd"></fa-icon>
+                </div>
+                <div>
+                  <h2
+                    class="text-base font-bold text-text group-hover:text-primary transition-colors"
+                  >
+                    د. {{ item.doctorName || 'غير محدد' }}
+                  </h2>
+                  <div class="flex items-center gap-1.5 text-xs text-text-muted mt-0.5 font-medium">
+                    <fa-icon [icon]="faHospital" class="text-accent text-[11px]"></fa-icon>
+                    <span>{{ item.clinicName || 'عيادة عامة' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Badge -->
+              <span
+                class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold shrink-0 border"
+                [class.bg-success\/10]="item.isActive"
+                [class.text-success]="item.isActive"
+                [class.border-success\/20]="item.isActive"
+                [class.bg-danger\/10]="!item.isActive"
+                [class.text-danger]="!item.isActive"
+                [class.border-danger\/20]="!item.isActive"
+              >
+                <fa-icon
+                  [icon]="item.isActive ? faCheckCircle : faTimesCircle"
+                  class="text-[10px]"
+                ></fa-icon>
+                <span>{{ item.isActive ? 'مُفعل' : 'مُعطل' }}</span>
+              </span>
+            </div>
+
+            <!-- Date & Appointments Count Details Box -->
+            <div
+              class="grid grid-cols-2 gap-3 my-4 p-3.5 rounded-2xl bg-main-bg/60 border border-primary/10"
+            >
+              <!-- Day & Date -->
+              <div class="flex flex-col gap-0.5">
+                <span class="text-[11px] font-medium text-text-muted flex items-center gap-1">
+                  <fa-icon [icon]="faCalendarDay" class="text-primary text-[10px]"></fa-icon>
+                  التاريخ والموعد
+                </span>
+                <span class="text-xs font-bold text-text mt-0.5">
+                  {{ item.dayName || 'اليوم' }} - {{ item.date | date: 'MM/dd' }}
+                </span>
+              </div>
+
+              <!-- Appointments Count -->
+              <div class="flex flex-col gap-0.5 border-r border-primary/10 pr-3">
+                <span class="text-[11px] font-medium text-text-muted flex items-center gap-1">
+                  <fa-icon [icon]="faUsersViewfinder" class="text-accent text-[10px]"></fa-icon>
+                  حجوزات اليوم
+                </span>
+                <span class="text-xs font-extrabold text-primary font-mono mt-0.5">
+                  {{ item.appointmentsCount ?? 0 }} حجز مسجل
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Bottom Action Buttons -->
+          <div class="flex items-center gap-2 pt-2 border-t border-primary/10">
+            <!-- View Appointments Button -->
+            <a
+              [routerLink]="['/main/schedule-appointments', item.id]"
+              class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-bold transition-all duration-200 cursor-pointer no-underline border border-primary/20 shadow-xs"
+            >
+              <fa-icon [icon]="faUsersViewfinder" class="text-xs"></fa-icon>
+              <span>عرض الحجوزات</span>
+            </a>
+
+            <!-- Book Appointment Button -->
+            @if (!IsAdmian()) {
+              <a
+                [routerLink]="['/main/appointment-booking']"
+                [queryParams]="{ doctorId: item.doctorId, scheduleId: item.id }"
+                title="حجز موعد مريض جديد"
+                class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-surface hover:bg-main-bg text-text border border-primary/20 text-xs font-semibold transition-all cursor-pointer no-underline"
+              >
+                <fa-icon [icon]="faPlus" class="text-primary text-xs"></fa-icon>
+                <span>حجز جديد</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

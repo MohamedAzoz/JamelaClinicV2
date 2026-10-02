@@ -1,0 +1,99 @@
+<div class="space-y-5" dir="rtl">
+  <!-- SECTION 1: Patient Personal Information -->
+  <section class="rounded-2xl border border-primary/10 bg-surface p-5 shadow-sm">
+    <div class="mb-4 flex items-center justify-between gap-3 border-b border-primary/10 pb-3">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
+        >
+          <fa-icon [icon]="faUser" class="text-base"></fa-icon>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-text">بيانات المريض</h3>
+          <p class="text-[11px] text-text-muted">معلومات شخصية ووضع الحجز</p>
+        </div>
+      </div>
+      <span
+        [class]="statusBadgeClass()"
+        class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+      >
+        {{ getStatusName(appointment().status) }}
+      </span>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faUser" class="text-xs text-primary"></fa-icon>
+          اسم المريض
+        </div>
+        <div class="text-sm font-bold text-text">{{ appointment().patientName }}</div>
+      </div>
+
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faPhone" class="text-xs text-primary"></fa-icon>
+          رقم الهاتف
+        </div>
+        <div class="text-sm font-bold text-text" dir="ltr">
+          {{ appointment().patientPhoneNumber }}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3 sm:col-span-2">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faMapMarkerAlt" class="text-xs text-primary"></fa-icon>
+          العنوان
+        </div>
+        <div class="text-sm text-text">
+          {{ appointment().patientAddress || 'لا توجد بيانات عنوان' }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: Appointment Details -->
+  <section class="rounded-2xl border border-primary/10 bg-surface p-5 shadow-sm">
+    <div class="mb-4 flex items-center gap-3 border-b border-primary/10 pb-3">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
+      >
+        <fa-icon [icon]="faUserMd" class="text-base"></fa-icon>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-text">تفاصيل الموعد</h3>
+        <p class="text-[11px] text-text-muted">نوع الزيارة، موعد الحجز ورقم الدور</p>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-3">
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faCalendarDay" class="text-xs text-primary"></fa-icon>
+          نوع الزيارة
+        </div>
+        <div class="text-sm font-bold text-text">
+          {{ getVisitTypeName(appointment().visitType) }}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faCalendarDay" class="text-xs text-primary"></fa-icon>
+          تاريخ الحجز
+        </div>
+        <div class="text-sm font-bold text-text">
+          {{ appointment().appointmentDate | date: 'yyyy-MM-dd' }}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faClipboardList" class="text-xs text-primary"></fa-icon>
+          رقم الدور
+        </div>
+        <div class="text-sm font-bold text-text">{{ appointment().queueNumber }}</div>
+      </div>
+    </div>
+  </section>
+</div>

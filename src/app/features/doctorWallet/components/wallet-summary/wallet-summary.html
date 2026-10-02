@@ -1,0 +1,52 @@
+<section aria-labelledby="wallet-summary-title" [attr.aria-busy]="facade.loadingSummary()">
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+    <h2 id="wallet-summary-title" class="text-base font-bold text-text">ملخص الحسابات</h2>
+    <span
+      class="rounded-lg border border-primary/15 bg-surface px-3 py-1 text-xs font-semibold text-text"
+    >
+      {{ facade.accountLabel() }}
+    </span>
+  </div>
+  @if (facade.summaryError()) {
+    <div
+      role="alert"
+      class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-danger/20 bg-surface p-5 text-sm text-text"
+    >
+      <p>{{ facade.summaryError() }}</p>
+      <button
+        type="button"
+        (click)="facade.loadSummary()"
+        class="rounded-lg border border-primary/20 px-3 py-2 font-bold"
+      >
+        إعادة المحاولة
+      </button>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      @for (card of cards(); track card.title) {
+        <div class="rounded-2xl border border-primary/10 bg-surface p-5 shadow-sm">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <h3 class="text-sm font-semibold text-text">{{ card.title }}</h3>
+            <span
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
+              aria-hidden="true"
+            >
+              <fa-icon [icon]="card.icon" />
+            </span>
+          </div>
+          @if (facade.loadingSummary()) {
+            <p class="py-1 text-sm text-text-muted" role="status">جاري التحميل...</p>
+          } @else {
+            <p class="flex items-baseline gap-2 text-text">
+              <span class="text-2xl font-bold tabular-nums" dir="ltr">{{
+                card.value == null ? '—' : (card.value | number: '1.2-2')
+              }}</span>
+              <span class="text-xs font-semibold">ج.م</span>
+            </p>
+          }
+          <p class="mt-3 text-xs text-text-muted">{{ card.hint }}</p>
+        </div>
+      }
+    </div>
+  }
+</section>

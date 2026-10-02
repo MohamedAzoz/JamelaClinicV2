@@ -1,0 +1,195 @@
+<div class="rounded-2xl bg-surface shadow-sm border border-primary/10 overflow-hidden mb-6">
+  <!-- Loading State -->
+  @if (facade.isLoadingAppointments()) {
+    <div class="flex flex-col items-center justify-center p-12 text-text-muted">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-3xl text-primary mb-3"></fa-icon>
+      <p class="text-sm font-semibold">جاري تحميل الحجوزات والمواعيد...</p>
+    </div>
+  } @else if (facade.filteredAppointments().length === 0) {
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center p-12 text-center text-text-muted">
+      <div
+        class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4"
+      >
+        <fa-icon [icon]="faReceipt" class="text-2xl"></fa-icon>
+      </div>
+      <h3 class="text-lg font-semibold text-text">لا توجد حجوزات مسجلة</h3>
+      <p class="text-xs text-text-muted max-w-sm mt-1">
+        لم نجد أي نتائج تطابق الفلاتر المحددة حالياً. حاول تعديل خيارات البحث أو تصفية التاريخ.
+      </p>
+    </div>
+  } @else {
+    <!-- Data Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-right text-sm">
+        <thead
+          class="bg-primary/5 text-xs font-semibold text-text-muted border-b border-primary/10"
+        >
+          <tr>
+            <th scope="col" class="px-4 py-3.5 text-center">رقم الدور</th>
+            <th scope="col" class="px-4 py-3.5">بيانات المريض</th>
+            <th scope="col" class="px-4 py-3.5">الطبيب المعالج</th>
+            <th scope="col" class="px-4 py-3.5">تاريخ الحجز</th>
+            <th scope="col" class="px-4 py-3.5">نوع الزيارة</th>
+            <th scope="col" class="px-4 py-3.5">الحجز والخصم والأرباح</th>
+            <th scope="col" class="px-4 py-3.5 text-center">حالة الموعد</th>
+            <th scope="col" class="px-4 py-3.5 text-center">تفاصيل الموعد</th>
+            @if (!facade.isDoctorOrAdminOrAccountant()) {
+              <th scope="col" class="px-4 py-3.5 text-center">تعديل</th>
+            }
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-primary/5 text-text">
+          @for (app of facade.filteredAppointments(); track app.id) {
+            <tr class="hover:bg-primary/5 transition">
+              <!-- Queue Number -->
+              <td class="px-4 py-4 text-center">
+                <span
+                  class="inline-flex h-6 lg:h-9 w-6 lg:w-9 items-center justify-center rounded-xl bg-primary/10 font-semibold text-primary font-mono text-sm border border-primary/20"
+                >
+                  {{ app.queueNumber }}
+                </span>
+              </td>
+
+              <!-- Patient Data -->
+              <td class="px-4 py-4">
+                <div class="font-semibold text-text flex items-center gap-1.5">
+                  <fa-icon [icon]="faUser" class="text-xs text-primary"></fa-icon>
+                  {{ app.patientName }}
+                </div>
+                @if (app.patientPhoneNumber) {
+                  <div
+                    class="text-xs font-mono text-text-muted flex items-center gap-1 mt-0.5"
+                    dir="ltr"
+                  >
+                    <span>{{ app.patientPhoneNumber }}</span>
+                    <fa-icon [icon]="faPhone" class="text-[10px] text-text-muted"></fa-icon>
+                  </div>
+                }
+                @if (app.patientAddress) {
+                  <div class="text-[11px] text-text-muted flex items-center gap-1 mt-0.5">
+                    <fa-icon [icon]="faMapMarkerAlt" class="text-[10px] text-text-muted"></fa-icon>
+                    {{ app.patientAddress }}
+                  </div>
+                }
+              </td>
+
+              <!-- Doctor Name -->
+              <td class="px-4 py-4">
+                @if (!facade.isDoctor()) {
+                  <div
+                    class="text-xs md:text-sm lg:text-base font-semibold text-text flex items-center gap-1.5"
+                  >
+                    <fa-icon [icon]="faUserMd" class="text-xs text-accent"></fa-icon>
+                    د. {{ app.doctorName || 'غير محدد' }}
+                  </div>
+                }
+                @if (app.employeeName) {
+                  <div class="lg:text-xs md:text-[10px] text-[8px] text-text-muted mt-0.5">
+                    الموظف: {{ app.employeeName }}
+                  </div>
+                }
+              </td>
+
+              <!-- Appointment Date -->
+              <td class="px-4 py-4">
+                <div
+                  class="text-xs md:text-sm lg:text-base font-semibold text-text flex items-center gap-1.5"
+                >
+                  <fa-icon
+                    [icon]="faCalendarDay"
+                    class="text-xs md:text-sm lg:text-base text-accent"
+                  ></fa-icon>
+                  {{ app.appointmentDate | date: 'yyyy-MM-dd' }}
+                </div>
+                <div class="lg:text-xs md:text-[10px] text-[8px] text-text-muted mt-0.5">
+                  التسجيل: {{ app.createdAt | date: 'yyyy-MM-dd (hh:mm a)' }}
+                </div>
+              </td>
+
+              <!-- Visit Type -->
+              <td class="px-4 py-4">
+                <span
+                  class="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary border border-primary/15"
+                >
+                  {{ getVisitTypeName(app.visitType) }}
+                </span>
+              </td>
+
+              <!-- Fee & Earnings Breakdown -->
+              <td class="px-4 py-4">
+                <div class="text-xs md:text-sm font-semibold text-text font-mono">
+                  {{ app.consultationFee }} جنية
+                </div>
+                @if ((app.discountAmount ?? 0) > 0) {
+                  <div class="mt-1 flex flex-col gap-0.5 text-[10px] md:text-xs">
+                    <span class="font-semibold text-danger"
+                      >الخصم: {{ app.discountAmount }} جنية</span
+                    >
+                    @if (app.finalPaidAmount !== undefined && app.finalPaidAmount !== null) {
+                      <span class="font-semibold text-success"
+                        >المدفوع النهائي: {{ app.finalPaidAmount }} جنية</span
+                      >
+                    }
+                  </div>
+                }
+                @if (facade.isAdminOrAccountant() && (app.doctorEarnings || app.centerEarnings)) {
+                  <div
+                    class="lg:text-xs md:text-[10px] text-[8px] text-text-muted mt-0.5 flex items-center gap-2"
+                  >
+                    <span class="text-success">الطبيب: {{ app.doctorEarnings }}</span>
+                    <span>•</span>
+                    <span class="text-accent">المركز: {{ app.centerEarnings }}</span>
+                  </div>
+                }
+              </td>
+
+              <!-- Appointment Status Badge -->
+              <td class="px-4 py-4 text-center">
+                <span
+                  [class]="getStatusBadgeClass(app.status)"
+                  class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+                >
+                  {{ getStatusName(app.status) }}
+                </span>
+              </td>
+
+              <td class="px-4 py-4 text-center">
+                <button
+                  type="button"
+                  (click)="openDetailsModal(app)"
+                  title="عرض تفاصيل الحجز"
+                  class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                >
+                  <fa-icon [icon]="faEye"></fa-icon>
+                  <span>تفاصيل</span>
+                </button>
+              </td>
+              <!-- Action Buttons -->
+              @if (!facade.isDoctorOrAdminOrAccountant()) {
+                <td class="px-4 py-4 text-center">
+                  <div class="flex flex-wrap items-center justify-center gap-1.5">
+                    <button
+                      type="button"
+                      (click)="openEditModal(app)"
+                      title="تعديل بيانات الحجز"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    >
+                      <fa-icon [icon]="faEdit"></fa-icon>
+                      <span>تعديل</span>
+                    </button>
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Edit Appointment Modal -->
+@if (editingAppointment()) {
+  <app-edit-appointment-modal [appointment]="editingAppointment()!" (closed)="closeEditModal()" />
+}

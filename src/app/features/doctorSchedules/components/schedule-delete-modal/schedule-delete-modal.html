@@ -1,0 +1,13 @@
+<app-confirm-modal
+  [isOpen]="facade.isDeleteModalOpen()"
+  variant="danger"
+  title="تأكيد حذف الموعد/الجدول"
+  [itemName]="facade.selectedScheduleToDelete()?.doctorName ? ('جدول د. ' + facade.selectedScheduleToDelete()?.doctorName) : undefined"
+  message="هل أنت أصلًا متأكد من رغبتك في حذف جدول المواعيد المحدد؟"
+  warningMessage="تحذير: حذف الجدول قد يؤثر على الحجوزات المرتبطة به."
+  confirmText="حذف الجدول"
+  cancelText="إلغاء"
+  [isLoading]="facade.actionLoading()"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+/>

@@ -1,0 +1,109 @@
+@if (isVisible()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="modalTitleId"
+  >
+    <!-- Modal Card Container -->
+    <div
+      class="relative w-full max-w-md bg-surface rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden animate-scaleUp p-6 flex flex-col gap-5"
+    >
+      <!-- Close Button -->
+      <button
+        type="button"
+        (click)="onCancel()"
+        [disabled]="activeIsLoading()"
+        class="absolute top-4 inset-e-4 p-2 rounded-xl text-text-muted hover:text-text hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50"
+        aria-label="إغلاق النافذة"
+      >
+        <fa-icon [icon]="faXmark" size="lg"></fa-icon>
+      </button>
+
+      <!-- Modal Header (Icon + Title + Description) -->
+      <div class="flex flex-col items-center text-center gap-3 pt-2">
+        <!-- Variant Icon Box -->
+        <div
+          class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner transition-transform duration-300 transform group-hover:scale-105"
+          [class]="variantStyles().iconBox"
+        >
+          <fa-icon [icon]="activeIcon()" size="2xl"></fa-icon>
+        </div>
+
+        <div class="space-y-1.5 max-w-xs sm:max-w-sm">
+          <h2 [id]="modalTitleId" class="text-lg sm:text-xl font-extrabold text-text tracking-tight">
+            {{ activeTitle() }}
+          </h2>
+
+          <p class="text-xs sm:text-sm text-text-muted leading-relaxed">
+            {{ activeMessage() }}
+          </p>
+
+          <!-- Item Name Pill Badge (If provided) -->
+          @if (activeItemName()) {
+            <div class="pt-1">
+              <span
+                class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide transition-colors"
+                [class]="variantStyles().itemBadge"
+              >
+                "{{ activeItemName() }}"
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Detail Items List (If provided) -->
+      @if (activeDetails() && activeDetails()!.length > 0) {
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-800/80 flex flex-col gap-2">
+          @for (item of activeDetails()!; track item.label) {
+            <div class="flex items-center justify-between text-xs sm:text-sm">
+              <span class="text-text-muted font-medium">{{ item.label }}:</span>
+              <span class="font-bold text-text">{{ item.value }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Optional Warning Highlight Box -->
+      @if (activeWarningMessage()) {
+        <div
+          class="p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 leading-relaxed font-medium"
+          [class]="variantStyles().warningBox"
+        >
+          <fa-icon [icon]="faTriangleExclamation" class="shrink-0 mt-0.5" size="lg"></fa-icon>
+          <span>{{ activeWarningMessage() }}</span>
+        </div>
+      }
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button
+          type="button"
+          (click)="onCancel()"
+          [disabled]="activeIsLoading()"
+          class="flex-1 py-3 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-surface text-text hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs sm:text-sm font-bold transition-all cursor-pointer disabled:opacity-50"
+        >
+          {{ activeCancelText() }}
+        </button>
+
+        <button
+          type="button"
+          (click)="onConfirm()"
+          [disabled]="activeIsLoading()"
+          class="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all cursor-pointer disabled:opacity-50"
+          [class]="variantStyles().confirmButton"
+        >
+          @if (activeIsLoading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+            <span>جاري المعالجة...</span>
+          } @else {
+            <fa-icon [icon]="activeIcon()"></fa-icon>
+            <span>{{ activeConfirmText() }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

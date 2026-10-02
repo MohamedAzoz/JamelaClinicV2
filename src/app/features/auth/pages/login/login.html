@@ -1,0 +1,42 @@
+<main class="grid min-h-screen w-full grid-cols-1 overflow-hidden relative" dir="rtl">
+  <section class="flex items-center justify-center p-4 sm:p-6 lg:p-10 min-h-full">
+    <div
+      class="w-full max-w-md bg-surface border border-text-muted/15 rounded-2xl p-5 sm:p-8 shadow-xl shadow-primary/10"
+    >
+      <!-- Card header -->
+      <div class="flex items-center gap-4 mb-7">
+        <div
+          class="shrink-0 flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary border border-primary/20"
+          aria-hidden="true"
+        >
+          <img
+            ngSrc="jamela.webp"
+            width="40"
+            height="40"
+            alt="logo"
+            class="object-contain w-full h-full rounded-xl"
+          />
+        </div>
+        <div class="flex-1">
+          <h2 class="text-xl font-bold text-text mb-0.5 tracking-tight">تسجيل الدخول</h2>
+          <p class="text-xs font-normal text-text-muted">مرحباً بك — أدخل بياناتك للمتابعة</p>
+        </div>
+      </div>
+
+      <!-- Error Banner -->
+      @if (facade.error()) {
+        <div
+          class="flex items-center gap-2.5 p-3 mb-5 bg-danger/10 border border-danger/25 rounded-lg text-danger text-sm font-medium"
+          role="alert"
+          aria-live="assertive"
+        >
+          <fa-icon [icon]="faCircleExclamation" class="text-base shrink-0"></fa-icon>
+          <span>{{ facade.error() }}</span>
+        </div>
+      }
+
+      <!-- Login Form Component -->
+      <app-login-form [isLoading]="facade.loading()" (submitted)="onFormSubmitted($event)" />
+    </div>
+  </section>
+</main>

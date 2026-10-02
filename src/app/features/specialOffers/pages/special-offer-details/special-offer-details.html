@@ -1,0 +1,50 @@
+<main class="min-h-screen p-4 text-text sm:p-6 lg:p-8" dir="rtl">
+  <div class="mx-auto max-w-6xl space-y-6">
+    <div
+      class="rounded-3xl border border-primary/20 bg-surface p-6 shadow-sm mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+      dir="rtl"
+    >
+      <div class="flex items-center gap-4">
+        <button
+          type="button"
+          (click)="goBack()"
+          class="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/20 bg-main-bg text-text hover:bg-primary/10 transition cursor-pointer"
+          title="الرجوع للخلف"
+        >
+          <fa-icon [icon]="faArrowRight" class="text-base"></fa-icon>
+        </button>
+        <p class="text-xs font-bold text-primary">العروض والخصومات</p>
+        <h1 class="mt-1 text-2xl font-bold">تفاصيل الخصم والحجوزات</h1>
+      </div>
+    </div>
+
+    @if (facade.isLoadingDetails()) {
+      <section
+        class="flex min-h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-primary/10 bg-surface p-8"
+        role="status"
+      >
+        <fa-icon [icon]="faSpinner" class="animate-spin text-3xl text-primary"></fa-icon>
+        <p class="text-sm font-semibold text-text-muted">جاري تحميل بيانات الخصم...</p>
+      </section>
+    } @else if (facade.detailsError()) {
+      <section
+        class="flex min-h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-danger/20 bg-surface p-8 text-center"
+        role="alert"
+      >
+        <fa-icon [icon]="faCircleExclamation" class="text-3xl text-danger"></fa-icon>
+        <h2 class="text-lg font-bold">تعذر تحميل تفاصيل الخصم</h2>
+        <p class="max-w-lg text-sm leading-6 text-text-muted">{{ facade.detailsError() }}</p>
+      </section>
+    } @else if (facade.selectedOfferDetails(); as offer) {
+      <app-special-offer-details-view [offer]="offer" />
+    }
+  </div>
+</main>
+
+@if (facade.isBookingFormOpen()) {
+  <app-special-offer-booking-form />
+}
+
+@if (facade.bookingToConvert(); as booking) {
+  <app-special-offer-convert-booking [booking]="booking" />
+}

@@ -1,0 +1,114 @@
+<section
+  aria-labelledby="wallet-filters-title"
+  class="rounded-2xl border border-primary/10 bg-surface p-4 sm:p-5 shadow-sm"
+  dir="rtl"
+>
+  <div class="mb-4 flex items-center justify-between gap-3 border-b border-primary/10 pb-3">
+    <h2 id="wallet-filters-title" class="flex items-center gap-2 text-sm font-bold text-text">
+      <fa-icon [icon]="faFilter" class="text-primary" /> تصفية الحركات المالية
+    </h2>
+    <button
+      type="button"
+      (click)="reset()"
+      class="flex min-h-9 items-center gap-1.5 rounded-xl border border-primary/20 bg-surface px-3 py-1.5 text-xs font-semibold text-text transition hover:bg-main-bg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      title="إعادة ضبط الفلاتر"
+    >
+      <fa-icon [icon]="faRotateLeft" class="text-xs" />
+      <span>إعادة ضبط</span>
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 flex-1">
+      @if (facade.canManage()) {
+        <label class="flex flex-col gap-1.5 text-xs font-bold text-text">
+          <span>الطبيب:</span>
+          <select
+            [value]="facade.doctorIdFilter()"
+            (change)="selectDoctor($event)"
+            [disabled]="facade.loadingDoctors()"
+            class="w-full cursor-pointer rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="">
+              {{ facade.loadingDoctors() ? 'جاري تحميل الأطباء...' : 'جميع الأطباء' }}
+            </option>
+            @for (doctor of facade.doctors(); track doctor.userId) {
+              <option [value]="doctor.userId">{{ doctor.fullName }} — {{ doctor.clinicName }}</option>
+            }
+          </select>
+        </label>
+      }
+
+      <label class="flex flex-col gap-1.5 text-xs font-bold text-text">
+        <span>الفترة:</span>
+        <select
+          [value]="facade.periodFilter() ?? ''"
+          (change)="selectPeriod($event)"
+          class="w-full cursor-pointer rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        >
+          <option value="">جميع الفترات</option>
+          <option [value]="Period.Today">اليوم</option>
+          <option [value]="Period.ThisMonth">هذا الشهر</option>
+          <option [value]="Period.ThisYear">هذا العام</option>
+        </select>
+      </label>
+    </div>
+
+    <form (submit)="applyDates($event)" class="flex flex-col gap-1.5">
+      <div
+        class="flex flex-col items-stretch gap-2 rounded-xl border border-primary/10 bg-main-bg/60 p-2 sm:p-1.5 sm:flex-row sm:items-center"
+      >
+        <label class="flex items-center justify-between sm:justify-start gap-1 text-xs font-medium text-text">
+          <span>من:</span>
+          <input
+            type="date"
+            [formField]="dateForm.fromDate"
+            [max]="dates().toDate || ''"
+            [attr.aria-invalid]="invalidRange() ? 'true' : null"
+            [attr.aria-describedby]="invalidRange() ? 'wallet-date-error' : null"
+            class="min-w-0 flex-1 sm:flex-initial rounded-lg border border-primary/20 bg-surface px-2.5 py-1.5 sm:py-1 text-xs font-medium text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </label>
+
+        <label class="flex items-center justify-between sm:justify-start gap-1 text-xs font-medium text-text">
+          <span>إلى:</span>
+          <input
+            type="date"
+            [formField]="dateForm.toDate"
+            [min]="dates().fromDate || ''"
+            [attr.aria-invalid]="invalidRange() ? 'true' : null"
+            [attr.aria-describedby]="invalidRange() ? 'wallet-date-error' : null"
+            class="min-w-0 flex-1 sm:flex-initial rounded-lg border border-primary/20 bg-surface px-2.5 py-1.5 sm:py-1 text-xs font-medium text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </label>
+
+        <button
+          type="submit"
+          [disabled]="invalidRange()"
+          class="w-full sm:w-auto cursor-pointer rounded-lg bg-primary px-3.5 py-1.5 sm:py-1 text-xs font-bold text-white transition hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          تطبيق
+        </button>
+      </div>
+
+      @if (invalidRange()) {
+        <p id="wallet-date-error" role="alert" class="text-xs font-medium text-text">
+          يجب أن يكون تاريخ البداية قبل تاريخ النهاية أو مساويًا له.
+        </p>
+      }
+    </form>
+  </div>
+
+  @if (facade.canManage() && facade.doctorsError()) {
+    <p role="alert" class="mt-3 text-xs text-text">
+      {{ facade.doctorsError() }}
+      <button
+        type="button"
+        (click)="facade.loadDoctors()"
+        class="rounded-lg px-2 py-1 font-bold underline hover:text-primary"
+      >
+        إعادة المحاولة
+      </button>
+    </p>
+  }
+</section>

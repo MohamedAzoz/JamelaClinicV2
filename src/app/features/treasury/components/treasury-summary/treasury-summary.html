@@ -1,0 +1,60 @@
+<section
+  class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4"
+  dir="rtl"
+  aria-label="ملخص الخزينة"
+>
+  @for (
+    card of [
+      {
+        label: 'إجمالي الدخل',
+        value: facade.summary()?.totalIncome,
+        icon: faArrowTrendUp,
+        tone: 'text-success',
+        bg: 'bg-success/10',
+      },
+      {
+        label: 'إجمالي المصروفات',
+        value: facade.summary()?.totalExpense,
+        icon: faCoins,
+        tone: 'text-danger',
+        bg: 'bg-danger/10',
+      },
+      {
+        label: 'صافي الربح',
+        value: facade.summary()?.netProfit,
+        icon: faScaleBalanced,
+        tone: 'text-primary',
+        bg: 'bg-primary/10',
+      },
+      {
+        label: 'رصيد الخزينة الحالي',
+        value: facade.summary()?.currentTreasuryBalance,
+        icon: faWallet,
+        tone: 'text-accent',
+        bg: 'bg-accent/10',
+      },
+    ];
+    track card.label
+  ) {
+    <article
+      class="flex items-center justify-between rounded-2xl border border-text-muted/10 bg-surface p-4 shadow-sm"
+    >
+      <div>
+        <p class="text-xs font-semibold text-text-muted">{{ card.label }}</p>
+        <strong class="mt-2 block text-lg font-bold" [class]="card.tone">{{
+          formatMoney(card.value)
+        }}</strong>
+      </div>
+      <div
+        class="flex h-11 w-11 items-center justify-center rounded-xl"
+        [class]="card.bg"
+        [class.text-success]="card.tone === 'text-success'"
+        [class.text-danger]="card.tone === 'text-danger'"
+        [class.text-primary]="card.tone === 'text-primary'"
+        [class.text-accent]="card.tone === 'text-accent'"
+      >
+        <fa-icon [icon]="card.icon"></fa-icon>
+      </div>
+    </article>
+  }
+</section>

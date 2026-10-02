@@ -1,0 +1,48 @@
+<div
+  class="min-h-screen bg-linear-to-br from-[#fdfdff] to-[#edf1fd] flex justify-center items-center font-['Tajawal'] px-4"
+>
+  <div class="max-w-2xl w-full text-center flex flex-col items-center">
+    <!-- خطأ 404 الرسومي مع حقيبة البيانات المتوهجة بالخلفية -->
+    <div class="relative flex items-center justify-center mb-6">
+      <!-- مجسم الخلفية الزرقاء الفاتحة (شكل الحقيبة) -->
+      <div
+        class="w-36 h-36 bg-[#d1ddf8]/70 rounded-[30px] relative before:content-[''] before:absolute before:-top-3 before:left-1/2 before:-translate-x-1/2 before:w-14 before:h-4 before:bg-[#d1ddf8]/70 before:rounded-t-lg"
+      ></div>
+      <!-- رقم 404 الضخم المتمركز بالمنتصف -->
+      <h1 class="absolute text-7xl font-extrabold text-[#1a56db] tracking-tight select-none">
+        404
+      </h1>
+    </div>
+
+    <!-- النصوص -->
+    <h2 class="text-2xl font-bold text-gray-900 mb-3">الصفحة غير موجودة</h2>
+    <p class="text-gray-500 text-sm leading-relaxed max-w-md mb-8">
+      عذرًا، يبدو أن الصفحة التي تبحث عنها غير موجودة أو تم نقلها.
+    </p>
+
+    <!-- زر الإجراء الرئيسي -->
+    <div class="mb-8">
+      <a
+        (click)="goBack()"
+        class="flex items-center cursor-pointer gap-2 px-6 py-3 text-sm font-semibold text-white bg-[#1a56db] rounded-lg hover:bg-[#1849b9] shadow-md transition-colors duration-200"
+      >
+        <!-- أيقونة المربعات الأربعة للوحة القيادة -->
+        <svg
+          class="h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+          />
+        </svg>
+        العودة للرئيسية
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,134 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="convert-offer-booking-title"
+  dir="rtl"
+>
+  <section
+    class="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-primary/15 bg-surface shadow-2xl"
+  >
+    <header class="flex items-center justify-between border-b border-primary/10 p-5">
+      <div>
+        <h2 id="convert-offer-booking-title" class="text-lg font-bold">تحويل الحجز إلى موعد</h2>
+        <p class="mt-1 text-xs text-text-muted">
+          {{ booking().patientName }} · حجز #{{ booking().bookingId }}
+        </p>
+      </div>
+      <button
+        type="button"
+        (click)="facade.closeConvertBooking()"
+        [disabled]="facade.isConvertingBooking()"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/15 text-text-muted hover:bg-main-bg"
+        aria-label="إغلاق النافذة"
+      >
+        <fa-icon [icon]="faXmark" />
+      </button>
+    </header>
+
+    <div class="space-y-4 p-5">
+      <div>
+        <label for="offer-convert-doctor" class="mb-1.5 block text-sm font-semibold">الطبيب</label>
+        <select
+          id="offer-convert-doctor"
+          [value]="facade.conversionDoctorId()"
+          (change)="onDoctorChange($event)"
+          [disabled]="facade.isLoadingDoctors()"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"
+        >
+          <option value="">
+            {{ facade.isLoadingDoctors() ? 'جاري تحميل الأطباء...' : 'اختر الطبيب' }}
+          </option>
+          @for (doctor of facade.doctors(); track doctor.userId) {
+            <option [value]="doctor.userId">
+              د. {{ doctor.fullName }}{{ doctor.clinicName ? ' · ' + doctor.clinicName : '' }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="offer-convert-schedule" class="mb-1.5 block text-sm font-semibold"
+          >الموعد المتاح</label
+        >
+        <select
+          id="offer-convert-schedule"
+          [value]="facade.conversionScheduleId() ?? ''"
+          (change)="setSchedule($event)"
+          [disabled]="!facade.conversionDoctorId() || facade.isLoadingSchedules()"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50"
+        >
+          <option value="">
+            {{ facade.isLoadingSchedules() ? 'جاري تحميل المواعيد...' : 'اختر موعد الطبيب' }}
+          </option>
+          @for (schedule of facade.schedules(); track schedule.id) {
+            <option [value]="schedule.id">
+              {{ schedule.dayName }} · {{ schedule.date | date: 'yyyy-MM-dd' }}
+            </option>
+          }
+        </select>
+        @if (
+          facade.conversionDoctorId() &&
+          !facade.isLoadingSchedules() &&
+          facade.schedules().length === 0
+        ) {
+          <p class="mt-1 text-xs text-text-muted">لا توجد مواعيد مستقبلية متاحة لهذا الطبيب.</p>
+        }
+      </div>
+
+      <div>
+        <label for="offer-convert-visit-type" class="mb-1.5 block text-sm font-semibold"
+          >نوع الزيارة</label
+        >
+        <select
+          id="offer-convert-visit-type"
+          [value]="facade.conversionVisitType()"
+          (change)="setVisitType($event)"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"
+        >
+          @for (visitType of visitTypes; track visitType.value) {
+            <option [value]="visitType.value">{{ visitType.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-4 text-sm">
+        <div class="flex justify-between gap-3">
+          <span class="text-text-muted">المبلغ المدفوع</span
+          ><strong>{{ booking().paidAmount | number: '1.2-2' }} ج.م</strong>
+        </div>
+        <p class="mt-2 text-xs leading-5 text-text-muted">
+          سيتم إنشاء موعد للمريض باستخدام بيانات الحجز الحالي.
+        </p>
+      </div>
+
+      <footer class="flex justify-end gap-2 border-t border-primary/10 pt-4">
+        <button
+          type="button"
+          (click)="facade.closeConvertBooking()"
+          [disabled]="facade.isConvertingBooking()"
+          class="min-h-10 rounded-xl border border-primary/20 px-4 text-sm font-semibold"
+        >
+          إلغاء
+        </button>
+        <button
+          type="button"
+          (click)="facade.convertBookingToAppointment()"
+          [disabled]="
+            facade.isConvertingBooking() ||
+            !facade.conversionDoctorId() ||
+            !facade.conversionScheduleId()
+          "
+          class="inline-flex min-h-10 items-center gap-2 rounded-xl bg-success px-4 text-sm font-bold text-white disabled:opacity-50"
+        >
+          @if (facade.isConvertingBooking()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+          } @else {
+            <fa-icon [icon]="faCheck" />
+          }
+          تأكيد التحويل
+        </button>
+      </footer>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,98 @@
+<div
+  class="rounded-3xl border border-primary/20 bg-surface p-6 shadow-sm mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+  dir="rtl"
+>
+  <div class="flex items-center gap-4">
+    <button
+      type="button"
+      (click)="goBack()"
+      class="flex h-9 md:h-11 w-9 md:w-11 items-center justify-center rounded-2xl border border-primary/20 bg-main-bg text-text hover:bg-primary/10 transition cursor-pointer"
+      title="الرجوع للخلف"
+    >
+      <fa-icon [icon]="faArrowRight" class="text-xs md:text-base"></fa-icon>
+    </button>
+
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-8 md:h-12 w-8 md:w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary shadow-sm ring-1 ring-primary/20"
+      >
+        <fa-icon [icon]="faReceipt" class="text-xl"></fa-icon>
+      </div>
+      <div>
+        <div class="flex items-center gap-1">
+          <h1 class="text-lg md:text-xl font-semibold text-text">تفاصيل الحجز</h1>
+          <span
+            [class]="statusBadgeClass()"
+            class="inline-flex items-center rounded-full px-1.5 py-1 text-[9px] md:text-xs font-semibold"
+          >
+            {{ getStatusName(appointment().status) }}
+          </span>
+        </div>
+        <p class="text-xs text-text-muted mt-0.5">
+          مريض: <span class="font-bold text-text">{{ appointment().patientName }}</span> | رقم
+          الدور: <span class="font-bold text-accent">{{ appointment().queueNumber }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Action Buttons -->
+  @if (!facade.isAdminOrAccountant()) {
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Pay Button if status is Unpaid (1) -->
+      @if (!facade.isDoctor() && Number(appointment().status) === 1) {
+        <button
+          type="button"
+          (click)="pay()"
+          [disabled]="facade.actionLoadingId() === appointment().id"
+          class="flex items-center gap-2 rounded-xl bg-success px-4 py-2.5 text-xs font-bold text-white transition hover:bg-success-dark disabled:opacity-50 cursor-pointer shadow-sm"
+        >
+          @if (facade.actionLoadingId() === appointment().id) {
+            <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
+          } @else {
+            <fa-icon [icon]="faCoins" class="text-xs"></fa-icon>
+          }
+          <span>تسديد الكشف</span>
+        </button>
+      }
+
+      <!-- Complete Button if status is InProgress (2) -->
+      @if (Number(appointment().status) === 2) {
+        <button
+          type="button"
+          (click)="complete()"
+          [disabled]="facade.actionLoadingId() === appointment().id"
+          class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-bold text-white transition hover:bg-primary-dark disabled:opacity-50 cursor-pointer shadow-sm"
+        >
+          @if (facade.actionLoadingId() === appointment().id) {
+            <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
+          } @else {
+            <fa-icon [icon]="faCheck" class="text-xs"></fa-icon>
+          }
+          <span>إكتمال الكشف</span>
+        </button>
+      }
+
+      <!-- Cancel Button if status is not Completed (3) and not Cancelled (4) -->
+      @if (
+        !facade.isDoctor() &&
+        Number(appointment().status) !== 4 &&
+        Number(appointment().status) !== 3
+      ) {
+        <button
+          type="button"
+          (click)="cancel()"
+          [disabled]="facade.actionLoadingId() === appointment().id"
+          class="flex items-center gap-2 rounded-xl border border-danger/30 bg-danger/10 px-4 py-2.5 text-xs font-bold text-danger transition hover:bg-danger/20 disabled:opacity-50 cursor-pointer"
+        >
+          @if (facade.actionLoadingId() === appointment().id) {
+            <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
+          } @else {
+            <fa-icon [icon]="faBan" class="text-xs"></fa-icon>
+          }
+          <span>إلغاء الحجز</span>
+        </button>
+      }
+    </div>
+  }
+</div>

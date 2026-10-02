@@ -1,0 +1,105 @@
+<app-material-dialog
+  [title]="isEdit() ? 'تعديل المادة' : 'إضافة مادة جديدة'"
+  [busy]="facade.actionLoading()"
+  (closed)="facade.closeEditor()"
+>
+  @if (facade.loadingDetails()) {
+    <p role="status" class="py-10 text-center text-text-muted">جارٍ تحميل تفاصيل المادة…</p>
+  } @else if (facade.detailError()) {
+    <div role="alert" class="space-y-4">
+      <p>{{ facade.detailError() }}</p>
+      <button
+        type="button"
+        (click)="facade.loadEditorDetails()"
+        class="rounded-xl bg-primary px-4 py-3 text-white"
+      >
+        إعادة المحاولة
+      </button>
+    </div>
+  } @else {
+    <form (submit)="submit($event)" novalidate>
+      <fieldset [disabled]="facade.actionLoading()" class="space-y-5">
+        <legend class="sr-only">بيانات المادة</legend>
+        <div>
+          <label for="material-name" class="mb-2 block text-sm font-semibold"
+            >اسم المادة <span class="text-text-muted">(مطلوب)</span></label
+          >
+          <input
+            id="material-name"
+            type="text"
+            [formField]="materialForm.name"
+            aria-describedby="material-name-error"
+            class="w-full rounded-xl border border-primary/20 bg-main-bg px-3 py-3"
+          />
+          <p id="material-name-error" class="mt-1 text-sm text-text" aria-live="polite">
+            @if (materialForm.name().touched() && materialForm.name().invalid()) {
+              {{ materialForm.name().errors()[0].message }}
+            }
+          </p>
+        </div>
+        <div>
+          <label for="material-price" class="mb-2 block text-sm font-semibold"
+            >السعر (ج.م) <span class="text-text-muted">(مطلوب)</span></label
+          >
+          <input
+            id="material-price"
+            type="number"
+            step="0.01"
+            inputmode="decimal"
+            [formField]="materialForm.price"
+            aria-describedby="material-price-error"
+            class="w-full rounded-xl border border-primary/20 bg-main-bg px-3 py-3"
+          />
+          <p id="material-price-error" class="mt-1 text-sm text-text" aria-live="polite">
+            @if (materialForm.price().touched() && materialForm.price().invalid()) {
+              {{ materialForm.price().errors()[0].message }}
+            }
+          </p>
+        </div>
+        <div>
+          <label for="material-description" class="mb-2 block text-sm font-semibold"
+            >الوصف <span class="text-text-muted">(اختياري)</span></label
+          >
+          <textarea
+            id="material-description"
+            rows="3"
+            [formField]="materialForm.description"
+            class="w-full resize-y rounded-xl border border-primary/20 bg-main-bg px-3 py-3"
+          ></textarea>
+        </div>
+        <label
+          class="flex cursor-pointer items-center gap-3 rounded-xl border border-primary/15 bg-main-bg p-3"
+        >
+          <input
+            type="checkbox"
+            [formField]="materialForm.isActive"
+            class="size-5 accent-primary"
+          />
+          <span class="text-sm font-semibold">المادة نشطة</span>
+        </label>
+      </fieldset>
+      @if (facade.formError()) {
+        <p role="alert" class="mt-4 rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-sm">
+          {{ facade.formError() }}
+        </p>
+      }
+      <footer class="mt-6 flex flex-wrap justify-end gap-3 border-t border-primary/10 pt-5">
+        <button
+          type="button"
+          (click)="facade.closeEditor()"
+          [disabled]="facade.actionLoading()"
+          class="rounded-xl border border-primary/20 px-5 py-3 font-semibold disabled:opacity-50"
+        >
+          إلغاء
+        </button>
+        <button
+          type="submit"
+          [disabled]="facade.actionLoading()"
+          class="rounded-xl bg-primary px-5 py-3 font-bold text-white hover:bg-primary-dark disabled:opacity-50"
+        >
+          {{ facade.actionLoading() ? 'جارٍ الحفظ…' : isEdit() ? 'حفظ التعديلات' : 'إضافة المادة' }}
+        </button>
+      </footer>
+    </form>
+  }
+</app-material-dialog>

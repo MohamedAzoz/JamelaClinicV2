@@ -1,0 +1,107 @@
+<div
+  class="min-h-screen bg-linear-to-br from-[#fdfdff] to-[#edf1fd] flex justify-center items-center font-['Tajawal'] px-4"
+>
+  <div class="max-w-2xl w-full text-center flex flex-col items-center">
+    <!-- إطار الأيقونة المربع المنحني (الخلفية المتوهجة الفاتحة) -->
+    <div
+      class="relative w-36 h-36 bg-red-50/60 border border-red-100 rounded-2xl flex items-center justify-center shadow-sm mb-8"
+    >
+      <!-- الأيقونة: درع بداخلة علامة X -->
+      <svg
+        class="h-16 w-16 text-red-600"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+        />
+      </svg>
+    </div>
+
+    <!-- النصوص الرئيسية -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ title() }}</h1>
+
+    <!-- شارة الخطأ 403 -->
+    <div
+      class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-full border border-red-100 mb-6"
+    >
+      <svg
+        class="h-3.5 w-3.5"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
+      </svg>
+      <span>خطأ 403</span>
+    </div>
+
+    <p class="text-gray-500 text-base leading-relaxed max-w-xl mb-8">
+      {{ description() }}
+    </p>
+
+    <!-- أزرار التحكم -->
+    <div class="flex flex-row-reverse items-center gap-4 mb-10">
+      <!-- زر العودة للرئيسية الملون -->
+      <button
+        (click)="navigateToDashboard()"
+        class="flex items-center cursor-pointer gap-2 px-6 py-3 text-sm font-semibold text-white bg-[#004ad7] rounded-lg hover:bg-[#003cb0] shadow-md transition-colors duration-200"
+      >
+        <svg
+          class="h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7-7-7M19 10v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          />
+        </svg>
+        العودة للرئيسية
+      </button>
+
+      <!-- زر طلب صلاحية الشفاف -->
+      <button
+        (click)="requestPermission()"
+        class="flex items-center cursor-pointer gap-2 px-6 py-3 text-sm font-semibold text-[#004ad7] bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+      >
+        <svg
+          class="h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+          />
+        </svg>
+        طلب صلاحية
+      </button>
+    </div>
+
+    <!-- التذييل للدعم الفني -->
+    <div class="text-xs text-gray-400 flex items-center gap-1 justify-center">
+      <span>هل تحتاج إلى مساعدة؟</span>
+      <a href="#" class="text-[#004ad7] hover:underline font-medium">تواصل مع الدعم الفني</a>
+    </div>
+  </div>
+</div>

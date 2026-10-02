@@ -1,0 +1,92 @@
+<div class="rounded-2xl border border-primary/10 bg-surface p-5 shadow-sm" dir="rtl">
+  <div
+    class="mb-4 flex flex-col items-stretch justify-between gap-4 border-b border-primary/10 pb-4 lg:flex-row lg:items-center"
+  >
+    <label class="flex flex-col gap-1.5 text-xs font-bold text-text">
+      <span class="flex items-center gap-1">
+        <fa-icon [icon]="faCalendarAlt" class="text-primary"></fa-icon>
+        الفترة:
+      </span>
+      <select
+        [value]="facade.periodFilter() ?? ''"
+        (change)="onPeriodSelect($event)"
+        class="w-full cursor-pointer rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+      >
+        <option value="">جميع الفترات</option>
+        <option [value]="TreasuryPeriod.Today">اليوم</option>
+        <option [value]="TreasuryPeriod.ThisMonth">هذا الشهر</option>
+        <option [value]="TreasuryPeriod.ThisYear">هذا العام</option>
+      </select>
+    </label>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <form (submit)="onDateRangeApply($event)" class="flex flex-col gap-2">
+       <div
+        class="flex flex-col items-stretch gap-2 rounded-xl border border-primary/10 bg-main-bg/60 p-2 sm:p-1.5 sm:flex-row sm:items-center"
+      >
+        <label class="flex items-center justify-between sm:justify-start gap-1 text-xs font-medium text-text">
+           من:
+            <input
+              type="date"
+              [formField]="dateForm.fromDate"
+              [max]="dateRange().toDate || ''"
+              [attr.aria-invalid]="invalidDateRange() ? 'true' : null"
+              [attr.aria-describedby]="invalidDateRange() ? 'treasury-date-range-error' : null"
+              class="min-w-0 rounded-lg border border-primary/20 bg-surface px-2.5 py-1 text-xs font-medium text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+          <label class="flex items-center gap-1 text-xs font-medium text-text">
+            إلى:
+            <input
+              type="date"
+              [formField]="dateForm.toDate"
+              [min]="dateRange().fromDate || ''"
+              [attr.aria-invalid]="invalidDateRange() ? 'true' : null"
+              [attr.aria-describedby]="invalidDateRange() ? 'treasury-date-range-error' : null"
+              class="min-w-0 rounded-lg border border-primary/20 bg-surface px-2.5 py-1 text-xs font-medium text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </label>
+          <button
+            type="submit"
+            [disabled]="invalidDateRange()"
+            class="cursor-pointer rounded-lg bg-primary px-3 py-1 text-xs font-bold text-white transition hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            تطبيق
+          </button>
+        </div>
+        @if (invalidDateRange()) {
+          <p id="treasury-date-range-error" role="alert" class="text-xs font-medium text-text">
+            يجب أن يكون تاريخ البداية قبل تاريخ النهاية أو مساويًا له.
+          </p>
+        }
+      </form>
+
+      <button
+        type="button"
+        (click)="resetAll()"
+        aria-label="إعادة ضبط الفلاتر"
+        title="إعادة ضبط الفلاتر"
+        class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-danger/30 bg-danger/5 text-danger transition hover:bg-danger/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >
+        <fa-icon [icon]="faRotateLeft" class="text-xs"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <label class="flex flex-col gap-1 text-xs font-bold text-text">
+    <span class="flex items-center gap-1">
+      <fa-icon [icon]="faFilter" class="text-primary"></fa-icon>
+      تصفية حسب النوع:
+    </span>
+    <select
+      id="treasury-type"
+      [value]="facade.typeFilter() ?? ''"
+      (change)="onTypeChange($event)"
+      class="w-full cursor-pointer rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+    >
+      <option value="">كل الأنواع</option>
+      <option [value]="TreasuryType.Income">الإيرادات</option>
+      <option [value]="TreasuryType.Expense">المصروفات</option>
+    </select>
+  </label>
+</div>

@@ -1,0 +1,146 @@
+<section
+  aria-labelledby="wallet-table-title"
+  [attr.aria-busy]="facade.loadingReport()"
+  class="overflow-hidden rounded-2xl border border-primary/10 bg-surface shadow-sm"
+>
+  <div class="flex items-center justify-between gap-3 border-b border-primary/10 p-5">
+    <h2 id="wallet-table-title" class="flex items-center gap-2 text-base font-bold text-text">
+      <fa-icon [icon]="faReceipt" class="text-primary" /> سجل الحركات المالية
+    </h2>
+    <span class="rounded-lg bg-primary/10 px-3 py-1 text-xs font-semibold text-text"
+      >{{ facade.totalCount() }} حركة</span
+    >
+  </div>
+  @if (facade.loadingReport()) {
+    <div role="status" class="flex flex-col items-center gap-3 p-12 text-sm text-text">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-2xl text-primary" /> جاري تحميل الحركات
+      المالية...
+    </div>
+  } @else if (facade.reportError()) {
+    <div role="alert" class="flex flex-col items-center gap-3 p-10 text-center text-sm text-text">
+      <p>{{ facade.reportError() }}</p>
+      <button
+        type="button"
+        (click)="facade.loadTransactions()"
+        class="rounded-xl border border-primary/20 px-4 py-2 font-bold"
+      >
+        إعادة المحاولة
+      </button>
+    </div>
+  } @else if (facade.transactions().length === 0) {
+    <div class="flex flex-col items-center gap-3 p-12 text-center">
+      <span
+        class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-2xl text-primary"
+        ><fa-icon [icon]="faReceipt"
+      /></span>
+      <h3 class="text-lg font-bold text-text">لا توجد حركات مالية</h3>
+      <p class="max-w-md text-sm text-text-muted">
+        لم نجد حركات تطابق الفلاتر الحالية. يمكنك تغيير الفترة أو التواريخ المحددة.
+      </p>
+      @if (facade.canManage()) {
+        <button
+          type="button"
+          (click)="facade.openTransaction(WalletTransactionType.Deposit)"
+          class="mt-1 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-dark"
+        >
+          إضافة رصيد
+        </button>
+      }
+    </div>
+  } @else {
+    <div
+      class="overflow-x-auto focus-visible:outline-2 focus-visible:outline-primary"
+      tabindex="0"
+      role="region"
+      aria-label="جدول الحركات المالية، قابل للتمرير أفقيًا"
+    >
+      <table class="w-full text-right text-sm">
+        <caption class="sr-only">
+          تفاصيل الحركات المالية
+        </caption>
+        <thead class="border-b border-primary/10 bg-primary/5 text-xs font-bold text-text">
+          <tr>
+            <th scope="col" class="px-4 py-4">رقم الحركة</th>
+            <th scope="col" class="px-4 py-4">الطبيب</th>
+            <th scope="col" class="px-4 py-4">نوع الحركة</th>
+            <th scope="col" class="px-4 py-4">المبلغ</th>
+            <th scope="col" class="px-4 py-4">الموظف</th>
+            <th scope="col" class="px-4 py-4">البيان</th>
+            <th scope="col" class="px-4 py-4">التاريخ</th>
+            <th scope="col" class="px-4 py-4">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-primary/10 text-text">
+          @for (transaction of facade.transactions(); track transaction.id) {
+            <tr class="transition hover:bg-main-bg/70">
+              <td class="px-4 py-4 font-mono">{{ transaction.id }}</td>
+              <th scope="row" class="min-w-40 px-4 py-4 font-semibold">
+                {{ transaction.doctorName || 'غير محدد' }}
+              </th>
+              <td class="px-4 py-4">
+                <span
+                  class="inline-block whitespace-nowrap rounded-lg border border-primary/15 {{
+                    formatTypeClass(transaction.type)
+                  }} px-2.5 py-1 text-xs font-semibold"
+                  >{{ formatType(transaction.type) }}</span
+                >
+              </td>
+              <td class="whitespace-nowrap px-4 py-4 font-bold">
+                <span dir="ltr">{{ transaction.amount | number: '1.2-2' }}</span>
+                <span class="text-xs font-normal">ج.م</span>
+              </td>
+              <td class="min-w-32 px-4 py-4">{{ transaction.employeeName || '—' }}</td>
+              <td
+                class="min-w-48 max-w-xs whitespace-normal wrap-break-word px-4 py-4 text-xs leading-6"
+              >
+                {{ transaction.description || '—' }}
+              </td>
+              <td class="whitespace-nowrap px-4 py-4 text-xs">
+                <div class="mt-1 text-text-muted">
+                  {{ transaction.createdAt | date: 'yyyy-MM-dd (hh:mm a)' }}
+                </div>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <div class="flex flex-wrap items-center justify-center gap-1.5">
+                  <button
+                    type="button"
+                    (click)="openTransactionDetails(transaction)"
+                    title="عرض تفاصيل الحركة المالية"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                  >
+                    <fa-icon [icon]="faEye" />
+                    <span>متابعة</span>
+                  </button>
+
+                  @if (transaction.appointmentId) {
+                    <button
+                      type="button"
+                      (click)="openAppointmentDetails(transaction)"
+                      title="عرض تفاصيل الحجز المرتبط"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    >
+                      <fa-icon [icon]="faReceipt" />
+                      <span>الحجز</span>
+                    </button>
+                  } @else {
+                    @if (facade.canManage()) {
+                      <button
+                        type="button"
+                        (click)="onDelete(transaction.id)"
+                        title="حذف الحركة"
+                        class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                      >
+                        <fa-icon [icon]="faTrash" />
+                        <span>حذف</span>
+                      </button>
+                    }
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

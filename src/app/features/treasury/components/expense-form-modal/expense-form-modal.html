@@ -1,0 +1,95 @@
+@if (facade.isFormModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-sidebar-bg/70 p-4 backdrop-blur-sm"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="expense-form-title"
+  >
+    <div
+      class="w-full max-w-lg overflow-hidden rounded-2xl border border-text-muted/10 bg-surface shadow-2xl"
+    >
+      <div
+        class="flex items-center justify-between border-b border-text-muted/10 bg-main-bg/70 px-5 py-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"
+          >
+            <fa-icon [icon]="faFileInvoiceDollar"></fa-icon>
+          </div>
+          <div>
+            <h2 id="expense-form-title" class="font-bold text-text">
+              {{ facade.selectedExpense() ? 'تعديل المصروف' : 'إضافة مصروف جديد' }}
+            </h2>
+            <p class="text-xs text-text-muted">أدخل بيانات المصروف بدقة قبل الحفظ</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="facade.closeFormModal()"
+          class="rounded-xl p-2 text-text-muted hover:bg-danger/10 hover:text-danger"
+          aria-label="إغلاق"
+        >
+          <fa-icon [icon]="faXmark"></fa-icon>
+        </button>
+      </div>
+      <form
+        [formRoot]="expenseForm"
+        (submit)="submit($event)"
+        class="flex flex-col gap-4 p-5"
+        novalidate
+      >
+        <div class="grid grid-cols-1 gap-4">
+          <label class="flex  gap-1.5 text-xs font-semibold text-text"
+            >المبلغ <span class="text-danger">*</span></label
+          ><input
+            type="number"
+            step="0.01"
+            [formField]="expenseForm.amount"
+            class="rounded-xl border border-text-muted/15 bg-main-bg px-3 py-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+          @if (expenseForm.amount().touched() && expenseForm.amount().invalid()) {
+            @for (error of expenseForm.amount().errors(); track error.message) {
+              <span class="text-xs text-danger" role="alert">{{ error.message }}</span>
+            }
+          }
+        </div>
+        <div class="grid grid-cols-1 gap-4">
+          <label class="flex  gap-1.5 text-xs font-semibold text-text"
+            >وصف المصروف <span class="text-danger">*</span> </label
+          ><textarea
+            rows="4"
+            [formField]="expenseForm.description"
+            class="resize-none rounded-xl border border-text-muted/15 bg-main-bg px-3 py-3 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          ></textarea>
+          @if (expenseForm.description().touched() && expenseForm.description().invalid()) {
+            @for (error of expenseForm.description().errors(); track error.message) {
+              <span class="text-xs text-danger" role="alert">{{ error.message }}</span>
+            }
+          }
+        </div>
+        <div class="flex justify-end gap-2 border-t border-text-muted/10 pt-4">
+          <button
+            type="button"
+            (click)="facade.closeFormModal()"
+            class="rounded-xl border border-text-muted/15 px-5 py-2.5 text-xs font-semibold text-text hover:bg-main-bg"
+          >
+            إلغاء</button
+          ><button
+            type="submit"
+            [disabled]="facade.actionLoading()"
+            class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs font-semibold text-white hover:bg-primary-dark disabled:opacity-50"
+          >
+            @if (facade.actionLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+            } @else {
+              <fa-icon [icon]="faCheck"></fa-icon>
+            }
+            <span>حفظ المصروف</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

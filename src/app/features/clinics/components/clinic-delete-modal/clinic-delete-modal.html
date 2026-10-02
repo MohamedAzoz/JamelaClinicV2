@@ -1,0 +1,13 @@
+<app-confirm-modal
+  [isOpen]="facade.isDeleteModalOpen()"
+  variant="danger"
+  title="تأكيد حذف العيادة"
+  [itemName]="facade.clinicToDelete()?.name"
+  message="هل أنت أصلًا متأكد من رغبتك في حذف العيادة التالية؟"
+  warningMessage="تحذير: هذا الإجراء سيؤدي إلى حذف بيانات العيادة ولا يمكن التراجع عنه لاحقاً."
+  confirmText="حذف العيادة"
+  cancelText="إلغاء"
+  [isLoading]="facade.actionLoading()"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+/>

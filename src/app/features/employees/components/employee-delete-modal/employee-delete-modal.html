@@ -1,0 +1,13 @@
+<app-confirm-modal
+  [isOpen]="facade.isDeleteModalOpen()"
+  variant="danger"
+  title="تأكيد حذف الموظف"
+  [itemName]="facade.employeeToDelete()?.fullName"
+  message="هل أنت أصلًا متأكد من رغبتك في حذف حساب الموظف المحدد؟"
+  warningMessage="تحذير: هذا الإجراء سيؤدي إلى حذف بيانات وحساب الموظف نهائياً."
+  confirmText="حذف حساب الموظف"
+  cancelText="إلغاء"
+  [isLoading]="facade.actionLoading()"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+/>

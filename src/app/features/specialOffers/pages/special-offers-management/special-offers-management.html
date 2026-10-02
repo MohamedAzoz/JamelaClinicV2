@@ -1,0 +1,9 @@
+<main class="min-h-screen space-y-6 p-4 text-text sm:p-6 lg:p-8" dir="rtl">
+  <div class="mx-auto max-w-7xl space-y-6">
+    <app-special-offers-header />
+    <app-special-offers-list />
+  </div>
+  @if (facade.isFormOpen()) {
+    <app-special-offer-form-modal />
+  }
+</main>

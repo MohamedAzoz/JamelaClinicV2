@@ -1,0 +1,22 @@
+<div class="min-h-screen p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl">
+    <!-- Header Section -->
+    <app-booking-header></app-booking-header>
+
+    <!-- Main Grid Content: Form + Summary Preview -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <!-- Left (2 cols): Signal Form Component -->
+      <div class="lg:col-span-2">
+        <app-booking-form (formValueChange)="onFormValueChange($event)"></app-booking-form>
+      </div>
+
+      <!-- Right (1 col): Live Booking Summary Card -->
+      <div class="lg:col-span-1">
+        <app-booking-summary-card [formData]="currentFormValue()"></app-booking-summary-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Confirmation Modal -->
+  <app-booking-success-modal></app-booking-success-modal>
+</div>

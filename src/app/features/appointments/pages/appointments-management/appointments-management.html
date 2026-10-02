@@ -1,0 +1,23 @@
+<div class="min-h-screen p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl">
+    <!-- Header with Stats & Actions -->
+    <app-appointment-list-header></app-appointment-list-header>
+
+    <!-- Comprehensive Filter Toolbar -->
+    <app-appointment-filter></app-appointment-filter>
+
+    <!-- Data Table -->
+    <app-appointment-table></app-appointment-table>
+
+    <!-- Pagination Controls -->
+    <app-pagination
+      [pageNumber]="facade.pageNumber()"
+      [pageSize]="facade.pageSize()"
+      [totalCount]="facade.totalCount()"
+      [totalPages]="facade.totalPages()"
+      [disabled]="facade.isLoadingAppointments()"
+      (pageChange)="facade.setPageNumber($event)"
+      (pageSizeChange)="facade.setPageSize($event)"
+    />
+  </div>
+</div>

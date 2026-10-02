@@ -1,0 +1,184 @@
+<div
+  class="w-full bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden"
+  dir="rtl"
+>
+  <!-- Loading Skeleton / State -->
+  @if (facade.isLoading()) {
+    <div class="flex flex-col items-center justify-center py-16 gap-4 text-text-muted">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-primary text-3xl"></fa-icon>
+      <span class="text-sm font-semibold">جاري تحميل مواعيد الطبيب...</span>
+    </div>
+  } @else if (facade.schedules().length === 0) {
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center py-16 px-4 text-center gap-4">
+      <div
+        class="w-16 h-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center text-2xl shadow-inner"
+      >
+        <fa-icon [icon]="faCalendarDay"></fa-icon>
+      </div>
+      <div class="max-w-md">
+        <h3 class="text-base sm:text-lg font-bold text-text">لا توجد مواعيد متاحة مسجلة</h3>
+        <p class="text-xs sm:text-sm text-text-muted mt-1">
+          {{
+            facade.selectedDoctor()
+              ? 'لم يتم إضافة مواعيد عمل متاحة للدكتور (' +
+                facade.selectedDoctor()?.fullName +
+                ') بعد.'
+              : 'قم باختيار طبيب أو اضغط على "إضافة موعد جديد" لإنشاء أول موعد متاح.'
+          }}
+        </p>
+      </div>
+      @if (facade.selectedDoctorId()) {
+        <button
+          type="button"
+          (click)="facade.openCreateModal()"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer"
+        >
+          <fa-icon [icon]="faCalendarCheck"></fa-icon>
+          <span>إضافة موعد الآن</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <!-- Table Container -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-right text-xs sm:text-sm text-text border-collapse">
+        <!-- Table Header -->
+        <thead
+          class="bg-main-bg/80 text-text-muted text-xs font-bold uppercase border-b border-slate-200/80 dark:border-slate-800"
+        >
+          <tr>
+            <th scope="col" class="px-6 py-4">اليوم والتاريخ</th>
+            @if (facade.isAdminOrReception()) {
+              <th scope="col" class="px-6 py-4">اسم الطبيب</th>
+            }
+            <th scope="col" class="px-6 py-4 text-center">عدد الحجوزات</th>
+            <th scope="col" class="px-6 py-4 text-center">حالة الاستقبال</th>
+            <th scope="col" class="px-6 py-4 text-center">الإجراءات</th>
+          </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody class="divide-y divide-slate-200/60 dark:divide-slate-800/60 font-medium">
+          @for (schedule of facade.schedules(); track schedule.id) {
+            <tr class="hover:bg-main-bg/40 transition-colors duration-150">
+              <!-- Day Name & Date -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-9 h-9 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center shrink-0 font-bold"
+                  >
+                    <fa-icon [icon]="faCalendarDay"></fa-icon>
+                  </div>
+                  <div>
+                    <div class="font-bold text-text text-sm">
+                      {{ schedule.dayName || (schedule.date | date) }}
+                    </div>
+                    <div class="text-xs text-text-muted">
+                      {{ schedule.date | date: 'yyyy/MM/dd' }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Doctor Name (for Admin/Reception view) -->
+              @if (facade.isAdminOrReception()) {
+                <td class="px-6 py-4 font-semibold text-text">
+                  <div class="flex items-center gap-2">
+                    <fa-icon [icon]="faUserMd" class="text-text-muted"></fa-icon>
+                    <span>{{
+                      schedule.doctorName || facade.selectedDoctor()?.fullName || '---'
+                    }}</span>
+                  </div>
+                </td>
+              }
+
+              <!-- Appointments Count -->
+              <td class="px-6 py-4 text-center">
+                <a
+                  [routerLink]="['/main/schedule-appointments', schedule.id]"
+                  title="عرض كافة الحجوزات لهذا اليوم"
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs border border-primary/20 transition-all cursor-pointer no-underline group"
+                >
+                  <fa-icon
+                    [icon]="faUsersViewfinder"
+                    class="text-primary group-hover:scale-110 transition-transform"
+                  ></fa-icon>
+                  <span>{{ schedule.appointmentsCount ?? 0 }} حجز</span>
+                  <span
+                    class="text-[10px] opacity-70 group-hover:translate-x-0.5 transition-transform"
+                    >←</span
+                  >
+                </a>
+              </td>
+
+              <!-- Status Switch/Badge -->
+              <td class="px-6 py-4 text-center">
+                @if (schedule.appointmentsCount === 0) {
+                  <button
+                    type="button"
+                    (click)="facade.toggleScheduleStatus(schedule)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-bold transition-all cursor-pointer"
+                    [class.border-success\/20]="schedule.isActive"
+                    [class.bg-success\/5]="schedule.isActive"
+                    [class.text-success]="schedule.isActive"
+                    [class.hover:bg-success\/10]="schedule.isActive"
+                    [class.border-warning\/20]="!schedule.isActive"
+                    [class.bg-warning\/5]="!schedule.isActive"
+                    [class.text-warning]="!schedule.isActive"
+                    [class.hover:bg-warning\/10]="!schedule.isActive"
+                    [title]="
+                      schedule.isActive
+                        ? 'تعطيل الاستقبال لهذا اليوم'
+                        : 'تفعيل الاستقبال لهذا اليوم'
+                    "
+                  >
+                    <fa-icon
+                      [icon]="schedule.isActive ? faToggleOn : faToggleOff"
+                    ></fa-icon>
+                    <span>{{ schedule.isActive ? 'مُفعل للاستقبال' : 'مُعطل مؤقتاً' }}</span>
+                  </button>
+                } @else {
+                  <span class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-success/20 bg-success/5 px-2.5 text-xs font-bold text-success">
+                    مُفعل للاستقبال (يوجد حجوزات)
+                  </span>
+                }
+              </td>
+
+              <!-- Action Buttons (Edit, Delete) -->
+              <td class="px-6 py-4">
+                <div class="flex flex-wrap items-center justify-center gap-1.5">
+                  <!-- Edit Schedule Button -->
+                  <button
+                    type="button"
+                    (click)="facade.openEditModal(schedule)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    title="تعديل تاريخ الموعد"
+                    aria-label="تعديل تاريخ الموعد"
+                  >
+                    <fa-icon [icon]="faPenToSquare"></fa-icon>
+                    <span>تعديل</span>
+                  </button>
+
+                  <!-- Delete Schedule Button -->
+                  @if (schedule.appointmentsCount === 0) {
+                    <button
+                      type="button"
+                      (click)="facade.openDeleteModal(schedule)"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                      title="حذف الموعد المتاح"
+                      aria-label="حذف الموعد المتاح"
+                    >
+                      <fa-icon [icon]="faTrashCan"></fa-icon>
+                      <span>حذف</span>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

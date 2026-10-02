@@ -1,0 +1,106 @@
+<div class="flex flex-col gap-6 w-full" dir="rtl">
+  <!-- Top Header & Search/Controls -->
+  <div
+    class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm"
+  >
+    <!-- Title & Description -->
+    <div class="flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-2xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0 shadow-inner"
+      >
+        <fa-icon [icon]="faClockRotateLeft" size="xl"></fa-icon>
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold text-text tracking-tight">سجل تسجيل دخول المستخدمين</h1>
+        <p class="text-xs sm:text-sm text-text-muted mt-0.5">
+          متابعة سجلات ومحاولات دخول جميع الأطباء والموظفين والأدمن والأجهزة المستخدمة
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Controls: Search, PageSize, Refresh -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Search Input -->
+      <div class="relative min-w-55 sm:min-w-70">
+        <div
+          class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+        >
+          <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+        </div>
+        <input
+          type="text"
+          [value]="facade.loginLogsSearchQuery()"
+          (input)="onSearchInput($event)"
+          placeholder="ابحث بالاسم أو اليوزر أو الدور..."
+          class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all placeholder:text-text-muted/70 shadow-xs"
+        />
+      </div>
+
+      
+
+      <!-- Refresh Button -->
+      <button
+        type="button"
+        (click)="refresh()"
+        [disabled]="facade.loginLogsLoading()"
+        class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface hover:bg-slate-50 dark:hover:bg-slate-800 text-text transition-colors cursor-pointer disabled:opacity-50"
+        title="تحديث البيانات"
+        aria-label="تحديث البيانات"
+      >
+        <fa-icon [icon]="faRotateRight" [class.animate-spin]="facade.loginLogsLoading()"></fa-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stat Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <!-- Total Log Entries Card -->
+    <div
+      class="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-xs"
+    >
+      <div
+        class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0"
+      >
+        <fa-icon [icon]="faUsers" size="lg"></fa-icon>
+      </div>
+      <div>
+        <span class="text-xs text-text-muted font-medium">إجمالي السجلات بالنظام</span>
+        <div class="text-lg font-bold text-text">{{ facade.loginLogsTotalCount() }} سجل</div>
+      </div>
+    </div>
+
+    <!-- Successful Logins in Current View Card -->
+    <div
+      class="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-xs"
+    >
+      <div
+        class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0"
+      >
+        <fa-icon [icon]="faCircleCheck" size="lg"></fa-icon>
+      </div>
+      <div>
+        <span class="text-xs text-text-muted font-medium">دخول ناجح (الصفحة الحالية)</span>
+        <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+          {{ facade.successfulLoginsCount() }} محاولة
+        </div>
+      </div>
+    </div>
+
+    <!-- Failed Logins in Current View Card -->
+    <div
+      class="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-xs"
+    >
+      <div
+        class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shrink-0"
+      >
+        <fa-icon [icon]="faCircleXmark" size="lg"></fa-icon>
+      </div>
+      <div>
+        <span class="text-xs text-text-muted font-medium">دخول فاشل (الصفحة الحالية)</span>
+        <div class="text-lg font-bold text-rose-600 dark:text-rose-400">
+          {{ facade.failedLoginsCount() }} محاولة
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

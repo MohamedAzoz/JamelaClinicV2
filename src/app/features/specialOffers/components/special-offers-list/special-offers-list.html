@@ -1,0 +1,144 @@
+<section
+  class="overflow-hidden rounded-2xl border border-primary/10 bg-surface shadow-sm"
+  aria-labelledby="offers-list-title"
+>
+  <div class="flex items-center justify-between gap-3 border-b border-primary/10 p-5">
+    <div>
+      <h2 id="offers-list-title" class="text-base font-bold">الخصومات المتاحة</h2>
+      <p class="mt-1 text-xs text-text-muted">{{ facade.offers().length }} عرض</p>
+    </div>
+  </div>
+
+  @if (facade.isLoading()) {
+    <div class="flex items-center justify-center gap-3 p-12 text-sm text-text-muted" role="status">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-xl text-primary"></fa-icon>
+      جاري تحميل الخصومات...
+    </div>
+  } @else if (facade.error()) {
+    <div class="flex flex-col items-center gap-3 p-10 text-center" role="alert">
+      <p class="text-sm text-danger">{{ facade.error() }}</p>
+      <button
+        type="button"
+        (click)="facade.loadOffers()"
+        class="rounded-xl border border-primary/20 px-4 py-2 text-sm font-bold"
+      >
+        إعادة المحاولة
+      </button>
+    </div>
+  } @else if (facade.offers().length === 0) {
+    <div class="flex flex-col items-center gap-2 p-12 text-center">
+      <fa-icon [icon]="faEye" class="text-2xl text-primary"></fa-icon>
+      <h3 class="font-bold">لا توجد خصومات حاليًا</h3>
+      @if (facade.isManager()) {
+        <p class="text-sm text-text-muted">أنشئ خصمًا جديدًا ليظهر هنا.</p>
+      }
+    </div>
+  } @else {
+    <div
+      class="overflow-x-auto"
+      tabindex="0"
+      role="region"
+      aria-label="قائمة الخصومات، قابلة للتمرير أفقيًا"
+    >
+      <table class="w-full text-right text-sm">
+        <caption class="sr-only">
+          قائمة الخصومات والعروض
+        </caption>
+        <thead class="border-b border-primary/10 bg-primary/5 text-xs font-bold text-text-muted">
+          <tr>
+            <th scope="col" class="px-4 py-3.5">العرض</th>
+            <th scope="col" class="px-4 py-3.5">السعر</th>
+            <th scope="col" class="px-4 py-3.5">فترة العرض</th>
+            <th scope="col" class="px-4 py-3.5">الحالة</th>
+            <th scope="col" class="px-4 py-3.5 text-center">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-primary/10">
+          @for (offer of facade.offers(); track offer.id) {
+            <tr class="transition hover:bg-main-bg/60">
+              <th scope="row" class="min-w-56 px-4 py-4 text-right">
+                <span class="font-bold">{{ offer.title }}</span>
+                <span class="mt-1 block max-w-sm text-xs font-normal leading-5 text-text-muted">{{
+                  offer.description
+                }}</span>
+              </th>
+              <td class="whitespace-nowrap px-4 py-4 font-bold">
+                {{ offer.offerPrice | number: '1.2-2' }}
+                <span class="text-xs font-normal">ج.م</span>
+              </td>
+              <td class="whitespace-nowrap px-4 py-4 text-xs text-text-muted">
+                <span>{{ offer.startDate | date: 'yyyy-MM-dd' }}</span>
+                <span class="px-1">إلى</span>
+                <span>{{ offer.endDate | date: 'yyyy-MM-dd' }}</span>
+              </td>
+              <td class="px-4 py-4">
+                <span
+                  [class]="
+                    offer.isActive
+                      ? 'border-success/20 bg-success/10 text-success'
+                      : 'border-text-muted/20 bg-main-bg text-text-muted'
+                  "
+                  class="inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-bold"
+                >
+                  {{ offer.isActive ? 'نشط' : 'غير نشط' }}
+                </span>
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex flex-wrap justify-center gap-2">
+                  <button
+                    type="button"
+                    (click)="openDetails(offer)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10"
+                    aria-label="عرض تفاصيل {{ offer.title }}"
+                  >
+                    <fa-icon [icon]="faEye" /> تفاصيل
+                  </button>
+                  @if (facade.isManager()) {
+                    <button
+                      type="button"
+                      (click)="facade.openEditForm(offer)"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10"
+                      aria-label="تعديل {{ offer.title }}"
+                    >
+                      <fa-icon [icon]="faPen" /> تعديل
+                    </button>
+                    <button
+                      type="button"
+                      (click)="toggleStatus(offer)"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-warning/20 bg-warning/5 px-2.5 text-xs font-bold text-warning hover:bg-warning/10"
+                      aria-label="{{ offer.isActive ? 'إيقاف' : 'تفعيل' }} {{ offer.title }}"
+                    >
+                      <fa-icon [icon]="faPowerOff" /> {{ offer.isActive ? 'إيقاف' : 'تفعيل' }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="facade.requestDelete(offer)"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10"
+                      aria-label="حذف {{ offer.title }}"
+                    >
+                      <fa-icon [icon]="faTrash" /> حذف
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <app-confirm-modal
+    [isOpen]="!!facade.offerToDelete()"
+    variant="danger"
+    title="تأكيد حذف الخصم"
+    [itemName]="facade.offerToDelete()?.title"
+    message="هل أنت أصلًا متأكد من رغبتك في حذف هذا العرض/الخصم الخاص؟"
+    warningMessage="تحذير: لا يمكن التراجع عن هذا الإجراء لاحقاً."
+    confirmText="حذف الخصم"
+    cancelText="إلغاء"
+    [isLoading]="facade.isDeleting()"
+    (confirmed)="facade.deleteOffer()"
+    (cancelled)="facade.cancelDelete()"
+  />
+</section>

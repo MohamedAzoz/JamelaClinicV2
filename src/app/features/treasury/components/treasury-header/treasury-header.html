@@ -1,0 +1,58 @@
+<header class="flex flex-col gap-5" dir="rtl">
+  <div
+    class="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-text-muted/10 bg-surface p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6"
+  >
+    <div
+      class="absolute -top-12 -inset-s-8 h-32 w-32 rounded-full bg-accent/10 blur-2xl"
+      aria-hidden="true"
+    ></div>
+    <div class="relative flex items-center gap-4">
+      <div
+        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+      >
+        <fa-icon [icon]="faMoneyBillTrendUp" size="xl"></fa-icon>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold text-text sm:text-2xl">إدارة المصروفات والخزينة</h1>
+        <p class="mt-1 text-xs text-text-muted sm:text-sm">
+          متابعة المصروفات والتحليل المالي للفترة المحددة
+        </p>
+      </div>
+    </div>
+    <div class="relative grid grid-cols-2 md:grid-cols-3 gap-2 self-start sm:self-auto">
+      <button
+        type="button"
+        (click)="facade.refreshData()"
+        [disabled]="facade.loading()"
+        class="inline-flex items-center gap-2 rounded-xl border border-text-muted/15 bg-surface px-3.5 py-2.5 text-xs font-semibold text-text transition hover:bg-main-bg disabled:opacity-50"
+        title="تحديث البيانات"
+      >
+        <fa-icon [icon]="faRotateRight" [class.animate-spin]="facade.loading()"></fa-icon
+        ><span>تحديث</span>
+      </button>
+      @if (facade.canExportExcel()) {
+        <button
+          type="button"
+          (click)="facade.exportExcel()"
+          [disabled]="facade.isExportingExcel()"
+          class="inline-flex items-center gap-2 rounded-xl border border-success/25 bg-success/10 px-3.5 py-2.5 text-xs font-semibold text-success transition hover:bg-success/15 disabled:cursor-wait disabled:opacity-60"
+          title="تصدير بيانات الخزينة حسب الفلاتر الحالية"
+        >
+          <fa-icon
+            [icon]="faFileExcel"
+            [class.animate-pulse]="facade.isExportingExcel()"
+            aria-hidden="true"
+          ></fa-icon>
+          <span>{{ facade.isExportingExcel() ? 'جاري التصدير...' : 'تصدير Excel' }}</span>
+        </button>
+      }
+      <button
+        type="button"
+        (click)="facade.openCreateModal()"
+        class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-primary/20 transition hover:bg-primary-dark"
+      >
+        <fa-icon [icon]="faPlus"></fa-icon><span>إضافة مصروف</span>
+      </button>
+    </div>
+  </div>
+</header>

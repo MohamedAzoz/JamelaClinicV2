@@ -1,0 +1,133 @@
+<div
+  class="sticky top-6 rounded-2xl bg-sidebar-bg/90 p-6 text-white shadow-xl border border-surface/10 overflow-hidden"
+>
+  <!-- Card Header -->
+  <div class="flex items-center justify-between border-b border-surface/15 pb-4 mb-5">
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/20 border border-accent/30 text-accent"
+      >
+        <fa-icon [icon]="faReceipt" class="text-lg"></fa-icon>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-white">ملخص طلب الحجز</h3>
+        <p class="text-xs text-white/60">معاينة فورية لبيانات التذكرة</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Items -->
+  <div class="space-y-4 text-sm">
+    <!-- Doctor Info -->
+    <div class="rounded-xl bg-surface/5 p-3.5 border border-white/10">
+      <div class="text-xs text-white/80 font-medium mb-1 flex items-center gap-1.5">
+        <fa-icon [icon]="faUserMd" class="text-accent"></fa-icon>
+        الطبيب المعالج
+      </div>
+      @if (selectedDoctor(); as doc) {
+        <div class="font-bold text-white text-base">د. {{ doc.fullName }}</div>
+        @if (doc.clinicName) {
+          <div class="text-xs text-accent/80 flex items-center gap-1 mt-0.5">
+            <fa-icon [icon]="faClinicMedical" class="text-[10px]"></fa-icon>
+            {{ doc.clinicName }}
+          </div>
+        }
+      } @else {
+        <div class="text-xs text-white/50 italic">لم يتم اختيار طبيب بعد</div>
+      }
+    </div>
+
+    <!-- Schedule Info -->
+    <div class="rounded-xl bg-surface/5 p-3.5 border border-white/10">
+      <div class="text-xs text-white/80 font-medium mb-1 flex items-center gap-1.5">
+        <fa-icon [icon]="faCalendarCheck" class="text-accent"></fa-icon>
+        تاريخ وموعد الحجز
+      </div>
+      @if (selectedSchedule(); as sched) {
+        <div class="font-bold text-success text-base">
+          {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }}
+        </div>
+      } @else {
+        <div class="text-xs text-white/50 italic">لم يتم اختيار موعد بعد</div>
+      }
+    </div>
+
+    <!-- Patient Info -->
+    <div class="rounded-xl bg-surface/5 p-3.5 border border-white/10 space-y-2">
+      <div class="text-xs text-white/80 font-medium flex items-center gap-1.5">
+        <fa-icon [icon]="faUser" class="text-accent"></fa-icon>
+        بيانات المريض
+      </div>
+
+      @if (formData()?.patientName) {
+        <div class="font-bold text-white">
+          {{ formData()?.patientName }}
+        </div>
+      } @else {
+        <div class="text-xs text-white/50 italic">اسم المريض غائبة</div>
+      }
+
+      @if (formData()?.patientPhoneNumber) {
+        <div class="text-xs text-white/50 flex items-center gap-1.5" dir="ltr">
+          <span class="font-mono text-success">{{ formData()?.patientPhoneNumber }}</span>
+          <fa-icon [icon]="faPhone" class="text-[10px] text-accent"></fa-icon>
+        </div>
+      }
+
+      @if (formData()?.patientAddress) {
+        <div class="text-xs text-white/50 flex items-center gap-1.5">
+          <fa-icon [icon]="faMapMarkerAlt" class="text-[10px] text-accent"></fa-icon>
+          {{ formData()?.patientAddress }}
+        </div>
+      }
+    </div>
+
+    <!-- Visit Type & Fee Summary -->
+    <div class="rounded-xl bg-primary/20 p-4 border border-primary/30 space-y-2.5">
+      <div class="flex items-center justify-between text-xs text-white/80">
+        <span>نوع الزيارة:</span>
+        <span
+          class="font-bold text-accent bg-accent/20 px-2 py-0.5 rounded-md border border-accent/30"
+        >
+          {{ visitTypeName() }}
+        </span>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-white/80">
+        <span>رسوم الحجز:</span>
+        <span class="font-mono text-base font-extrabold text-warning">
+          {{ formData()?.consultationFee || 0 }} جنية
+        </span>
+      </div>
+
+      <div class="flex items-center justify-between text-xs text-white">
+        <span>الخصم من حصة الطبيب:</span>
+        <span class="font-bold">{{ formData()?.discountAmount ?? 0 | number: '1.2-2' }} ج.م</span>
+      </div>
+      @if (pricing(); as amounts) {
+        <div class="flex items-center justify-between text-sm text-white">
+          <span>المطلوب من المريض:</span>
+          <span class="font-bold">{{ amounts.finalPaidAmount | number: '1.2-2' }} ج.م</span>
+        </div>
+      }
+      <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+        <span class="text-xs font-semibold text-white/80">حالة السداد:</span>
+        @if (formData()?.isPaid) {
+          <span
+            class="inline-flex items-center gap-1 rounded-full bg-success/20 px-2.5 py-0.5 text-xs font-bold text-success border border-success/30"
+          >
+            <fa-icon [icon]="faCheckCircle" class="text-[10px]"></fa-icon>
+            مدفوع
+          </span>
+        } @else {
+          <span
+            class="inline-flex items-center gap-1 rounded-full bg-warning/20 px-2.5 py-0.5 text-xs font-bold text-warning border border-warning/30"
+          >
+            <fa-icon [icon]="faTimesCircle" class="text-[10px]"></fa-icon>
+            غير مدفوع
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+</div>

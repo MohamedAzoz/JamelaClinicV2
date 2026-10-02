@@ -1,0 +1,117 @@
+@if (facade.isFormModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="facade.selectedClinic() ? 'edit-clinic-title' : 'add-clinic-title'"
+  >
+    <!-- Modal Card Container -->
+    <div
+      class="relative w-full max-w-lg bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden transform transition-all animate-scaleUp"
+    >
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between px-6 py-4 bg-main-bg/70 border-b border-slate-200/80 dark:border-slate-800"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0"
+          >
+            <fa-icon [icon]="faHospital" size="lg"></fa-icon>
+          </div>
+          <div>
+            <h2
+              [id]="facade.selectedClinic() ? 'edit-clinic-title' : 'add-clinic-title'"
+              class="text-base sm:text-lg font-bold text-text"
+            >
+              {{ facade.selectedClinic() ? 'تعديل بيانات العيادة' : 'إضافة عيادة جديدة' }}
+            </h2>
+            <p class="text-xs text-text-muted">
+              {{
+                facade.selectedClinic()
+                  ? 'قم بتحديث الاسم المعروض للعيادة الطبية'
+                  : 'أدخل البيانات الأساسية لإضافة عيادة جديدة بالنظام'
+              }}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="close()"
+          class="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+          aria-label="إغلاق النافذة"
+        >
+          <fa-icon [icon]="faXmark" size="lg"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form [formRoot]="clinicForm" (submit)="onSubmit($event)" novalidate class="p-6 flex flex-col gap-5">
+        <!-- Clinic Name Field -->
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="clinicName"
+            class="text-xs sm:text-sm font-semibold text-text flex items-center justify-between"
+          >
+            <span>اسم العيادة <span class="text-danger">*</span></span>
+            @if (facade.selectedClinic()) {
+              <span class="text-xs font-normal text-text-muted"
+                >معرف: #{{ facade.selectedClinic()?.id }}</span
+              >
+            }
+          </label>
+
+          <input
+            id="clinicName"
+            type="text"
+            [formField]="clinicForm.name"
+            placeholder="مثال: عيادة الأسنان، عيادة الباطنة..."
+            class="w-full px-4 py-3 rounded-xl border bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+            [class.border-slate-200]="!clinicForm.name().touched() || clinicForm.name().valid()"
+            [class.border-danger]="clinicForm.name().touched() && clinicForm.name().invalid()"
+            [class.dark:border-slate-700]="!clinicForm.name().touched() || clinicForm.name().valid()"
+          />
+
+          <!-- Validation error messages -->
+          @if (clinicForm.name().touched() && clinicForm.name().invalid()) {
+            <div class="text-xs text-danger flex items-center gap-1 mt-0.5" role="alert">
+              @for (error of clinicForm.name().errors(); track error.message) {
+                <span>⚠ {{ error.message }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Action Footer -->
+        <div
+          class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800"
+        >
+          <button
+            type="button"
+            (click)="close()"
+            [disabled]="facade.actionLoading()"
+            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+          >
+            إلغاء
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="facade.actionLoading()"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+          >
+            @if (facade.actionLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+              <span>جاري الحفظ...</span>
+            } @else {
+              <fa-icon [icon]="faCheck"></fa-icon>
+              <span>{{ facade.selectedClinic() ? 'حفظ التعديلات' : 'إضافة العيادة' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,144 @@
+<div
+  class="w-full bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden"
+  dir="rtl"
+>
+  <!-- Loading Skeleton State -->
+  @if (facade.loginLogsLoading()) {
+    <div class="flex flex-col items-center justify-center py-16 gap-4 text-text-muted">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-primary text-3xl"></fa-icon>
+      <span class="text-sm font-semibold">جاري تحميل سجلات تسجيل الدخول...</span>
+    </div>
+  } @else if (facade.filteredLoginLogs().length === 0) {
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center py-16 px-4 text-center gap-3">
+      <div
+        class="w-16 h-16 rounded-3xl bg-primary/10 text-primary flex items-center justify-center text-2xl shadow-inner"
+      >
+        <fa-icon [icon]="faClock"></fa-icon>
+      </div>
+      <div class="max-w-md">
+        <h3 class="text-base sm:text-lg font-bold text-text">لا توجد سجلات دخول مطابقة</h3>
+        <p class="text-xs sm:text-sm text-text-muted mt-1">
+          {{
+            facade.loginLogsSearchQuery()
+              ? 'لم نجد أي نتائج تطابق البحث: "' + facade.loginLogsSearchQuery() + '"'
+              : 'لم يتم تسجيل أي عمليات دخول بالنظام حتى الآن.'
+          }}
+        </p>
+      </div>
+    </div>
+  } @else {
+    <!-- Table Container -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-right text-xs sm:text-sm text-text border-collapse">
+        <!-- Table Header -->
+        <thead
+          class="bg-main-bg/80 text-text-muted text-xs font-bold uppercase border-b border-slate-200/80 dark:border-slate-800"
+        >
+          <tr>
+            <th scope="col" class="px-6 py-4">#</th>
+            <th scope="col" class="px-6 py-4">المستخدم</th>
+            <th scope="col" class="px-6 py-4">الدور الوظيفي</th>
+            <th scope="col" class="px-6 py-4">وقت تسجيل الدخول</th>
+            <th scope="col" class="px-6 py-4 text-center">نتيجة المحاولة</th>
+            <th scope="col" class="px-6 py-4">معلومات الجهاز والمتصفح</th>
+          </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody class="divide-y divide-slate-200/60 dark:divide-slate-800/60 font-medium">
+          @for (log of facade.filteredLoginLogs(); track log.id; let idx = $index) {
+            <tr class="hover:bg-main-bg/40 transition-colors duration-150">
+              <!-- Index -->
+              <td class="px-6 py-4 text-text-muted font-bold">
+                {{ (facade.loginLogsPageNumber() - 1) * facade.loginLogsPageSize() + idx + 1 }}
+              </td>
+
+              <!-- User Full Name & Username -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-9 h-9 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center shrink-0 font-bold"
+                  >
+                    <fa-icon [icon]="faUser"></fa-icon>
+                  </div>
+                  <div>
+                    <div class="font-bold text-text text-sm">
+                      {{ log.fullName || 'مستخدم غير معرف' }}
+                    </div>
+                    <div class="text-xs text-text-muted">&#64;{{ log.username || '---' }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Role Badge -->
+              <td class="px-6 py-4">
+                <span
+                  class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary dark:text-accent border border-primary/20"
+                >
+                  <fa-icon [icon]="faShieldHalved" class="text-[10px]"></fa-icon>
+                  <span>{{ log.roles || 'مستخدم' }}</span>
+                </span>
+              </td>
+
+              <!-- Login Time -->
+              <td class="px-6 py-4 text-text-muted font-semibold">
+                <div class="flex items-center gap-2">
+                  <fa-icon [icon]="faClock" class="text-primary/70"></fa-icon>
+                  <span>{{ log.loginTime | date: 'yyyy/MM/dd - hh:mm a' }}</span>
+                </div>
+              </td>
+
+              <!-- Status Badge -->
+              <td class="px-6 py-4 text-center">
+                @if (log.isSuccessful) {
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                  >
+                    <fa-icon [icon]="faCircleCheck"></fa-icon>
+                    <span>دخول ناجح</span>
+                  </span>
+                } @else {
+                  <div class="flex flex-col items-center gap-1">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20"
+                    >
+                      <fa-icon [icon]="faCircleXmark"></fa-icon>
+                      <span>فشل الدخول</span>
+                    </span>
+                    @if (log.failureReason) {
+                      <span class="text-[11px] text-danger font-normal">
+                        {{ log.failureReason }}
+                      </span>
+                    }
+                  </div>
+                }
+              </td>
+
+              <!-- Device Info -->
+              <td class="px-6 py-4 text-xs text-text-muted max-w-xs truncate">
+                <div class="flex items-center gap-2" [title]="log.deviceInfo">
+                  <fa-icon [icon]="faDesktop" class="shrink-0 text-text-muted/70"></fa-icon>
+                  <span class="truncate">{{ log.deviceInfo || 'غير متاح' }}</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer Controls -->
+    <div class="p-4 border-t border-slate-200/80 dark:border-slate-800 bg-main-bg/50">
+      <app-pagination
+        [pageNumber]="facade.loginLogsPageNumber()"
+        [pageSize]="facade.loginLogsPageSize()"
+        [totalCount]="facade.loginLogsTotalCount()"
+        [totalPages]="facade.loginLogsTotalPages()"
+        [disabled]="facade.loginLogsLoading()"
+        (pageChange)="facade.loadUserLoginLogs($event, facade.loginLogsPageSize())"
+        (pageSizeChange)="facade.changeLoginLogsPageSize($event)"
+      />
+    </div>
+  }
+</div>

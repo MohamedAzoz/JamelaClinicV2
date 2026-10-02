@@ -1,0 +1,31 @@
+<div class="p-6 md:p-8 space-y-6 max-w-7xl mx-auto" dir="rtl">
+  <!-- Header Component -->
+  <app-companies-header></app-companies-header>
+
+  <!-- Table Component -->
+  <app-companies-table
+    [companies]="facade.filteredCompanies()"
+    [loading]="facade.loading()"
+    (editCompany)="facade.openEditModal($event)"
+    (deleteCompany)="facade.openDeleteModal($event)"
+    (viewCompanyOrders)="onViewOrders($event)"
+  ></app-companies-table>
+
+  <!-- Add/Edit Modal Component -->
+  <app-company-form-modal></app-company-form-modal>
+
+  <!-- Reusable Confirm Delete Modal -->
+  <app-confirm-modal
+    [(isOpen)]="facade.isDeleteModalOpen"
+    variant="danger"
+    title="حذف الشركة الموردة"
+    message="هل أنت تأكد من رغبتك في حذف هذه الشركة؟ لا يمكن التراجع عن هذا الإجراء."
+    [itemName]="facade.companyToDelete()?.name"
+    warningMessage="سيؤدي حذف الشركة إلى حذف كافة بيانات التواصل الخاصة بها."
+    confirmText="حذف الشركة"
+    cancelText="إلغاء"
+    [isLoading]="facade.actionLoading()"
+    (confirmed)="facade.confirmDelete()"
+    (cancelled)="facade.closeDeleteModal()"
+  ></app-confirm-modal>
+</div>

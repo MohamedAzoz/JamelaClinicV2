@@ -1,0 +1,104 @@
+@if (facade.isPayModalOpen() && facade.orderToPay()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pay-order-title"
+  >
+    <div class="relative w-full max-w-md bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden animate-scaleUp">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 py-4 bg-success/5 border-b border-success/20">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
+            <fa-icon [icon]="faMoneyBillWave" size="lg"></fa-icon>
+          </div>
+          <div>
+            <h2 id="pay-order-title" class="text-base sm:text-lg font-bold text-text">
+              تسجيل دفعة مالية
+            </h2>
+            <p class="text-xs text-text-muted">
+              {{ facade.orderToPay()?.title }}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="close()"
+          class="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+          aria-label="إغلاق النافذة"
+        >
+          <fa-icon [icon]="faXmark" size="lg"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Order Info Banner -->
+      <div class="mx-6 mt-5 p-4 rounded-xl bg-main-bg border border-slate-200/80 dark:border-slate-700/40 grid grid-cols-2 gap-3 text-sm">
+        <div>
+          <p class="text-xs text-text-muted mb-0.5">الإجمالي</p>
+          <p class="font-bold text-text font-mono">{{ facade.orderToPay()?.totalAmount | number:'1.2-2' }} ج.م</p>
+        </div>
+        <div>
+          <p class="text-xs text-text-muted mb-0.5">المدفوع حتى الآن</p>
+          <p class="font-bold text-success font-mono">{{ facade.orderToPay()?.paidAmount | number:'1.2-2' }} ج.م</p>
+        </div>
+        <div class="col-span-2">
+          <p class="text-xs text-text-muted mb-0.5">المتبقي</p>
+          <p class="font-bold text-warning font-mono text-lg">{{ facade.orderToPay()?.remainingAmount | number:'1.2-2' }} ج.م</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form [formRoot]="payForm" (submit)="onSubmit($event)" novalidate class="p-6 flex flex-col gap-5">
+        <div class="flex flex-col gap-1.5">
+          <label for="amountToPay" class="text-xs sm:text-sm font-semibold text-text">
+            المبلغ المراد دفعه الآن (ج.م) <span class="text-danger">*</span>
+          </label>
+          <input
+            id="amountToPay"
+            type="number"
+            [formField]="payForm.amountToPay"
+            placeholder="0.00"
+            class="w-full px-4 py-3 rounded-xl border bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-success/30 transition-all font-mono md:text-lg"
+            [class.border-slate-200]="!payForm.amountToPay().touched() || payForm.amountToPay().valid()"
+            [class.border-danger]="payForm.amountToPay().touched() && payForm.amountToPay().invalid()"
+            [class.dark:border-slate-700]="!payForm.amountToPay().touched() || payForm.amountToPay().valid()"
+          />
+          @if (payForm.amountToPay().touched() && payForm.amountToPay().invalid()) {
+            <div class="text-xs text-danger" role="alert">
+              @for (err of payForm.amountToPay().errors(); track err.message) {
+                <span>⚠ {{ err.message }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="close()"
+            [disabled]="facade.actionLoading()"
+            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            [disabled]="facade.actionLoading()"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-success hover:bg-success/90 text-white font-medium text-xs sm:text-sm shadow-md shadow-success/20 transition-all cursor-pointer disabled:opacity-50"
+          >
+            @if (facade.actionLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+              <span>جاري التسجيل...</span>
+            } @else {
+              <fa-icon [icon]="faCheck"></fa-icon>
+              <span>تأكيد الدفعة</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

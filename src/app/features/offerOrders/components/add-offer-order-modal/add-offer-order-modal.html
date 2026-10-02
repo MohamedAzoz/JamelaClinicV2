@@ -1,0 +1,164 @@
+@if (facade.isAddOrderModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="add-order-title"
+  >
+    <div
+      class="relative w-full max-w-lg bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden animate-scaleUp"
+    >
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between px-6 py-4 bg-main-bg/70 border-b border-slate-200/80 dark:border-slate-800"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center shrink-0"
+          >
+            <fa-icon [icon]="faFileInvoiceDollar" size="lg"></fa-icon>
+          </div>
+          <div>
+            <h2
+              id="add-order-title"
+              class="text-base sm:text-lg font-bold text-text"
+            >
+              إضافة طلب توريد جديد
+            </h2>
+            <p class="text-xs text-text-muted">
+              أدخل بيانات طلب التوريد من الشركة: {{ facade.companyName() }}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="close()"
+          class="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+          aria-label="إغلاق النافذة"
+        >
+          <fa-icon [icon]="faXmark" size="lg"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form
+        [formRoot]="orderForm"
+        (submit)="onSubmit($event)"
+        novalidate
+        class="p-6 flex flex-col gap-5"
+      >
+        <!-- Title Field -->
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="orderTitle"
+            class="text-xs sm:text-sm font-semibold text-text"
+          >
+            عنوان الطلب <span class="text-danger">*</span>
+          </label>
+          <input
+            id="orderTitle"
+            type="text"
+            [formField]="orderForm.title"
+            placeholder="مثال: توريد أدوية - سبتمبر 2026"
+            class="w-full px-4 py-3 rounded-xl border bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+            [class.border-slate-200]="!orderForm.title().touched() || orderForm.title().valid()"
+            [class.border-danger]="orderForm.title().touched() && orderForm.title().invalid()"
+            [class.dark:border-slate-700]="!orderForm.title().touched() || orderForm.title().valid()"
+          />
+          @if (orderForm.title().touched() && orderForm.title().invalid()) {
+            <div class="text-xs text-danger flex items-center gap-1" role="alert">
+              @for (err of orderForm.title().errors(); track err.message) {
+                <span>⚠ {{ err.message }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Amount Row -->
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Total Amount -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="totalAmount"
+              class="text-xs sm:text-sm font-semibold text-text"
+            >
+              إجمالي المبلغ (ج.م) <span class="text-danger">*</span>
+            </label>
+            <input
+              id="totalAmount"
+              type="number"
+              [formField]="orderForm.totalAmount"
+              placeholder="0.00"
+              class="w-full px-4 py-3 rounded-xl border bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-mono"
+              [class.border-slate-200]="!orderForm.totalAmount().touched() || orderForm.totalAmount().valid()"
+              [class.border-danger]="orderForm.totalAmount().touched() && orderForm.totalAmount().invalid()"
+              [class.dark:border-slate-700]="!orderForm.totalAmount().touched() || orderForm.totalAmount().valid()"
+            />
+            @if (orderForm.totalAmount().touched() && orderForm.totalAmount().invalid()) {
+              <div class="text-xs text-danger" role="alert">
+                @for (err of orderForm.totalAmount().errors(); track err.message) {
+                  <span>⚠ {{ err.message }}</span>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Paid Amount -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="paidAmount"
+              class="text-xs sm:text-sm font-semibold text-text"
+            >
+              الدفعة المقدمة (ج.م)
+            </label>
+            <input
+              id="paidAmount"
+              type="number"
+              [formField]="orderForm.paidAmount"
+              placeholder="0.00"
+              class="w-full px-4 py-3 rounded-xl border bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-mono"
+              [class.border-slate-200]="!orderForm.paidAmount().touched() || orderForm.paidAmount().valid()"
+              [class.border-danger]="orderForm.paidAmount().touched() && orderForm.paidAmount().invalid()"
+              [class.dark:border-slate-700]="!orderForm.paidAmount().touched() || orderForm.paidAmount().valid()"
+            />
+            @if (orderForm.paidAmount().touched() && orderForm.paidAmount().invalid()) {
+              <div class="text-xs text-danger" role="alert">
+                @for (err of orderForm.paidAmount().errors(); track err.message) {
+                  <span>⚠ {{ err.message }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div
+          class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800"
+        >
+          <button
+            type="button"
+            (click)="close()"
+            [disabled]="facade.actionLoading()"
+            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            [disabled]="facade.actionLoading()"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-xs sm:text-sm shadow-md shadow-primary/20 transition-all cursor-pointer disabled:opacity-50"
+          >
+            @if (facade.actionLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+              <span>جاري الحفظ...</span>
+            } @else {
+              <fa-icon [icon]="faCheck"></fa-icon>
+              <span>إضافة الطلب</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

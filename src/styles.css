@@ -1,0 +1,282 @@
+/* 
+@import 'tailwindcss';
+
+:root {
+  --raw-main-bg: #fbf7f2;
+
+  --raw-surface: #fffdfb;
+
+  --raw-sidebar-bg: #3b2526;
+
+  --raw-sidebar-text: #fff8f3;
+  --raw-primary: #8c4b45;
+
+  --raw-primary-dark: #6f3733;
+
+  --raw-accent: #a06456;
+  --raw-text: #2a201f;
+
+  --raw-text-muted: #756864;
+
+  --raw-success: #2f7d68;
+
+  --raw-warning: #a66a1f;
+
+  --raw-danger: #b64555;
+
+  --raw-font-main: 'Cairo', sans-serif;
+
+  color-scheme: light;
+}
+
+.dark {
+  --raw-main-bg: #151111;
+
+  --raw-surface: #211a1a;
+
+  --raw-sidebar-bg: #0f0c0c;
+
+  --raw-sidebar-text: #fff7f2;
+
+  --raw-primary: #a45a50;
+
+  --raw-primary-dark: #8c4b45;
+
+  --raw-accent: #cfa08e;
+  --raw-text: #f7efeb;
+
+  --raw-text-muted: #bdb0aa;
+
+  --raw-success: #5fbb98;
+
+  --raw-warning: #d6a24a;
+
+  --raw-danger: #e17380;
+
+  color-scheme: dark;
+}
+
+@theme {
+  --color-main-bg: var(--raw-main-bg);
+
+  --color-surface: var(--raw-surface);
+
+  --color-sidebar-bg: var(--raw-sidebar-bg);
+  --color-sidebar-text: var(--raw-sidebar-text);
+
+  --color-primary: var(--raw-primary);
+  --color-primary-dark: var(--raw-primary-dark);
+
+  --color-accent: var(--raw-accent);
+
+  --color-text: var(--raw-text);
+  --color-text-muted: var(--raw-text-muted);
+
+  --color-success: var(--raw-success);
+  --color-warning: var(--raw-warning);
+  --color-danger: var(--raw-danger);
+
+  --font-main: var(--raw-font-main);
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/cairo-v31-arabic_latin-700.woff2') format('woff2');
+
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/cairo-v31-arabic_latin-regular.woff2') format('woff2');
+
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+
+  margin: 0;
+  padding: 0;
+
+  font-family: var(--raw-font-main);
+
+  color: var(--raw-text);
+
+  background-color: var(--raw-main-bg);
+  background-image:
+    radial-gradient(
+      circle at 8% 0%,
+      color-mix(in srgb, var(--raw-accent) 7%, transparent),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 95% 5%,
+      color-mix(in srgb, var(--raw-primary) 5%, transparent),
+      transparent 32rem
+    );
+
+  background-attachment: fixed;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+button,
+a {
+  @apply cursor-pointer;
+}
+
+@layer utilities {
+  .glass {
+    background: color-mix(in srgb, var(--raw-surface) 84%, transparent);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .btn {
+    @apply cursor-pointer
+           transition-all
+           duration-300;
+  }
+} */
+
+@import 'tailwindcss';
+
+/* @custom-variant dark (&:where(.dark, .dark *)); */
+
+:root {
+  --raw-main-bg: #f4f9ff;
+  --raw-surface: #ffffff;
+  --raw-sidebar-bg: #071a3d;
+  --raw-sidebar-text: #f5faff;
+  --raw-primary: #0d63d4;
+  --raw-primary-dark: #084ba7;
+  --raw-accent: #089fbe;
+  --raw-text: #10213d;
+  --raw-text-muted: #62738b;
+  --raw-success: #187d67;
+  --raw-warning: #a66a12;
+  --raw-danger: #c23e55;
+  --raw-font-main: 'Cairo', sans-serif;
+  color-scheme: light;
+}
+
+.dark {
+  --raw-main-bg: #07111f;
+  --raw-surface: #0e1d2e;
+  --raw-sidebar-bg: #040b16;
+  --raw-sidebar-text: #f4f9ff;
+  --raw-primary: #2f73d9;
+  --raw-primary-dark: #1d57b6;
+  --raw-accent: #39c4df;
+  --raw-text: #edf6ff;
+  --raw-text-muted: #9eafc2;
+  --raw-success: #5bc5a3;
+  --raw-warning: #e4ad54;
+  --raw-danger: #ed7484;
+  color-scheme: dark;
+}
+
+@theme {
+  --color-main-bg: var(--raw-main-bg);
+  --color-surface: var(--raw-surface);
+  --color-sidebar-bg: var(--raw-sidebar-bg);
+  --color-sidebar-text: var(--raw-sidebar-text);
+  --color-primary: var(--raw-primary);
+  --color-primary-dark: var(--raw-primary-dark);
+  --color-accent: var(--raw-accent);
+  --color-text: var(--raw-text);
+  --color-text-muted: var(--raw-text-muted);
+  --color-success: var(--raw-success);
+  --color-warning: var(--raw-warning);
+  --color-danger: var(--raw-danger);
+  --font-main: var(--raw-font-main);
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/cairo-v31-arabic_latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/cairo-v31-arabic_latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--raw-font-main);
+  color: var(--raw-text);
+  background-color: var(--raw-main-bg);
+  background-image:
+    radial-gradient(
+      circle at 5% 0%,
+      color-mix(in srgb, var(--raw-accent) 8%, transparent),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 95% 3%,
+      color-mix(in srgb, var(--raw-primary) 7%, transparent),
+      transparent 34rem
+    );
+
+  background-attachment: fixed;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+button,
+a {
+  @apply cursor-pointer;
+}
+
+@layer utilities {
+  .glass {
+    background: color-mix(in srgb, var(--raw-surface) 84%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .btn {
+    @apply cursor-pointer
+      transition-all
+      duration-300;
+  }
+}

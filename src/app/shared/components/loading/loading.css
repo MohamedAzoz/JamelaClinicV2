@@ -1,0 +1,84 @@
+/* --- Pulse Rings --- */
+.pulse-ring {
+  position: absolute;
+  width: var(--ring-size, 80px);
+  height: var(--ring-size, 80px);
+  border-radius: 50%;
+  border: 2px solid var(--color-primary, currentColor);
+  opacity: 0;
+  animation: pulseRing 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  animation-delay: var(--ring-delay, 0s);
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* --- Heartbeat Logo Animation --- */
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.06);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+/* --- Smooth Bouncing Loading Dots --- */
+.animate-dot {
+  display: inline-block;
+  animation: dotBounce 1.4s ease-in-out infinite;
+  animation-delay: var(--dot-delay, 0s);
+}
+
+@keyframes dotBounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* --- Smooth Indeterminate Progress Bar --- */
+.animate-bar-slide {
+  animation: barSlide 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+
+@keyframes barSlide {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(210%);
+  }
+}

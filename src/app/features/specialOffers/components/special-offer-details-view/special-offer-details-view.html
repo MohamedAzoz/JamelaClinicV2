@@ -1,0 +1,282 @@
+<div class="space-y-6">
+  <section class="overflow-hidden rounded-2xl border border-primary/10 bg-surface shadow-sm">
+    <div class="grid gap-6 bg-primary/5 p-5 sm:p-7 md:grid-cols-[1fr_auto] md:items-center">
+      <div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="rounded-full border px-3 py-1 text-xs font-bold"
+            [class.border-success/20]="offer().isActive"
+            [class.bg-success/10]="offer().isActive"
+            [class.text-success]="offer().isActive"
+            [class.border-text-muted/20]="!offer().isActive"
+            [class.bg-main-bg]="!offer().isActive"
+            [class.text-text-muted]="!offer().isActive"
+          >
+            {{ offer().isActive ? 'عرض نشط' : 'عرض غير نشط' }}
+          </span>
+          <!-- <span class="text-xs text-text-muted">رقم العرض #{{ offer().id }}</span> -->
+        </div>
+        <h2 class="mt-3 text-2xl font-bold sm:text-3xl">{{ offer().title }}</h2>
+        <p class="mt-2 max-w-3xl whitespace-pre-wrap text-sm leading-7 text-text-muted">
+          {{ offer().description }}
+        </p>
+      </div>
+      <div class="rounded-2xl border border-primary/10 bg-surface p-5 text-center">
+        <p class="text-xs font-semibold text-text-muted">سعر العرض</p>
+        <p class="mt-1 whitespace-nowrap text-3xl font-bold text-primary" dir="ltr">
+          {{ offer().offerPrice | number: '1.2-2' }} <span class="text-base">ج.م</span>
+        </p>
+      </div>
+    </div>
+
+    <dl class="grid gap-3 p-5 sm:grid-cols-2 sm:p-7">
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-4">
+        <dt class="flex items-center gap-2 text-xs font-semibold text-text-muted">
+          <fa-icon [icon]="faCalendarDays" class="text-primary" /> بداية العرض
+        </dt>
+        <dd class="mt-2 text-sm font-bold">{{ offer().startDate | date: 'yyyy-MM-dd' }}</dd>
+      </div>
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-4">
+        <dt class="flex items-center gap-2 text-xs font-semibold text-text-muted">
+          <fa-icon [icon]="faCalendarDays" class="text-primary" /> نهاية العرض
+        </dt>
+        <dd class="mt-2 text-sm font-bold">{{ offer().endDate | date: 'yyyy-MM-dd' }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="إحصائيات حجوزات الخصم">
+    <article
+      class="flex items-center gap-3 rounded-2xl border border-primary/10 bg-surface p-4 shadow-sm"
+    >
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+      >
+        <fa-icon [icon]="faUsers" aria-hidden="true" />
+      </span>
+      <div>
+        <p class="text-xs font-semibold text-text-muted">إجمالي الحجوزات</p>
+        <p class="mt-1 text-xl font-bold text-text">{{ totalBookings() }}</p>
+      </div>
+    </article>
+
+    <article
+      class="flex items-center gap-3 rounded-2xl border border-success/15 bg-surface p-4 shadow-sm"
+    >
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-success/10 text-success"
+      >
+        <fa-icon [icon]="faCheckCircle" aria-hidden="true" />
+      </span>
+      <div>
+        <p class="text-xs font-semibold text-text-muted">حجوزات مستخدمة</p>
+        <p class="mt-1 text-xl font-bold text-success">{{ redeemedBookings() }}</p>
+      </div>
+    </article>
+
+    <article
+      class="flex items-center gap-3 rounded-2xl border border-warning/15 bg-surface p-4 shadow-sm"
+    >
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-warning/10 text-warning"
+      >
+        <fa-icon [icon]="faClock" aria-hidden="true" />
+      </span>
+      <div>
+        <p class="text-xs font-semibold text-text-muted">حجوزات غير مستخدمة</p>
+        <p class="mt-1 text-xl font-bold text-warning">{{ pendingBookings() }}</p>
+      </div>
+    </article>
+
+    <article
+      class="flex items-center gap-3 rounded-2xl border border-accent/15 bg-surface p-4 shadow-sm"
+    >
+      <span
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent"
+      >
+        <fa-icon [icon]="faCoins" aria-hidden="true" />
+      </span>
+      <div>
+        <p class="text-xs font-semibold text-text-muted">إجمالي الإيرادات</p>
+        <p class="mt-1 whitespace-nowrap text-lg font-bold text-accent" dir="ltr">
+          {{ totalRevenue() | number: '1.2-2' }} ج.م
+        </p>
+      </div>
+    </article>
+  </section>
+
+  <section
+    class="overflow-hidden rounded-2xl border border-primary/10 bg-surface shadow-sm"
+    aria-labelledby="offer-bookings-title"
+  >
+    <header
+      class="flex flex-wrap items-center justify-between gap-3 border-b border-primary/10 p-5"
+    >
+      <div>
+        <h2 id="offer-bookings-title" class="flex items-center gap-2 text-base font-bold">
+          <fa-icon [icon]="faUsers" class="text-primary" /> حجوزات هذا الخصم
+        </h2>
+        <p class="mt-1 text-xs text-text-muted">إدارة الحجوزات المسجلة على هذا العرض</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+          {{ facade.bookingReport()?.totalBookingsCount ?? bookings().length }} حجز
+        </span>
+        <span class="rounded-full bg-success/10 px-3 py-1 text-xs font-bold text-success">
+          {{ facade.bookingReport()?.totalRevenue ?? 0 | number: '1.2-2' }} ج.م
+        </span>
+        @if (facade.isBookingOperator()) {
+          <button
+            type="button"
+            (click)="facade.openCreateBooking()"
+            class="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-bold text-white transition hover:bg-primary-dark"
+          >
+            <fa-icon [icon]="faPlus" /> إضافة حجز
+          </button>
+        }
+      </div>
+    </header>
+
+    @if (facade.isLoadingBookings()) {
+      <div
+        class="flex items-center justify-center gap-3 p-10 text-sm text-text-muted"
+        role="status"
+      >
+        <fa-icon [icon]="faSpinner" class="animate-spin text-xl text-primary" />
+        جاري تحميل حجوزات الخصم...
+      </div>
+    } @else if (facade.bookingsError()) {
+      <div class="flex flex-col items-center gap-3 p-10 text-center" role="alert">
+        <p class="text-sm text-danger">{{ facade.bookingsError() }}</p>
+        <button
+          type="button"
+          (click)="facade.loadOfferDetails(offer().id)"
+          class="rounded-xl border border-primary/20 px-4 py-2 text-sm font-bold"
+        >
+          إعادة تحميل الحجوزات
+        </button>
+      </div>
+    } @else if (bookings().length === 0) {
+      <div class="flex flex-col items-center gap-2 p-10 text-center">
+        <span
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-main-bg text-text-muted"
+          ><fa-icon [icon]="faUsers"
+        /></span>
+        <h3 class="text-sm font-bold">لا توجد حجوزات لهذا الخصم</h3>
+        <p class="max-w-xl text-xs leading-6 text-text-muted">
+          ستظهر هنا الحجوزات التي تُسجّل على هذا العرض.
+        </p>
+      </div>
+    } @else {
+      <div
+        class="overflow-x-auto"
+        tabindex="0"
+        role="region"
+        aria-label="حجوزات الخصم، قابلة للتمرير أفقيًا"
+      >
+        <table class="w-full text-right text-sm">
+          <caption class="sr-only">
+            الحجوزات المرتبطة بالخصم
+          </caption>
+          <thead class="border-b border-primary/10 bg-primary/5 text-xs font-bold text-text-muted">
+            <tr>
+              <th scope="col" class="px-4 py-3">بيانات المريض</th>
+              <th scope="col" class="px-4 py-3">المبلغ</th>
+              <th scope="col" class="px-4 py-3">تاريخ التسجيل</th>
+              <th scope="col" class="px-4 py-3">سجّله</th>
+              <th scope="col" class="px-4 py-3">حالة الحجز</th>
+              @if (facade.isBookingOperator()) {
+                <th scope="col" class="px-4 py-3 text-center">الإجراءات</th>
+              }
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-primary/10">
+            @for (booking of bookings(); track booking.bookingId) {
+              <tr class="hover:bg-main-bg/60">
+                <th scope="row" class="min-w-48 px-4 py-3 text-right">
+                  <span class="block font-semibold">{{ booking.patientName }}</span>
+                  <span class="mt-1 block text-xs text-text-muted" dir="ltr">{{
+                    booking.patientPhoneNumber
+                  }}</span>
+                  <span class="mt-1 block max-w-64 whitespace-normal text-xs text-text-muted">{{
+                    booking.patientAddress || '—'
+                  }}</span>
+                </th>
+                <td class="whitespace-nowrap px-4 py-3 font-semibold">
+                  {{ booking.paidAmount | number: '1.2-2' }} ج.م
+                </td>
+                <td class="whitespace-nowrap px-4 py-3 text-xs">
+                  {{ booking.createdAt | date: 'yyyy-MM-dd (hh:mm a)' }}
+                </td>
+                <td class="px-4 py-3">{{ booking.createdByEmployeeName || '—' }}</td>
+                <td class="px-4 py-3">
+                  <span
+                    [class]="
+                      booking.isRedeemed
+                        ? 'border-success/20 bg-success/10 text-success'
+                        : 'border-warning/20 bg-warning/10 text-warning'
+                    "
+                    class="inline-flex whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-bold"
+                    >{{ booking.isRedeemed ? 'تم استخدامه' : 'قيد الانتظار' }}</span
+                  >
+                </td>
+                @if (facade.isBookingOperator() && !facade.isAccountant()) {
+                  <td class="px-4 py-3">
+                    <div class="flex flex-wrap justify-center gap-2">
+                      @if (!booking.isRedeemed) {
+                        <button
+                          type="button"
+                          (click)="facade.openConvertBooking(booking)"
+                          class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-success/20 bg-success/5 px-2.5 text-xs font-bold text-success hover:bg-success/10"
+                          aria-label="تحويل الحجز رقم {{ booking.bookingId }} إلى موعد"
+                        >
+                          <fa-icon [icon]="faCheck" /> تحويل لموعد
+                        </button>
+                        <button
+                          type="button"
+                          (click)="facade.openEditBooking(booking)"
+                          class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10"
+                          aria-label="تعديل الحجز رقم {{ booking.bookingId }}"
+                        >
+                          <fa-icon [icon]="faPen" /> تعديل
+                        </button>
+                        <button
+                          type="button"
+                          (click)="facade.requestDeleteBooking(booking)"
+                          class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10"
+                          aria-label="حذف الحجز رقم {{ booking.bookingId }}"
+                        >
+                          <fa-icon [icon]="faTrash" /> حذف
+                        </button>
+                      } @else {
+                        <span class="text-xs md:text-sm font-semibold text-success"
+                          >تم الحجز بالفعل</span
+                        >
+                      }
+                    </div>
+                  </td>
+                } @else if (facade.isAccountant()) {
+                  <td class="text-xs md:text-sm font-semibold text-text-muted">---</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <app-confirm-modal
+      [isOpen]="!!facade.bookingToDelete()"
+      variant="danger"
+      title="تأكيد حذف حجز العرض"
+      [itemName]="facade.bookingToDelete()?.patientName"
+      message="هل أنت أصلًا متأكد من رغبتك في حذف هذا الحجز الخاص بالعرض المحدد؟"
+      warningMessage="تحذير: سيم تدمير وحذف سجل هذا الحجز بشكل دائم."
+      confirmText="حذف الحجز"
+      cancelText="إلغاء"
+      [isLoading]="facade.isDeletingBooking()"
+      (confirmed)="facade.deleteBooking()"
+      (cancelled)="facade.cancelDeleteBooking()"
+    />
+  </section>
+</div>

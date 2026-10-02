@@ -1,0 +1,71 @@
+<div
+  class="relative w-full rounded-3xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-lg overflow-hidden p-6 sm:p-8"
+  dir="rtl"
+>
+  <!-- Background Decorative Gradient Glow -->
+  <div
+    class="absolute top-0 right-0 left-0 h-32 bg-linear-to-r from-primary/20 via-accent/15 to-primary/10 z-0 blur-xl opacity-70"
+  ></div>
+
+  <!-- Content Container -->
+  <div
+    class="relative z-10 flex flex-col md:flex-row items-center md:items-start justify-between gap-6"
+  >
+    <!-- User Avatar & Core Information -->
+    <div
+      class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-right gap-5"
+    >
+      <!-- Gradient Avatar Circle -->
+      <div
+        class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-linear-to-tr from-primary via-primary-dark to-accent p-1 shadow-xl shadow-primary/20 shrink-0"
+      >
+        <div
+          class="w-full h-full rounded-[22px] bg-surface flex items-center justify-center text-primary text-3xl sm:text-4xl font-extrabold"
+        >
+          <fa-icon [icon]="faUser"></fa-icon>
+        </div>
+        <!-- Active Status Indicator Dot -->
+        <span
+          class="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-surface shadow-xs"
+          title="حساب نشط"
+        ></span>
+      </div>
+
+      <!-- Info Badges & Names -->
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+          <!-- Full Name -->
+          <h1 class="text-xl sm:text-2xl font-black text-text tracking-tight">
+            {{ facade.userProfile()?.fullName || identity.userName() || 'مستخدم النظام' }}
+          </h1>
+
+          <!-- Role Badge -->
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary dark:text-accent border border-primary/20 shadow-xs"
+          >
+            <fa-icon [icon]="faShieldHalved" class="text-[11px]"></fa-icon>
+            <span>{{ identity.userRole() || 'مستخدم' }}</span>
+          </span>
+        </div>
+
+        <!-- Username Handle -->
+        <div
+          class="flex items-center justify-center sm:justify-start gap-2 text-xs sm:text-sm text-text-muted font-medium"
+        >
+          <fa-icon [icon]="faAt" class="text-primary/70"></fa-icon>
+          <span>{{ facade.userProfile()?.userName || identity.userName() || '---' }}</span>
+        </div>
+
+        <!-- Account Verification Pill -->
+        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-1 text-xs">
+          <span
+            class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold"
+          >
+            <fa-icon [icon]="faCircleCheck"></fa-icon>
+            <span>حساب نشط ومُوثق بالنظام</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

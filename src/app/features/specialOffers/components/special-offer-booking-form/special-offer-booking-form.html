@@ -1,0 +1,115 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="offer-booking-form-title"
+  dir="rtl"
+>
+  <section
+    class="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-primary/15 bg-surface shadow-2xl"
+  >
+    <header class="flex items-center justify-between border-b border-primary/10 p-5">
+      <div>
+        <h2 id="offer-booking-form-title" class="text-lg font-bold">
+          {{ facade.bookingToEdit() ? 'تعديل بيانات الحجز' : 'إضافة حجز للخصم' }}
+        </h2>
+        <p class="mt-1 text-xs text-text-muted">{{ facade.selectedOfferDetails()?.title }}</p>
+      </div>
+      <button
+        type="button"
+        (click)="facade.closeBookingForm()"
+        [disabled]="facade.isSavingBooking()"
+        class="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/15 text-text-muted hover:bg-main-bg"
+        aria-label="إغلاق النافذة"
+      >
+        <fa-icon [icon]="faXmark" />
+      </button>
+    </header>
+
+    <form [formRoot]="bookingForm" (submit)="onSubmit($event)" class="space-y-4 p-5" novalidate>
+      <div>
+        <label for="offer-booking-patient" class="mb-1.5 block text-sm font-semibold"
+          >اسم المريض</label
+        >
+        <input
+          id="offer-booking-patient"
+          type="text"
+          [formField]="bookingForm.patientName"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"
+          autocomplete="name"
+        />
+        @if (bookingForm.patientName().touched() && bookingForm.patientName().invalid()) {
+          @for (error of bookingForm.patientName().errors(); track error.message) {
+            <p class="mt-1 text-xs text-danger" role="alert">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <div>
+        <label for="offer-booking-phone" class="mb-1.5 block text-sm font-semibold"
+          >رقم الهاتف</label
+        >
+        <input
+          id="offer-booking-phone"
+          type="tel"
+          dir="ltr"
+          [formField]="bookingForm.patientPhoneNumber"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-left text-sm focus-visible:outline-2 focus-visible:outline-primary"
+          autocomplete="tel"
+        />
+        @if (
+          bookingForm.patientPhoneNumber().touched() && bookingForm.patientPhoneNumber().invalid()
+        ) {
+          @for (error of bookingForm.patientPhoneNumber().errors(); track error.message) {
+            <p class="mt-1 text-xs text-danger" role="alert">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <div>
+        <label for="offer-booking-address" class="mb-1.5 block text-sm font-semibold"
+          >العنوان</label
+        >
+        <textarea
+          id="offer-booking-address"
+          rows="3"
+          [formField]="bookingForm.patientAddress"
+          class="w-full rounded-xl border border-primary/20 bg-main-bg px-3 py-2.5 text-sm focus-visible:outline-2 focus-visible:outline-primary"
+          autocomplete="street-address"
+        ></textarea>
+        @if (bookingForm.patientAddress().touched() && bookingForm.patientAddress().invalid()) {
+          @for (error of bookingForm.patientAddress().errors(); track error.message) {
+            <p class="mt-1 text-xs text-danger" role="alert">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      @if (facade.bookingActionError()) {
+        <p class="text-sm text-danger" role="alert">{{ facade.bookingActionError() }}</p>
+      }
+
+      <footer class="flex justify-end gap-2 border-t border-primary/10 pt-4">
+        <button
+          type="button"
+          (click)="facade.closeBookingForm()"
+          [disabled]="facade.isSavingBooking()"
+          class="min-h-10 rounded-xl border border-primary/20 px-4 text-sm font-semibold"
+        >
+          إلغاء
+        </button>
+        <button
+          type="submit"
+          [disabled]="facade.isSavingBooking()"
+          class="inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-white hover:bg-primary-dark disabled:opacity-50"
+        >
+          @if (facade.isSavingBooking()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin" />
+          } @else {
+            <fa-icon [icon]="faCheck" />
+          }
+          {{ facade.bookingToEdit() ? 'حفظ التعديل' : 'إضافة الحجز' }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

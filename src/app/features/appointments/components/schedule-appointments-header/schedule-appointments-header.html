@@ -1,0 +1,37 @@
+<div class="space-y-6 mb-6" dir="rtl">
+  <!-- Top Banner Header -->
+  <div
+    class="relative overflow-hidden rounded-2xl bg-sidebar-bg/90 p-6 md:p-8 text-sidebar-text shadow-xl"
+  >
+    <!-- Decorative Blurs -->
+    <div
+      class="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-white/10 blur-2xl pointer-events-none"
+    ></div>
+    <div
+      class="absolute -left-10 -bottom-10 h-44 w-44 rounded-full bg-accent/20 blur-2xl pointer-events-none"
+    ></div>
+
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <!-- Title & Details -->
+      <div class="flex items-start gap-4">
+        <a
+          (click)="onBackClick()"
+          title="العودة لمواعيد الأطباء"
+          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-white hover:bg-white/25 transition-all cursor-pointer shadow-inner"
+        >
+          <fa-icon [icon]="faArrowRight" class="text-xl"></fa-icon>
+        </a>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <h1 class="text-base md:text-lg lg:text-xl font-semibold tracking-tight text-white">
+              قائمة حجوزات الموعد
+            </h1>
+          </div>
+          <p class="text-xs sm:text-sm md:text-base text-white/80 font-medium">
+            استعراض المرضى والحجوزات المسجلة لهذا اليوم، متابعة حالة الكشفية والإجراءات
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

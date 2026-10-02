@@ -1,0 +1,13 @@
+<app-confirm-modal
+  [isOpen]="facade.isDeleteModalOpen()"
+  variant="danger"
+  title="تأكيد حذف حساب الطبيب"
+  [itemName]="facade.doctorToDelete()?.fullName"
+  message="هل أنت أصلًا متأكد من رغبتك في حذف حساب الطبيب المحدد؟"
+  warningMessage="تحذير: هذا الإجراء سيؤدي إلى إلغاء تفعيل/حذف حساب الطبيب وسجلاته."
+  confirmText="حذف حساب الطبيب"
+  cancelText="إلغاء"
+  [isLoading]="facade.actionLoading()"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+/>

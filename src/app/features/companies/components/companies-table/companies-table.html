@@ -1,0 +1,128 @@
+<div
+  class="w-full bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-hidden"
+  dir="rtl"
+>
+  @if (loading()) {
+    <!-- Skeleton Loading State -->
+    <div class="p-6 space-y-4">
+      <div class="h-6 bg-slate-200 dark:bg-slate-800 rounded-md w-1/4 animate-pulse"></div>
+      <div class="space-y-3">
+        @for (item of [1, 2, 3, 4, 5]; track item) {
+          <div class="h-14 bg-slate-100 dark:bg-slate-800/40 rounded-xl animate-pulse"></div>
+        }
+      </div>
+    </div>
+  } @else if (companies().length === 0) {
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center p-12 text-center">
+      <div
+        class="w-16 h-16 rounded-2xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center mb-4"
+      >
+        <fa-icon [icon]="faInbox" class="text-3xl"></fa-icon>
+      </div>
+      <h3 class="text-lg font-bold text-text mb-1">لا توجد شركات موردة</h3>
+      <p class="text-sm text-text-muted max-w-sm mb-4">
+        لم يتم العثور على أي شركات مطابقة للبحث أو لم تقم بإضافة شركات بعد.
+      </p>
+    </div>
+  } @else {
+    <!-- Table View -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-right border-collapse text-sm">
+        <thead>
+          <tr
+            class="bg-main-bg/80 border-b border-slate-200 dark:border-slate-800 text-text-muted font-semibold uppercase tracking-wider select-none"
+          >
+            <th class="py-4 px-6">اسم الشركة</th>
+            <th class="py-4 px-6">رقم الهاتف</th>
+            <th class="py-4 px-6">عدد الطلبات</th>
+            <th class="py-4 px-6 text-left">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-text">
+          @for (company of companies(); track company.id; let idx = $index) {
+            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
+              <!-- Company Name -->
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold text-sm shrink-0 group-hover:scale-105 transition-transform"
+                  >
+                    <fa-icon [icon]="faBuilding"></fa-icon>
+                  </div>
+                  <span
+                    class="font-semibold text-text group-hover:text-primary dark:group-hover:text-accent transition-colors"
+                  >
+                    {{ company.name }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Phone Number -->
+              <td class="py-4 px-6">
+                @if (company.phone) {
+                  <div
+                    class="inline-flex items-center gap-2 text-text-muted font-mono text-xs bg-main-bg px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-700/50"
+                  >
+                    <fa-icon [icon]="faPhone" class="text-text-muted/60 text-xs"></fa-icon>
+                    <span>{{ company.phone }}</span>
+                  </div>
+                } @else {
+                  <span class="text-text-muted text-xs italic">غير محدد</span>
+                }
+              </td>
+
+              <!-- Offer Orders Count -->
+              <td class="py-4 px-6">
+                <div
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-success/10 text-success border border-success/20"
+                >
+                  <fa-icon [icon]="faBoxesPacking"></fa-icon>
+                  <span>{{ company.offerOrdersCount ?? 0 }} طلب</span>
+                </div>
+              </td>
+
+              <!-- Actions -->
+              <td class="py-4 px-6 text-left">
+                <div class="flex flex-wrap items-center justify-end gap-1.5">
+                  <!-- View Orders -->
+                  <button
+                    type="button"
+                    (click)="viewCompanyOrders.emit(company)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    title="عرض طلبات الشركة"
+                  >
+                    <fa-icon [icon]="faReceipt"></fa-icon>
+                    <span>الطلبات</span>
+                  </button>
+
+                  <!-- Edit Company -->
+                  <button
+                    type="button"
+                    (click)="editCompany.emit(company)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    title="تعديل بيانات الشركة"
+                  >
+                    <fa-icon [icon]="faPenToSquare"></fa-icon>
+                    <span>تعديل</span>
+                  </button>
+
+                  <!-- Delete Company -->
+                  <button
+                    type="button"
+                    (click)="deleteCompany.emit(company)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                    title="حذف الشركة"
+                  >
+                    <fa-icon [icon]="faTrash"></fa-icon>
+                    <span>حذف</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,39 @@
+<div class="p-4 sm:p-6 lg:p-8 min-h-screen text-text" dir="rtl">
+  @if (facade.isLoadingAppointmentDetails()) {
+    <div class="flex flex-col items-center justify-center py-20 text-text-muted">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-4xl text-primary mb-3"></fa-icon>
+      <p class="text-base font-semibold text-text">جاري تحميل تفاصيل الحجز والمواد المضافة...</p>
+    </div>
+  } @else if (facade.appointmentDetails(); as appointment) {
+    <!-- HEADER -->
+    <app-appointment-details-header [appointment]="appointment"></app-appointment-details-header>
+
+    <!-- PAGE GRID BODY -->
+    <div class="grid gap-6 xl:grid-cols-12">
+      <!-- Main Content Left (Patient Info + Materials) -->
+      <div class="xl:col-span-8 space-y-6">
+        <app-appointment-patient-info [appointment]="appointment"></app-appointment-patient-info>
+        <app-appointment-materials-section [appointment]="appointment"></app-appointment-materials-section>
+      </div>
+
+      <!-- Sidebar Right (Financial Summary) -->
+      <div class="xl:col-span-4 space-y-6">
+        <app-appointment-financial-summary [appointment]="appointment"></app-appointment-financial-summary>
+      </div>
+    </div>
+  } @else {
+    <div
+      class="flex flex-col items-center justify-center rounded-3xl border border-dashed border-danger/30 bg-surface p-12 text-center my-8 shadow-sm"
+    >
+      <div
+        class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/10 text-danger"
+      >
+        <fa-icon [icon]="faExclamationTriangle" class="text-2xl"></fa-icon>
+      </div>
+      <h3 class="text-lg font-bold text-text">تعذر العثور على تفاصيل الحجز</h3>
+      <p class="mt-1 text-sm text-text-muted max-w-md">
+        قد يكون رقم الحجز غير صحيح أو تم إزالته من النظام. يرجى العودة لجدول الحجوزات والمحاولة مرة أخرى.
+      </p>
+    </div>
+  }
+</div>

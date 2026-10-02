@@ -1,0 +1,104 @@
+<form
+  class="flex flex-col gap-5 w-full"
+  [formRoot]="loginForm"
+  (submit)="onSubmit($event)"
+  novalidate
+  aria-label="نموذج تسجيل الدخول"
+>
+  <!-- Username Field -->
+  <div class="flex flex-col gap-1.5">
+    <label for="username" class="text-sm font-semibold text-text tracking-wide">اسم المستخدم</label>
+    <div class="relative flex items-center">
+      <span
+        class="absolute inset-s-3.5 flex items-center text-text-muted pointer-events-none z-10"
+        aria-hidden="true"
+      >
+        <fa-icon [icon]="faUser" class="text-sm"></fa-icon>
+      </span>
+      <input
+        id="username"
+        type="text"
+        class="w-full py-3 ps-10 pe-4 border border-text-muted/30 rounded-xl bg-main-bg/50 text-text text-sm font-main placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/20"
+        [class.!border-danger]="loginForm.username().touched() && loginForm.username().invalid()"
+        [class.!focus:ring-danger/20]="
+          loginForm.username().touched() && loginForm.username().invalid()
+        "
+        [formField]="loginForm.username"
+        placeholder="أدخل اسم المستخدم"
+        autocomplete="username"
+      />
+    </div>
+    @if (loginForm.username().touched() && loginForm.username().invalid()) {
+      @for (error of loginForm.username().errors(); track error.message) {
+        <span
+          class="flex items-center gap-1 text-xs font-medium text-danger animate-fade-in mt-0.5"
+          role="alert"
+        >
+          <span aria-hidden="true">⚠</span>
+          <span>{{ error.message }}</span>
+        </span>
+      }
+    }
+  </div>
+
+  <!-- Password Field -->
+  <div class="flex flex-col gap-1.5">
+    <label for="password" class="text-sm font-semibold text-text tracking-wide">كلمة المرور</label>
+    <div class="relative flex items-center">
+      <span
+        class="absolute inset-s-3.5 flex items-center text-text-muted pointer-events-none z-10"
+        aria-hidden="true"
+      >
+        <fa-icon [icon]="faLock" class="text-sm"></fa-icon>
+      </span>
+      <input
+        id="password"
+        [type]="showPassword() ? 'text' : 'password'"
+        class="w-full py-3 ps-10 pe-11 border border-text-muted/30 rounded-xl bg-main-bg/50 text-text text-sm font-main placeholder:text-text-muted/70 transition-all duration-200 outline-none focus:border-primary focus:bg-surface focus:ring-2 focus:ring-primary/20"
+        [class.!border-danger]="loginForm.password().touched() && loginForm.password().invalid()"
+        [class.!focus:ring-danger/20]="
+          loginForm.password().touched() && loginForm.password().invalid()
+        "
+        [formField]="loginForm.password"
+        placeholder="أدخل كلمة المرور"
+        autocomplete="current-password"
+      />
+      <button
+        type="button"
+        class="absolute inset-e-2.5 flex items-center justify-center w-8 h-8 rounded-lg text-text-muted hover:text-primary hover:bg-primary/10 transition-colors duration-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-primary"
+        (click)="togglePassword()"
+        [attr.aria-label]="showPassword() ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+      >
+        <fa-icon [icon]="showPassword() ? faEyeSlash : faEye" class="text-sm"></fa-icon>
+      </button>
+    </div>
+    @if (loginForm.password().touched() && loginForm.password().invalid()) {
+      @for (error of loginForm.password().errors(); track error.message) {
+        <span
+          class="flex items-center gap-1 text-xs font-medium text-danger animate-fade-in mt-0.5"
+          role="alert"
+        >
+          <span aria-hidden="true">⚠</span>
+          <span>{{ error.message }}</span>
+        </span>
+      }
+    }
+  </div>
+
+  <!-- Submit Button -->
+  <button
+    id="login-submit-btn"
+    type="submit"
+    class="flex items-center justify-center gap-2.5 w-full py-3.5 px-6 mt-2 rounded-xl bg-primary text-white text-base font-bold tracking-wide shadow-lg shadow-primary/30 hover:bg-primary-dark hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 cursor-pointer"
+    [disabled]="isLoading()"
+    [attr.aria-busy]="isLoading()"
+  >
+    @if (isLoading()) {
+      <fa-icon [icon]="faSpinner" [animation]="'spin'" class="text-sm"></fa-icon>
+      <span>جارٍ تسجيل الدخول...</span>
+    } @else {
+      <fa-icon [icon]="faRightToBracket" class="text-base"></fa-icon>
+      <span>تسجيل الدخول</span>
+    }
+  </button>
+</form>

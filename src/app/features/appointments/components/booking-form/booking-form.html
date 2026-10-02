@@ -1,0 +1,370 @@
+<form [formRoot]="bookingForm" (submit)="onSubmit($event)" class="space-y-6">
+  <!-- SECTION 1: Doctor & Schedule Selection -->
+  <div class="rounded-2xl bg-surface p-6 shadow-sm border border-primary/10">
+    <div class="flex items-center gap-3 border-b border-primary/10 pb-4 mb-5">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <fa-icon [icon]="faUserMd" class="text-lg"></fa-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-text">اختيار الطبيب والموعد</h2>
+        <p class="text-xs text-text-muted">
+          حدد الطبيب المعالج ثم اختر الموعد المناسب من المواعيد المتاحة له
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <!-- Doctor Selection Dropdown -->
+      <div>
+        <label for="doctorId" class="block text-sm font-semibold text-text mb-1.5">
+          الطبيب المعالج <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <select
+            id="doctorId"
+            [formField]="bookingForm.doctorId"
+            (change)="onDoctorChange($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+          >
+            <option value="" disabled selected>-- اختر الطبيب من القائمة --</option>
+            @for (doc of facade.doctors(); track doc.userId) {
+              <option [value]="doc.userId">
+                د. {{ doc.fullName }} {{ doc.clinicName ? '(' + doc.clinicName + ')' : '' }}
+              </option>
+            }
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+          >
+            <fa-icon [icon]="faUserMd"></fa-icon>
+          </div>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+          >
+            @if (facade.isLoadingDoctors()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+            } @else {
+              <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+            }
+          </div>
+        </div>
+
+        @if (bookingForm.doctorId().touched() && bookingForm.doctorId().errors(); as errors) {
+          @for (err of errors; track err.kind) {
+            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Doctor Schedule Selection Dropdown -->
+      <div>
+        <label for="doctorScheduleId" class="block text-sm font-semibold text-text mb-1.5">
+          المواعيد المتاحة للطبيب <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <select
+            id="doctorScheduleId"
+            [formField]="bookingForm.doctorScheduleId"
+            (change)="onScheduleChange($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            @if (!facade.selectedDoctorId()) {
+              <option value="" disabled selected>-- اختر طبيباً أولاً لعرض مواعيده --</option>
+            } @else if (facade.isLoadingSchedules()) {
+              <option value="" disabled selected>جاري تحميل المواعيد المتاحة...</option>
+            } @else if (facade.schedules().length === 0) {
+              <option value="" disabled selected>لا توجد مواعيد قادمة متاحة لهذا الطبيب</option>
+            } @else {
+              <option value="" disabled selected>-- اختر اليوم والموعد المناسب --</option>
+              @for (sched of facade.schedules(); track sched.id) {
+                <option [value]="sched.id">
+                  {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }} (الحجوزات السابقة:
+                  {{ sched.appointmentsCount }})
+                </option>
+              }
+            }
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+          >
+            <fa-icon [icon]="faCalendarDay"></fa-icon>
+          </div>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+          >
+            @if (facade.isLoadingSchedules()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+            } @else {
+              <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+            }
+          </div>
+        </div>
+
+        @if (
+          bookingForm.doctorScheduleId().touched() && bookingForm.doctorScheduleId().errors();
+          as errors
+        ) {
+          @for (err of errors; track err.kind) {
+            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Patient Information -->
+  <div class="rounded-2xl bg-surface p-6 shadow-sm border border-primary/10">
+    <div class="flex items-center gap-3 border-b border-primary/10 pb-4 mb-5">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success">
+        <fa-icon [icon]="faUser" class="text-lg"></fa-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-text">بيانات المريض الشخصية</h2>
+        <p class="text-xs text-text-muted">سجل معلومات المريض للاتصال والمتابعة الطبية</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <!-- Patient Name Input -->
+      <div>
+        <label for="patientName" class="block text-sm font-semibold text-text mb-1.5">
+          اسم المريض بالكامل <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <input
+            id="patientName"
+            type="text"
+            [formField]="bookingForm.patientName"
+            placeholder="مثال: أحمد محمد علي"
+            class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+          />
+          <div
+            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+          >
+            <fa-icon [icon]="faUser"></fa-icon>
+          </div>
+        </div>
+
+        @if (bookingForm.patientName().touched() && bookingForm.patientName().errors(); as errors) {
+          @for (err of errors; track err.kind) {
+            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Patient Phone Number Input -->
+      <div>
+        <label for="patientPhoneNumber" class="block text-sm font-semibold text-text mb-1.5">
+          رقم الهاتف / الجوال <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <input
+            id="patientPhoneNumber"
+            type="tel"
+            dir="ltr"
+            [formField]="bookingForm.patientPhoneNumber"
+            placeholder="01XXXXXXXX"
+            class="w-full text-right rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+          />
+          <div
+            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+          >
+            <fa-icon [icon]="faPhone"></fa-icon>
+          </div>
+        </div>
+
+        @if (
+          bookingForm.patientPhoneNumber().touched() && bookingForm.patientPhoneNumber().errors();
+          as errors
+        ) {
+          @for (err of errors; track err.kind) {
+            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Patient Address Input -->
+      <div class="md:col-span-2">
+        <label for="patientAddress" class="block text-sm font-semibold text-text mb-1.5">
+          العنوان السكني للمريض
+        </label>
+        <div class="relative">
+          <input
+            id="patientAddress"
+            type="text"
+            [formField]="bookingForm.patientAddress"
+            placeholder="مثال: سوهاج - شارع الجمهورية"
+            class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+          />
+          <div
+            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+          >
+            <fa-icon [icon]="faMapMarkerAlt"></fa-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Visit Type & Payment Details -->
+  <div class="rounded-2xl bg-surface p-6 shadow-sm border border-primary/10">
+    <div class="flex items-center gap-3 border-b border-primary/10 pb-4 mb-5">
+      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
+        <fa-icon [icon]="faMoneyBillWave" class="text-lg"></fa-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-semibold text-text">نوع الزيارة والرسوم</h2>
+        <p class="text-xs text-text-muted">تحديد نوع الزيارة وقيمة الحجز وتأكيد سداد الرسوم</p>
+      </div>
+    </div>
+
+    <!-- Visit Type Grid Cards -->
+    <div class="mb-6">
+      <label class="block text-sm font-semibold text-text mb-3">
+        نوع الزيارة / الفحص <span class="text-danger">*</span>
+      </label>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        @for (opt of visitTypeOptions; track opt.value) {
+          <button
+            type="button"
+            (click)="onVisitTypeSelect(opt.value)"
+            [class.border-primary]="model().visitType === opt.value"
+            [class.bg-primary/10]="model().visitType === opt.value"
+            class="flex flex-col items-center justify-center text-center p-3.5 rounded-xl border border-primary/15 bg-main-bg transition hover:border-primary hover:bg-primary/5"
+          >
+            <span class="text-sm font-semibold text-text mb-1">
+              {{ opt.label }}
+            </span>
+            <span class="text-[11px] text-text-muted">
+              {{ opt.desc }}
+            </span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Fee and Payment Row -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+      <!-- Consultation Fee Input -->
+      <div class="box-border">
+        <label for="consultationFee" class="block text-sm font-semibold text-text mb-1.5">
+          مبلغ الحجز (رسوم الزيارة) <span class="text-danger">*</span>
+        </label>
+        <div class="relative">
+          <input
+            id="consultationFee"
+            type="number"
+            step="0.01"
+            [formField]="bookingForm.consultationFee"
+            placeholder="0"
+            class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-semibold text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+          />
+          <div
+            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+          >
+            <fa-icon [icon]="faCoins"></fa-icon>
+          </div>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-text-muted"
+          >
+            جنية
+          </div>
+        </div>
+
+        @if (
+          bookingForm.consultationFee().touched() && bookingForm.consultationFee().errors();
+          as errors
+        ) {
+          @for (err of errors; track err.kind) {
+            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+          }
+        }
+      </div>
+
+      <div class="box-border">
+        <label for="booking-discount" class="mb-1.5 block text-sm font-semibold text-text"
+          >قيمة الخصم (ج.م)</label
+        >
+        <input
+          id="booking-discount"
+          type="number"
+          step="0.01"
+          inputmode="decimal"
+          [formField]="bookingForm.discountAmount"
+          [attr.aria-invalid]="bookingForm.discountAmount().invalid()"
+          [attr.aria-describedby]="
+            bookingForm.discountAmount().invalid()
+              ? 'booking-discount-help booking-discount-error'
+              : 'booking-discount-help'
+          "
+          class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 text-sm font-semibold text-text focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
+        />
+        @if (
+          bookingForm.discountAmount().invalid() ||
+          bookingForm.discountAmount().value() > maxDiscount()!
+        ) {
+          <div
+            id="booking-discount-error"
+            role="alert"
+            class="mt-2 text-xs font-semibold text-text"
+          >
+            @for (error of bookingForm.discountAmount().errors(); track error.kind) {
+              <p class="text-danger">{{ error.message }}</p>
+            }
+          </div>
+        }
+      </div>
+      <!-- Payment Status Toggle Checkbox -->
+      <div class="pt-2 md:pt-6">
+        <label
+          class="relative flex items-center gap-3 cursor-pointer p-3.5 rounded-xl border border-primary/15 bg-main-bg"
+        >
+          <input
+            type="checkbox"
+            [checked]="model().isPaid"
+            (change)="onPaidToggle($event)"
+            class="h-5 w-5 rounded border-primary/30 text-primary focus:ring-primary"
+          />
+          <div class="flex flex-col">
+            <span class="text-sm font-semibold text-text flex items-center gap-2">
+              <fa-icon [icon]="faCreditCard" class="text-primary"></fa-icon>
+              تم استلام المبلغ (حالة الدفع: مدفوع)
+            </span>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <app-appointment-fee-breakdown
+    [fee]="model().consultationFee"
+    [discount]="model().discountAmount"
+    [doctorPercentage]="selectedDoctor()?.doctorPercentage"
+  />
+
+  <!-- Submit & Reset Action Buttons -->
+  <div class="flex items-center justify-end gap-3 pt-2">
+    <button
+      type="button"
+      (click)="resetForm()"
+      [disabled]="facade.isSubmitting()"
+      class="rounded-xl border border-primary/20 bg-surface px-5 py-3 text-sm font-semibold text-text hover:bg-main-bg transition"
+    >
+      إعادة تعيين
+    </button>
+
+    <button
+      type="submit"
+      [disabled]="facade.isSubmitting() || bookingForm().invalid()"
+      class="flex items-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 hover:bg-primary-dark focus:outline-none focus:ring-4 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60 transition"
+    >
+      @if (facade.isSubmitting()) {
+        <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+        <span>جاري تأكيد الحجز...</span>
+      } @else {
+        <fa-icon [icon]="faCheckCircle"></fa-icon>
+        <span>حفظ وتأكيد حجز الموعد</span>
+      }
+    </button>
+  </div>
+</form>

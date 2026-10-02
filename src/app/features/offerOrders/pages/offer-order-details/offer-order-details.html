@@ -1,0 +1,35 @@
+<main class="min-h-screen px-4 py-6 text-text sm:px-6 lg:px-8" dir="rtl">
+  <div class="mx-auto flex max-w-5xl flex-col gap-6">
+    <app-offer-order-details-header [orderId]="currentOrderId" />
+
+    @if (facade.loadingOrderDetails()) {
+      <section
+        class="flex min-h-72 flex-col items-center justify-center gap-4 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-surface p-8 shadow-xs"
+        role="status"
+      >
+        <fa-icon [icon]="faSpinner" class="animate-spin text-3xl text-primary"></fa-icon>
+        <p class="text-sm font-semibold text-text-muted">جاري تحميل تفاصيل أمر الشراء...</p>
+      </section>
+    } @else if (facade.orderDetailsError()) {
+      <section
+        class="flex min-h-72 flex-col items-center justify-center rounded-3xl border border-danger/20 bg-surface p-8 text-center shadow-xs"
+        role="alert"
+      >
+        <span
+          class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/10 text-danger"
+        >
+          <fa-icon [icon]="faExclamationCircle" class="text-2xl"></fa-icon>
+        </span>
+        <h2 class="text-lg font-bold text-text">تعذر عرض تفاصيل أمر الشراء</h2>
+        <p class="mt-2 max-w-md text-sm leading-6 text-text-muted">
+          {{ facade.orderDetailsError() }}
+        </p>
+      </section>
+    } @else if (facade.selectedOrderDetails(); as order) {
+      <app-offer-order-details-card [order]="order" />
+    }
+  </div>
+
+  <!-- Pay Modal -->
+  <app-pay-offer-order-modal />
+</main>

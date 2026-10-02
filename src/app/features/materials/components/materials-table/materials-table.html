@@ -1,0 +1,127 @@
+<section
+  aria-labelledby="materials-table-heading"
+  class="overflow-hidden rounded-2xl border border-primary/10 bg-surface"
+>
+  <div class="flex items-center justify-between border-b border-primary/10 p-5">
+    <h2 id="materials-table-heading" class="font-bold text-text">قائمة المواد</h2>
+    <span class="rounded-lg bg-primary/10 px-3 py-1 text-sm text-text"
+      >{{ facade.totalCount() }} مادة</span
+    >
+  </div>
+  @if (facade.loading()) {
+    <p role="status" class="p-12 text-center text-text-muted">جارٍ تحميل المواد…</p>
+  } @else if (facade.listError()) {
+    <div role="alert" class="p-10 text-center text-text">
+      <p>{{ facade.listError() }}</p>
+      <button
+        type="button"
+        (click)="facade.loadMaterials()"
+        class="mt-4 rounded-xl bg-primary px-5 py-3 text-white"
+      >
+        إعادة المحاولة
+      </button>
+    </div>
+  } @else if (!facade.materials().length) {
+    <div class="p-12 text-center">
+      <p class="font-semibold text-text">لا توجد مواد لعرضها</p>
+      <p class="mt-2 text-sm text-text-muted">أضف مادة جديدة أو غيّر فلتر الحالة.</p>
+    </div>
+  } @else {
+    <p class="px-5 pt-3 text-xs text-text-muted sm:hidden">
+      مرّر الجدول أفقيًا لعرض السعر والإجراءات.
+    </p>
+    <div
+      class="overflow-x-auto"
+      tabindex="0"
+      role="region"
+      aria-label="جدول المواد، يمكن التمرير أفقيًا"
+    >
+      <table class="w-full min-w-190 text-right text-sm">
+        <caption class="sr-only">
+          المواد الطبية والمستحضرات وأسعارها وحالتها وإجراءات الإدارة
+        </caption>
+        <thead class="bg-main-bg text-text-muted">
+          <tr>
+            <th scope="col" class="px-5 py-4">اسم المادة</th>
+            <th scope="col" class="px-5 py-4">الوصف</th>
+            <th scope="col" class="px-5 py-4">السعر (ج.م)</th>
+            <th scope="col" class="px-5 py-4">الحالة</th>
+            <th scope="col" class="px-5 py-4">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-primary/10 text-text">
+          @for (material of facade.materials(); track material.id) {
+            <tr class="hover:bg-primary/5">
+              <th scope="row" class="min-w-40 max-w-64 wrap-break-word px-5 py-5 font-semibold">
+                {{ material.name }}
+              </th>
+              <td
+                class="min-w-48 max-w-80 whitespace-pre-wrap wrap-break-word px-5 py-5 text-text-muted"
+              >
+                {{ material.description || '—' }}
+              </td>
+              <td class="whitespace-nowrap px-5 py-5 font-semibold">
+                {{ material.price | number: '1.2-2' }}
+              </td>
+              <td class="whitespace-nowrap px-5 py-5">
+                <span
+                  class="rounded-lg px-3 py-1.5 text-xs font-semibold"
+                  [class]="
+                    material.isActive ? 'bg-emerald-500/10 text-text' : 'bg-slate-500/10 text-text'
+                  "
+                  >{{ material.isActive ? 'نشطة' : 'غير نشطة' }}</span
+                >
+              </td>
+              <td class="px-5 py-5">
+                <div class="flex flex-wrap items-center gap-1.5 whitespace-nowrap">
+                  <button
+                    type="button"
+                    (click)="facade.openEdit(material)"
+                    [disabled]="facade.actionLoading()"
+                    [attr.aria-label]="'تعديل ' + material.name"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <fa-icon [icon]="icons.edit" /><span>تعديل</span>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="toggleMaterialStatus(material)"
+                    [disabled]="facade.actionLoading()"
+                    [attr.aria-label]="(material.isActive ? 'تعطيل ' : 'تفعيل ') + material.name"
+                    [class.border-warning\/20]="material.isActive"
+                    [class.bg-warning\/5]="material.isActive"
+                    [class.text-warning]="material.isActive"
+                    [class.hover:bg-warning\/10]="material.isActive"
+                    [class.border-success\/20]="!material.isActive"
+                    [class.bg-success\/5]="!material.isActive"
+                    [class.text-success]="!material.isActive"
+                    [class.hover:bg-success\/10]="!material.isActive"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <fa-icon [icon]="icons.power" />
+                    <span>{{
+                      facade.togglingId() === material.id
+                        ? 'جارٍ التحديث…'
+                        : material.isActive
+                          ? 'تعطيل'
+                          : 'تفعيل'
+                    }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="facade.requestDelete(material)"
+                    [disabled]="facade.actionLoading()"
+                    [attr.aria-label]="'حذف ' + material.name"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <fa-icon [icon]="icons.delete" /><span>حذف</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

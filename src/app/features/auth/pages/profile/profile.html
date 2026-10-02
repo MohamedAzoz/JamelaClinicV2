@@ -1,0 +1,14 @@
+<div class="p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto w-full">
+  @if (facade.profileLoading()) {
+    <div class="flex flex-col items-center justify-center py-20 gap-4 text-text-muted">
+      <fa-icon [icon]="faSpinner" class="animate-spin text-primary text-3xl"></fa-icon>
+      <span class="text-sm font-semibold">جاري تحميل بيانات الملف الشخصي...</span>
+    </div>
+  } @else {
+    <!-- Profile Header Banner -->
+    <app-profile-header></app-profile-header>
+
+    <!-- Profile Details & Action Cards -->
+    <app-profile-details></app-profile-details>
+  }
+</div>

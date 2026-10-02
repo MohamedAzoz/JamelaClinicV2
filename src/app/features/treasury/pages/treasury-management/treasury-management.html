@@ -1,0 +1,20 @@
+<main
+  class="flex min-h-full flex-col gap-5 p-4 text-text transition-colors sm:p-6 md:p-8"
+  dir="rtl"
+>
+  <app-treasury-header></app-treasury-header>
+  <app-treasury-filters></app-treasury-filters>
+  <app-treasury-summary></app-treasury-summary>
+  <app-expense-table></app-expense-table>
+  <app-pagination
+    [pageNumber]="facade.pageNumber()"
+    [pageSize]="facade.pageSize()"
+    [totalCount]="facade.totalCount()"
+    [totalPages]="facade.totalPages()"
+    [disabled]="facade.loading()"
+    (pageChange)="facade.setPage($event)"
+    (pageSizeChange)="facade.setPageSize($event)"
+  />
+  <app-expense-form-modal></app-expense-form-modal>
+  <app-expense-delete-modal></app-expense-delete-modal>
+</main>

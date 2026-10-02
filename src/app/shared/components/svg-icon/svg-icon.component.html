@@ -1,0 +1,81 @@
+@switch (icon()) {
+  @case ('dashboard') {
+    @defer (when icon() === 'dashboard') {
+      <fa-icon [icon]="faDashboard"></fa-icon>
+    }
+  }
+  @case ('schedule') {
+    @defer (when icon() === 'schedule') {
+      <fa-icon [icon]="faSchedule"></fa-icon>
+    }
+  }
+  @case ('inventory') {
+    @defer (when icon() === 'inventory') {
+      <fa-icon [icon]="faInventory"></fa-icon>
+    }
+  }
+  @case ('company') {
+    @defer (when icon() === 'company') {
+      <fa-icon [icon]="faCompany"></fa-icon>
+    }
+  }
+  @case ('doctors') {
+    @defer (when icon() === 'doctors') {
+      <fa-icon [icon]="faDoctors"></fa-icon>
+    }
+  }
+
+  @case ('clinics') {
+    @defer (when icon() === 'clinics') {
+      <fa-icon [icon]="faClinics"></fa-icon>
+    }
+  }
+  @case ('appointments') {
+    @defer (when icon() === 'appointments') {
+      <fa-icon [icon]="faAppointments"></fa-icon>
+    }
+  }
+  @case ('lab') {
+    @defer (when icon() === 'lab') {
+      <fa-icon [icon]="faLab"></fa-icon>
+    }
+  }
+  @case ('logs') {
+    @defer (when icon() === 'logs') {
+      <fa-icon [icon]="faLogs"></fa-icon>
+    }
+  }
+
+  @case ('payment') {
+    @defer (when icon() === 'payment') {
+      <fa-icon [icon]="faPayment"></fa-icon>
+    }
+  }
+
+  @case ('users') {
+    @defer (when icon() === 'users') {
+      <fa-icon [icon]="faUsers"></fa-icon>
+    }
+  }
+  @case ('wallet') {
+    @defer (when icon() === 'wallet') {
+      <fa-icon [icon]="faWallet"></fa-icon>
+    }
+  }
+  @case ('manage-password') {
+    @defer (when icon() === 'manage-password') {
+      <fa-icon [icon]="faManagePassword"></fa-icon>
+    }
+  }
+  @case ('discount') {
+    @defer (when icon() === 'discount') {
+      <fa-icon [icon]="faDiscount"></fa-icon>
+    }
+  }
+
+  @case ('settings') {
+    @defer (when icon() === 'settings') {
+      <fa-icon [icon]="faSettings"></fa-icon>
+    }
+  }
+}

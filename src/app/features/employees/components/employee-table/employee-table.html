@@ -1,0 +1,177 @@
+<div
+  class="w-full rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-hidden"
+  dir="rtl"
+>
+  <!-- Table Container -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-start text-xs sm:text-sm border-collapse">
+      <!-- Table Header -->
+      <thead
+        class="bg-main-bg/80 border-b border-slate-200 dark:border-slate-800 text-text-muted font-semibold uppercase tracking-wider select-none"
+      >
+        <tr>
+          <!-- Employee Name & Username -->
+          <th scope="col" class="px-4 sm:px-6 py-4 text-start">
+            <div class="flex items-center gap-1.5">
+              <fa-icon [icon]="faUserTie" class="text-text-muted/60 text-xs"></fa-icon>
+              <span>اسم الموظف / اسم المستخدم</span>
+            </div>
+          </th>
+
+          <!-- Status -->
+          <th scope="col" class="px-4 sm:px-6 py-4 text-center">
+            <span>الحالة</span>
+          </th>
+
+          <!-- Actions -->
+          <th scope="col" class="px-4 sm:px-6 py-4 text-center">
+            <span>الإجراءات</span>
+          </th>
+        </tr>
+      </thead>
+
+      <!-- Table Body -->
+      <tbody class="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-text">
+        <!-- Skeleton Loading State -->
+        @if (facade.loading()) {
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <tr class="animate-pulse">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 bg-slate-200 dark:bg-slate-800 rounded-xl"></div>
+                  <div class="flex flex-col gap-1.5">
+                    <div class="h-4 w-36 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                    <div class="h-3 w-20 bg-slate-200 dark:bg-slate-800 rounded"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-5 w-16 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-8 w-20 bg-slate-200 dark:bg-slate-800 rounded-xl mx-auto"></div>
+              </td>
+            </tr>
+          }
+        } @else {
+          <!-- Employees Data Rows -->
+          @for (employee of facade.filteredEmployees(); track employee.userId) {
+            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
+              <!-- Employee Name & Username -->
+              <td class="px-4 sm:px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0 group-hover:scale-105 transition-transform"
+                  >
+                    <fa-icon [icon]="faUserTie" size="lg"></fa-icon>
+                  </div>
+                  <div class="flex flex-col">
+                    <span
+                      class="font-semibold text-text group-hover:text-primary dark:group-hover:text-accent transition-colors"
+                    >
+                      {{ employee.fullName }}
+                    </span>
+                    <span class="text-xs font-mono text-text-muted">
+                      {{ employee.username }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td class="px-4 sm:px-6 py-4 text-center">
+                <button
+                  type="button"
+                  (click)="toggleStatus(employee)"
+                  class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-bold transition-all cursor-pointer"
+                  [class.border-success\/20]="employee.isActive"
+                  [class.bg-success\/5]="employee.isActive"
+                  [class.text-success]="employee.isActive"
+                  [class.hover:bg-success\/10]="employee.isActive"
+                  [class.border-danger\/20]="!employee.isActive"
+                  [class.bg-danger\/5]="!employee.isActive"
+                  [class.text-danger]="!employee.isActive"
+                  [class.hover:bg-danger\/10]="!employee.isActive"
+                  [title]="employee.isActive ? 'تعطيل حساب الموظف' : 'تفعيل حساب الموظف'"
+                >
+                  <fa-icon
+                    [icon]="employee.isActive ? faCircleCheck : faCircleXmark"
+                  ></fa-icon>
+                  <span>{{ employee.isActive ? 'نشط' : 'معطل' }}</span>
+                </button>
+              </td>
+
+              <!-- Actions (Edit & Delete) -->
+              <td class="px-4 sm:px-6 py-4 text-center">
+                <div class="flex flex-wrap items-center justify-center gap-1.5">
+                  <!-- Edit Button -->
+                  <button
+                    type="button"
+                    (click)="facade.openEditModal(employee)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    title="تعديل بيانات الموظف"
+                  >
+                    <fa-icon [icon]="faPen"></fa-icon>
+                    <span>تعديل</span>
+                  </button>
+
+                  <!-- Delete Button -->
+                  <button
+                    type="button"
+                    (click)="facade.openDeleteModal(employee)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                    title="حذف حساب الموظف"
+                  >
+                    <fa-icon [icon]="faTrashCan"></fa-icon>
+                    <span>حذف</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State View -->
+  @if (!facade.loading() && facade.filteredEmployees().length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div
+        class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/80 text-text-muted flex items-center justify-center mb-4 shadow-inner"
+      >
+        <fa-icon [icon]="faUserTie" size="2xl"></fa-icon>
+      </div>
+      <h3 class="text-base font-bold text-text mb-1">لا يوجد موظفو استقبال للعرض</h3>
+      <p class="text-xs sm:text-sm text-text-muted max-w-sm mb-6">
+        @if (facade.searchTerm()) {
+          لم نجد أي موظف يطابق كلمة البحث "{{ facade.searchTerm() }}".
+        } @else {
+          لم يتم تسجيل أي موظفي استقبال حتى الآن. يمكنك إضافة موظف جديد بالنقر على الزر أدناه.
+        }
+      </p>
+
+      @if (facade.searchTerm()) {
+        <button
+          type="button"
+          (click)="facade.setSearchTerm('')"
+          class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+        >
+          مسح فلتر البحث
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="facade.openCreateModal()"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-medium text-xs sm:text-sm shadow-md hover:bg-primary-dark transition-all cursor-pointer"
+        >
+          <fa-icon [icon]="faUserPlus"></fa-icon>
+          <span>إضافة موظف جديد</span>
+        </button>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,172 @@
+<div class="flex flex-col gap-6 w-full" dir="rtl">
+  <!-- Top Header & Actions Section -->
+  <div
+    class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm"
+  >
+    <!-- Title & Doctor Context Info -->
+    <div class="flex items-center gap-4">
+      <div
+        class="w-12 h-12 rounded-2xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0 shadow-inner"
+      >
+        <fa-icon [icon]="faCalendarDays" size="xl"></fa-icon>
+      </div>
+      <div>
+        <h1 class="text-xl font-extrabold text-text tracking-tight">
+          {{ facade.isDoctor() ? 'جدول مواعيدي المتاحة' : 'إدارة مواعيد الأطباء' }}
+        </h1>
+        <p class="text-xs sm:text-sm text-text-muted mt-0.5">
+          {{
+            facade.isDoctor()
+              ? 'قم بتنظيم وإضافة المواعيد وتواريخ العمل المتاحة لك لاستقبال الحجوزات'
+              : 'قم باختيار الطبيب لعرض وتنظيم جدول أيامه ومواعيده المتاحة'
+          }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Controls: Doctor Selector (Admin/Reception) & Add Button -->
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Doctor Selector for Admin and Receptionist -->
+      @if (facade.isAdminOrReception()) {
+        <div class="relative min-w-55">
+          <div
+            class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-primary"
+          >
+            <fa-icon [icon]="faUserMd"></fa-icon>
+          </div>
+          <select
+            [value]="facade.selectedDoctorId()"
+            (change)="onDoctorChange($event)"
+            class="w-full ps-10 pe-8 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all cursor-pointer shadow-xs"
+          >
+            @if (facade.doctors().length === 0) {
+              <option value="" disabled>جاري تحميل الأطباء...</option>
+            }
+            @for (doc of facade.doctors(); track doc.userId) {
+              <option [value]="doc.userId">{{ doc.fullName }} ({{ doc.clinicName }})</option>
+            }
+          </select>
+        </div>
+      }
+
+      <!-- Add New Schedule Button -->
+      <button
+        type="button"
+        (click)="facade.openCreateModal()"
+        [disabled]="facade.actionLoading() || facade.isLoading() || !facade.selectedDoctorId()"
+        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark active:scale-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-primary/25 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <fa-icon [icon]="faCalendarPlus"></fa-icon>
+        <span>إضافة موعد جديد</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div
+    class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-surface p-4 rounded-2xl border border-primary/10 shadow-xs"
+  >
+    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+      <span class="text-xs font-bold text-text-muted flex items-center gap-1.5 pl-2">
+        <fa-icon [icon]="faFilter" class="text-primary"></fa-icon>
+        تصفية المواعيد:
+      </span>
+
+      <!-- IsActive Filter Dropdown -->
+      <div class="relative min-w-44">
+        <select
+          [value]="
+            facade.isActiveFilter() === undefined ? '' : facade.isActiveFilter() ? 'true' : 'false'
+          "
+          (change)="onIsActiveChange($event)"
+          class="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
+        >
+          <option value="">المواعيد النشطة فقط</option>
+          <option value="false">المواعيد غير النشطة فقط</option>
+        </select>
+      </div>
+
+      <!-- OnlyFuture Filter Dropdown -->
+      <div class="relative min-w-48">
+        <select
+          [value]="
+            facade.onlyFutureFilter() === undefined
+              ? ''
+              : facade.onlyFutureFilter()
+                ? 'true'
+                : 'false'
+          "
+          (change)="onOnlyFutureChange($event)"
+          class="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
+        >
+          <option value="">المواعيد القادمة فقط</option>
+          <option value="false">المواعيد السابقة فقط</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Reset Filter Button -->
+    @if (facade.isActiveFilter() !== undefined || facade.onlyFutureFilter() !== undefined) {
+      <button
+        type="button"
+        (click)="facade.resetFilters()"
+        class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-danger/30 bg-danger/5 text-danger hover:bg-danger/15 text-xs font-bold transition-all cursor-pointer self-start sm:self-auto"
+      >
+        <fa-icon [icon]="faUndo" class="text-xs"></fa-icon>
+        <span>إعادة تعيين الفلاتر</span>
+      </button>
+    }
+  </div>
+
+  <!-- Summary Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <!-- Total Schedules Card -->
+    <div
+      class="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-xs"
+    >
+      <div
+        class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0"
+      >
+        <fa-icon [icon]="faCalendarDays" size="lg"></fa-icon>
+      </div>
+      <div>
+        <span class="text-xs text-text-muted font-medium">إجمالي الأيام المعروضة</span>
+        <div class="text-lg font-bold text-text">{{ facade.totalSchedulesCount() }} يوم</div>
+      </div>
+    </div>
+
+    <!-- Active Schedules Card -->
+    <div
+      class="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-xs"
+    >
+      <div
+        class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0"
+      >
+        <fa-icon [icon]="faCheckCircle" size="lg"></fa-icon>
+      </div>
+      <div>
+        <span class="text-xs text-text-muted font-medium">الأيام النشطة للاستقبال</span>
+        <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+          {{ facade.activeSchedulesCount() }} يوم
+        </div>
+      </div>
+    </div>
+
+    <!-- Inactive Schedules Card -->
+    <div
+      class="flex items-center gap-4 p-4 rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800 shadow-xs"
+    >
+      <div
+        class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold shrink-0"
+      >
+        <fa-icon [icon]="faTimesCircle" size="lg"></fa-icon>
+      </div>
+      <div>
+        <span class="text-xs text-text-muted font-medium">الأيام غير النشطة مؤقتاً</span>
+        <div class="text-lg font-bold text-rose-600 dark:text-rose-400">
+          {{ facade.inactiveSchedulesCount() }} يوم
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

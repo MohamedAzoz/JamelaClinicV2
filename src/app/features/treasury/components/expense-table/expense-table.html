@@ -1,0 +1,126 @@
+<section
+  class="overflow-hidden rounded-2xl border border-text-muted/10 bg-surface shadow-sm"
+  dir="rtl"
+>
+  <div
+    class="flex flex-col gap-3 border-b border-text-muted/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+  >
+    <div>
+      <h2 class="font-bold text-text">سجل المصروفات</h2>
+      <p class="mt-1 text-xs text-text-muted">{{ facade.totalCount() }} عملية ضمن الفلتر الحالي</p>
+    </div>
+    <fa-icon [icon]="faFileInvoiceDollar" class="text-primary"></fa-icon>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-190 text-sm">
+      <thead class="bg-main-bg/70 text-xs text-text-muted">
+        <tr>
+          <th class="px-4 py-3 text-start">البيان</th>
+          <th class="px-4 py-3 text-start">النوع</th>
+          <th class="px-4 py-3 text-start">المبلغ</th>
+          <th class="px-4 py-3 text-start">التاريخ والمنشئ</th>
+          <th class="px-4 py-3 text-center">الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-text-muted/10">
+        @if (facade.loading()) {
+          @for (row of [1, 2, 3, 4, 5]; track row) {
+            <tr class="animate-pulse">
+              <td colspan="5" class="px-4 py-5"><div class="h-4 rounded bg-main-bg"></div></td>
+            </tr>
+          }
+        } @else {
+          @for (expense of facade.expenses(); track expense.id) {
+            <tr class="transition hover:bg-main-bg/50">
+              <td class="px-4 py-4">
+                <div class="font-semibold text-text">{{ expense.description }}</div>
+              </td>
+              <td class="px-4 py-4">
+                <span
+                  class="rounded-full {{
+                    formatTypeClass(expense.type)
+                  }} px-2 py-1 text-xs font-semibold"
+                  >{{ formatType(expense.type) }}</span
+                >
+              </td>
+              <td class="px-4 py-4 font-bold text-danger">{{ formatMoney(expense.amount) }}</td>
+              <td class="px-4 py-4 text-xs text-text-muted">
+                <div class="flex items-center gap-1">
+                  <fa-icon [icon]="faCalendar"></fa-icon>{{ formatDate(expense.createdAt) }}
+                </div>
+                <div class="mt-1">{{ expense.userName }}</div>
+              </td>
+              <td class="px-4 py-4 text-center">
+                <div class="flex flex-wrap items-center justify-center gap-1.5">
+                  @if (
+                    !expense.appointmentId &&
+                    !expense.doctorWalletTransactionId &&
+                    !expense.offerOrderId
+                  ) {
+                    <button
+                      type="button"
+                      (click)="edit(expense)"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                      title="تعديل المصروف"
+                    >
+                      <fa-icon [icon]="faPen"></fa-icon>
+                      <span>تعديل</span>
+                    </button>
+                    <button
+                      type="button"
+                      (click)="remove(expense)"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                      title="حذف المصروف"
+                    >
+                      <fa-icon [icon]="faTrashCan"></fa-icon>
+                      <span>حذف</span>
+                    </button>
+                  } @else if (expense.doctorWalletTransactionId) {
+                    <button
+                      type="button"
+                      (click)="openTransactionDetails(expense.doctorWalletTransactionId)"
+                      title="عرض تفاصيل الحركة المالية"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    >
+                      <fa-icon [icon]="faEye" />
+                      <span>متابعة</span>
+                    </button>
+                  } @else if (expense.appointmentId) {
+                    <button
+                      type="button"
+                      (click)="openAppointmentDetails(expense.appointmentId)"
+                      title="عرض تفاصيل الحجز المرتبط"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    >
+                      <fa-icon [icon]="faReceipt" />
+                      <span>الحجز</span>
+                    </button>
+                  } @else if (expense.offerOrderId) {
+                    <button
+                      type="button"
+                      (click)="openOfferOrderDetails(expense.offerOrderId)"
+                      title="عرض تفاصيل طلب العروض/المشتريات"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                    >
+                      <fa-icon [icon]="faEye" />
+                      <span>الطلب</span>
+                    </button>
+                  } @else {
+                    ---
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (!facade.loading() && !facade.hasExpenses()) {
+    <div class="flex flex-col items-center gap-3 px-4 py-14 text-center">
+      <fa-icon [icon]="faFileInvoiceDollar" size="2xl" class="text-text-muted/40"></fa-icon>
+      <h3 class="font-bold text-text">لا توجد مصروفات</h3>
+      <p class="text-xs text-text-muted">جرّب تغيير الفلاتر أو أضف أول مصروف للفترة.</p>
+    </div>
+  }
+</section>

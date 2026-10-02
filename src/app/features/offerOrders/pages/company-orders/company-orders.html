@@ -1,0 +1,33 @@
+<div class="p-6 md:p-8 space-y-6 max-w-7xl mx-auto" dir="rtl">
+  <!-- Header -->
+  <app-offer-orders-header></app-offer-orders-header>
+
+  <!-- Financial Summary Cards -->
+  @if (!facade.loading() || facade.orders().length > 0) {
+    <app-offer-orders-summary></app-offer-orders-summary>
+  }
+
+  <!-- Orders Table -->
+  <app-offer-orders-table></app-offer-orders-table>
+
+  <!-- Add Offer Order Modal -->
+  <app-add-offer-order-modal></app-add-offer-order-modal>
+
+  <!-- Pay Remaining Modal -->
+  <app-pay-offer-order-modal></app-pay-offer-order-modal>
+
+  <!-- Confirm Delete Order Modal -->
+  <app-confirm-modal
+    [(isOpen)]="facade.isDeleteOrderModalOpen"
+    variant="danger"
+    title="حذف طلب التوريد "
+    message="هل أنت متأكد من رغبتك في حذف هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء."
+    [itemName]="facade.orderToDelete()?.title"
+    warningMessage="سيتم حذف جميع بيانات هذا الطلب نهائياً بما في ذلك سجلات الدفع المرتبطة به."
+    confirmText="حذف الطلب"
+    cancelText="إلغاء"
+    [isLoading]="facade.actionLoading()"
+    (confirmed)="facade.confirmDeleteOrder()"
+    (cancelled)="facade.closeDeleteOrderModal()"
+  ></app-confirm-modal>
+</div>
