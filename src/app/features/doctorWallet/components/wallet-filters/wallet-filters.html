@@ -33,7 +33,9 @@
               {{ facade.loadingDoctors() ? 'جاري تحميل الأطباء...' : 'جميع الأطباء' }}
             </option>
             @for (doctor of facade.doctors(); track doctor.userId) {
-              <option [value]="doctor.userId">{{ doctor.fullName }} — {{ doctor.clinicName }}</option>
+              <option [value]="doctor.userId">
+                {{ doctor.fullName }}
+              </option>
             }
           </select>
         </label>

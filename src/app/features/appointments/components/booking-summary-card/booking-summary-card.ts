@@ -47,7 +47,7 @@ export class BookingSummaryCardComponent {
     calculateAppointmentPricing(
       this.formData()?.consultationFee ?? 0,
       this.formData()?.discountAmount ?? 0,
-      this.selectedDoctor()?.doctorPercentage,
+      70,
     ),
   );
 

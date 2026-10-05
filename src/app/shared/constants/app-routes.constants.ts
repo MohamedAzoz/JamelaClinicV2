@@ -5,6 +5,7 @@ export const RoutesManagement = {
   DASHBOARD: { path: 'dashboard' },
   CLINICS: { path: 'clinics' },
   DOCTORS: { path: 'doctors' },
+  DOCTOR_CLINICS: { path: 'doctors/:doctorId/clinics' },
   EMPLOYEES: { path: 'employees' },
   TREASURY: { path: 'treasury' },
   SPECIAL_OFFERS: { path: 'special-offers' },

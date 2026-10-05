@@ -7,20 +7,17 @@ export interface FilterAppointment {
   ToDate?: string;
   DoctorId?: string;
   EmployeeId?: string;
+  ClinicId?: number;
   PageNumber?: number;
   PageSize?: number;
 }
 
-export interface FilterAppointmentsForExcel {
-  Period: Period | null;
-  FromDate?: string;
-  ToDate?: string;
-}
 
 export interface FilterAppointments {
   Period: Period | null;
   FromDate?: string;
   ToDate?: string;
+  ClinicId?: number;
   DoctorId?: string;
   EmployeeId?: string;
   Status: AppointmentStatus | null;

@@ -18,25 +18,12 @@
             </div>
           </th>
 
-          <!-- Clinic -->
-          <th scope="col" class="px-4 sm:px-6 py-4 text-start">
-            <div class="flex items-center gap-1.5">
-              <fa-icon [icon]="faHospital" class="text-text-muted/60 text-xs"></fa-icon>
-              <span>العيادة</span>
-            </div>
-          </th>
-
-          <!-- Percentage Split -->
-          <th scope="col" class="px-4 sm:px-6 py-4 text-start">
-            <div class="flex items-center gap-1.5">
-              <fa-icon [icon]="faPercent" class="text-text-muted/60 text-xs"></fa-icon>
-              <span>نسبة الطبيب / المركز</span>
-            </div>
-          </th>
-
           <!-- Status -->
           <th scope="col" class="px-4 sm:px-6 py-4 text-center">
             <span>الحالة</span>
+          </th>
+          <th scope="col" class="px-4 sm:px-6 py-4 text-center">
+            <span>التفاصيل</span>
           </th>
 
           <!-- Actions -->
@@ -100,41 +87,6 @@
                 </div>
               </td>
 
-              <!-- Clinic Name & ID -->
-              <td class="px-4 sm:px-6 py-4">
-                <div class="flex items-center gap-2">
-                  <span
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-main-bg text-xs font-medium text-text border border-slate-200 dark:border-slate-800"
-                  >
-                    <fa-icon [icon]="faHospital" class="text-accent text-[11px]"></fa-icon>
-                    <span>{{ doctor.clinicName || 'عيادة #' + doctor.clinicId }}</span>
-                  </span>
-                </div>
-              </td>
-
-              <!-- Percentages Split Display -->
-              <td class="px-4 sm:px-6 py-4">
-                <div class="flex flex-col gap-1 max-w-45">
-                  <div class="flex items-center justify-between text-xs font-medium">
-                    <span class="text-primary font-bold">طبيب: {{ doctor.doctorPercentage }}%</span>
-                    <span class="text-text-muted">مركز: {{ doctor.centerPercentage }}%</span>
-                  </div>
-                  <!-- Split Progress Bar -->
-                  <div
-                    class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex"
-                  >
-                    <div
-                      class="h-full bg-primary transition-all"
-                      [style.width.%]="doctor.doctorPercentage"
-                    ></div>
-                    <div
-                      class="h-full bg-accent/40 transition-all"
-                      [style.width.%]="doctor.centerPercentage"
-                    ></div>
-                  </div>
-                </div>
-              </td>
-
               <!-- Status Toggle Button -->
               <td class="px-4 sm:px-6 py-4 text-center">
                 <button
@@ -151,14 +103,23 @@
                   [class.hover:bg-danger\/10]="!doctor.isActive"
                   [title]="doctor.isActive ? 'تعطيل الحساب' : 'تفعيل الحساب'"
                 >
-                  <fa-icon
-                    [icon]="doctor.isActive ? faCircleCheck : faCircleXmark"
-                  ></fa-icon>
+                  <fa-icon [icon]="doctor.isActive ? faCircleCheck : faCircleXmark"></fa-icon>
                   <span>{{ doctor.isActive ? 'نشط' : 'معطل' }}</span>
                 </button>
               </td>
 
-              <!-- Actions (Edit & Delete) -->
+              <td class="px-4 sm:px-6 py-4 text-center">
+                <!-- Clinics & Percentages Button -->
+                <a
+                  [routerLink]="['/main/doctors', doctor.userId, 'clinics']"
+                  class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary/5 px-2.5 text-xs font-bold text-primary hover:bg-primary/10 transition-all cursor-pointer"
+                  title="إدارة عيادات ونسب الطبيب"
+                >
+                  <fa-icon [icon]="faSliders"></fa-icon>
+                  <span>العيادات والنسب</span>
+                </a>
+              </td>
+              <!-- Actions (Clinics, Edit & Delete) -->
               <td class="px-4 sm:px-6 py-4 text-center">
                 <div class="flex flex-wrap items-center justify-center gap-1.5">
                   <!-- Edit Button -->

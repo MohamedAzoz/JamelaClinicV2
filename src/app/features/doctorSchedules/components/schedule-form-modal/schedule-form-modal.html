@@ -33,7 +33,7 @@
               {{
                 facade.selectedSchedule()
                   ? 'قم بتحديث التاريخ المحدد لاستقبال الكشوفات'
-                  : 'حدد تاريخ اليوم المتاح لاستقبال الحجوزات للطبيب'
+                  : 'حدد العيادة وتاريخ اليوم المتاح لاستقبال الحجوزات للطبيب'
               }}
             </p>
           </div>
@@ -70,6 +70,54 @@
             </div>
           </div>
         }
+
+        <!-- Clinic Selection Field (For new schedules) -->
+        @if (!facade.selectedSchedule()) {
+          <div class="flex flex-col gap-1.5">
+            <label for="doctorClinicId" class="text-xs sm:text-sm font-semibold text-text">
+              العيادة <span class="text-danger">*</span>
+            </label>
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+              >
+                <fa-icon [icon]="faHospital"></fa-icon>
+              </div>
+              <select
+                id="doctorClinicId"
+                [formField]="scheduleForm.doctorClinicId"
+                class="w-full ps-10 pe-4 py-3 rounded-xl border bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all cursor-pointer"
+                [class.border-slate-200]="
+                  !scheduleForm.doctorClinicId().touched() || scheduleForm.doctorClinicId().valid()
+                "
+                [class.dark:border-slate-700]="
+                  !scheduleForm.doctorClinicId().touched() || scheduleForm.doctorClinicId().valid()
+                "
+                [class.border-danger]="
+                  scheduleForm.doctorClinicId().touched() && scheduleForm.doctorClinicId().invalid()
+                "
+              >
+                <option value="" disabled selected>اختر العيادة...</option>
+                @for (c of facade.doctorClinics(); track c.id) {
+                  <option [value]="c.id">{{ c.clinicName }} (نسبة الطبيب: {{ c.doctorPercentage }}%)</option>
+                }
+              </select>
+            </div>
+            @if (facade.doctorClinics().length === 0) {
+              <p class="text-xs text-warning mt-1">
+                ⚠ لم يتم إسناد عيادات نشطة لهذا الطبيب بعد. يرجى إسناد عيادة للطبيب من صفحة إدارة الأطباء.
+              </p>
+            }
+            @if (scheduleForm.doctorClinicId().touched() && scheduleForm.doctorClinicId().invalid()) {
+              <div class="text-xs text-danger flex items-center gap-1 mt-0.5" role="alert">
+                @for (error of scheduleForm.doctorClinicId().errors(); track error.message) {
+                  <span>⚠ {{ error.message }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+
         <!-- Schedule Date Field -->
         <div class="flex flex-col gap-1.5">
           <label for="scheduleDate" class="text-xs sm:text-sm font-semibold text-text">

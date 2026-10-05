@@ -102,7 +102,7 @@ export class EditAppointmentModalComponent implements OnInit {
     this.facade.doctors().find((doctor) => doctor.userId === this.model().doctorId),
   );
   readonly maxDiscount = computed(() =>
-    getDoctorShare(this.model().consultationFee, this.selectedDoctor()?.doctorPercentage),
+    getDoctorShare(this.model().consultationFee, 70),
   );
 
   readonly editForm = form(this._model, (path) => {
@@ -136,7 +136,7 @@ export class EditAppointmentModalComponent implements OnInit {
       const message = getDiscountError(
         this.model().consultationFee,
         value(),
-        this.selectedDoctor()?.doctorPercentage,
+        70,
       );
       return message ? { kind: 'discount', message } : null;
     });

@@ -1,5 +1,5 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { form, FormField, FormRoot, max, min, minLength, required } from '@angular/forms/signals';
+import { form, FormField, FormRoot, minLength, required } from '@angular/forms/signals';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faUserMd,
@@ -19,8 +19,6 @@ interface DoctorFormModel {
   fullName: string;
   username: string;
   password: string;
-  clinicId: string;
-  doctorPercentage: number;
   isActive: boolean;
 }
 
@@ -45,8 +43,6 @@ export class DoctorFormModalComponent {
     fullName: '',
     username: '',
     password: '',
-    clinicId: '',
-    doctorPercentage: 70,
     isActive: true,
   });
 
@@ -54,15 +50,13 @@ export class DoctorFormModalComponent {
     required(path.fullName, { message: 'اسم الطبيب مطلوب' });
     minLength(path.fullName, 3, { message: 'يجب أن يكون الاسم 3 أحرف على الأقل' });
 
-    required(path.clinicId, { message: 'يرجى اختيار العيادة' });
-
     required(path.username, {
       when: () => !this.facade.selectedDoctor(),
       message: 'اسم المستخدم مطلوب',
     });
-    minLength(path.username, 3, {
+    minLength(path.username, 6, {
       when: () => !this.facade.selectedDoctor(),
-      message: 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل',
+      message: 'اسم المستخدم يجب أن يكون 6 أحرف على الأقل',
     });
 
     required(path.password, {
@@ -71,20 +65,7 @@ export class DoctorFormModalComponent {
     });
     minLength(path.password, 6, {
       when: () => !this.facade.selectedDoctor(),
-      message: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
-    });
-
-    required(path.doctorPercentage, {
-      when: () => !!this.facade.selectedDoctor(),
-      message: 'نسبة الطبيب مطلوبة',
-    });
-    min(path.doctorPercentage, 0, {
-      when: () => !!this.facade.selectedDoctor(),
-      message: 'النسبة لا يمكن أن تكون أقل من 0',
-    });
-    max(path.doctorPercentage, 100, {
-      when: () => !!this.facade.selectedDoctor(),
-      message: 'النسبة لا يمكن أن تتجاوز 100',
+      message: 'كلمة المرور يجب أن تكون 6 أحرف أو أرقام أو رموز على الأقل',
     });
   });
 
@@ -96,8 +77,6 @@ export class DoctorFormModalComponent {
           fullName: selected.fullName,
           username: '',
           password: '',
-          clinicId: selected.clinicId ? String(selected.clinicId) : '',
-          doctorPercentage: selected.doctorPercentage ?? 70,
           isActive: selected.isActive,
         });
       } else {
@@ -105,8 +84,6 @@ export class DoctorFormModalComponent {
           fullName: '',
           username: '',
           password: '',
-          clinicId: '',
-          doctorPercentage: 70,
           isActive: true,
         });
       }
@@ -128,8 +105,6 @@ export class DoctorFormModalComponent {
       const request: UpdateDoctorRequest = {
         userId: selected.userId,
         fullName: val.fullName,
-        clinicId: Number(val.clinicId),
-        doctorPercentage: Number(val.doctorPercentage),
         isActive: val.isActive,
       };
       this.facade.updateDoctor(request);
@@ -138,7 +113,6 @@ export class DoctorFormModalComponent {
         fullName: val.fullName,
         username: val.username,
         password: val.password,
-        clinicId: Number(val.clinicId),
       };
       this.facade.registerDoctor(request);
     }
@@ -148,4 +122,3 @@ export class DoctorFormModalComponent {
     this.facade.closeFormModal();
   }
 }
-

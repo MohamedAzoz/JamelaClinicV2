@@ -43,7 +43,9 @@
               <option value="" disabled>جاري تحميل الأطباء...</option>
             }
             @for (doc of facade.doctors(); track doc.userId) {
-              <option [value]="doc.userId">{{ doc.fullName }} ({{ doc.clinicName }})</option>
+              <option [value]="doc.userId">
+                {{ doc.fullName }}
+              </option>
             }
           </select>
         </div>

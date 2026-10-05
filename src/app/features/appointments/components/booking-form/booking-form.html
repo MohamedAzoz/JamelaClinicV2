@@ -28,9 +28,7 @@
           >
             <option value="" disabled selected>-- اختر الطبيب من القائمة --</option>
             @for (doc of facade.doctors(); track doc.userId) {
-              <option [value]="doc.userId">
-                د. {{ doc.fullName }} {{ doc.clinicName ? '(' + doc.clinicName + ')' : '' }}
-              </option>
+              <option [value]="doc.userId">د. {{ doc.fullName }}</option>
             }
           </select>
           <div
@@ -339,7 +337,7 @@
   <app-appointment-fee-breakdown
     [fee]="model().consultationFee"
     [discount]="model().discountAmount"
-    [doctorPercentage]="selectedDoctor()?.doctorPercentage"
+    [doctorPercentage]="70"
   />
 
   <!-- Submit & Reset Action Buttons -->

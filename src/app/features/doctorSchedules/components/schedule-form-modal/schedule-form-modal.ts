@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCalendarPlus,
   faCalendarDays,
+  faHospital,
   faXmark,
   faCheck,
   faSpinner,
@@ -13,6 +14,7 @@ import { DoctorScheduleFacade } from '../../services/doctor-schedule.facade';
 
 interface ScheduleFormModel {
   date: string;
+  doctorClinicId: string;
 }
 
 @Component({
@@ -25,6 +27,7 @@ export class ScheduleFormModalComponent {
 
   readonly faCalendarPlus = faCalendarPlus;
   readonly faCalendarDays = faCalendarDays;
+  readonly faHospital = faHospital;
   readonly faXmark = faXmark;
   readonly faCheck = faCheck;
   readonly faSpinner = faSpinner;
@@ -32,23 +35,29 @@ export class ScheduleFormModalComponent {
 
   private readonly _model = signal<ScheduleFormModel>({
     date: '',
+    doctorClinicId: '',
   });
 
   readonly scheduleForm = form(this._model, (path) => {
     required(path.date, { message: 'يرجى اختيار تاريخ الموعد' });
+    if (!this.facade.selectedSchedule()) {
+      required(path.doctorClinicId, { message: 'يرجى اختيار العيادة' });
+    }
   });
 
   constructor() {
     effect(() => {
       const selected = this.facade.selectedSchedule();
       if (selected) {
-        // Format ISO date or Date object to YYYY-MM-DD for date input
         const dateStr = this.formatDateForInput(selected.date);
-        this._model.set({ date: dateStr });
+        const clinics = this.facade.doctorClinics();
+        const firstClinicId = clinics.length > 0 ? String(clinics[0].id) : '';
+        this._model.set({ date: dateStr, doctorClinicId: firstClinicId });
       } else {
-        // Default to today's date in YYYY-MM-DD
         const today = new Date().toISOString().split('T')[0];
-        this._model.set({ date: today });
+        const clinics = this.facade.doctorClinics();
+        const firstClinicId = clinics.length > 0 ? String(clinics[0].id) : '';
+        this._model.set({ date: today, doctorClinicId: firstClinicId });
       }
     });
   }
@@ -78,7 +87,7 @@ export class ScheduleFormModalComponent {
     if (selected) {
       this.facade.updateSchedule(selected.id, val.date);
     } else {
-      this.facade.createSchedule(val.date);
+      this.facade.createSchedule(val.date, Number(val.doctorClinicId));
     }
   }
 

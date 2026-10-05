@@ -1,0 +1,148 @@
+@if (facade.isAssignModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="assign-modal-title"
+  >
+    <div
+      class="relative w-full max-w-lg bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl overflow-hidden transform transition-all animate-scaleUp"
+    >
+      <div
+        class="flex items-center justify-between px-6 py-4 bg-main-bg/70 border-b border-slate-200/80 dark:border-slate-800"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-primary/10 text-primary dark:text-accent flex items-center justify-center font-bold shrink-0"
+          >
+            <fa-icon [icon]="faPlus" size="lg"></fa-icon>
+          </div>
+          <div>
+            <h2 id="assign-modal-title" class="text-base sm:text-lg font-bold text-text">
+              إسناد عيادة جديدة للطبيب
+            </h2>
+            <p class="text-xs text-text-muted">اختر العيادة وحدد النسبة المئوية المقررة للطبيب</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="facade.closeAssignModal()"
+          class="p-2 rounded-xl text-text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+        >
+          <fa-icon [icon]="faCircleXmark" size="lg"></fa-icon>
+        </button>
+      </div>
+
+      <form
+        [formRoot]="facade.assignForm"
+        (submit)="facade.submitAssign($event)"
+        novalidate
+        class="p-6 flex flex-col gap-4"
+      >
+        <!-- Clinic Selection -->
+        <div class="flex flex-col gap-1.5">
+          <label for="assignClinicId" class="text-xs sm:text-sm font-semibold text-text">
+            العيادة <span class="text-danger">*</span>
+          </label>
+          <div class="relative">
+            <div
+              class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+            >
+              <fa-icon [icon]="faHospital"></fa-icon>
+            </div>
+            <select
+              id="assignClinicId"
+              [formField]="facade.assignForm.clinicId"
+              class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all cursor-pointer"
+              [class.border-danger]="
+                facade.assignForm.clinicId().touched() && facade.assignForm.clinicId().invalid()
+              "
+            >
+              <option value="" disabled selected>اختر العيادة...</option>
+              @for (clinic of facade.unassignedClinics(); track clinic.id) {
+                <option [value]="clinic.id">{{ clinic.name }}</option>
+              }
+            </select>
+          </div>
+          @if (facade.assignForm.clinicId().touched() && facade.assignForm.clinicId().invalid()) {
+            @for (error of facade.assignForm.clinicId().errors(); track error.message) {
+              <span class="text-xs text-danger" role="alert">⚠ {{ error.message }}</span>
+            }
+          }
+        </div>
+
+        <!-- Doctor Percentage Input -->
+        <div class="flex flex-col gap-1.5">
+          <label for="assignDoctorPercentage" class="text-xs sm:text-sm font-semibold text-text">
+            نسبة الطبيب (%) <span class="text-danger">*</span>
+          </label>
+          <div class="relative">
+            <div
+              class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+            >
+              <fa-icon [icon]="faPercent"></fa-icon>
+            </div>
+            <input
+              id="assignDoctorPercentage"
+              type="number"
+              [formField]="facade.assignForm.doctorPercentage"
+              placeholder="70"
+              class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+              [class.border-danger]="
+                facade.assignForm.doctorPercentage().touched() &&
+                facade.assignForm.doctorPercentage().invalid()
+              "
+            />
+          </div>
+          @if (
+            facade.assignForm.doctorPercentage().touched() &&
+            facade.assignForm.doctorPercentage().invalid()
+          ) {
+            @for (error of facade.assignForm.doctorPercentage().errors(); track error.message) {
+              <span class="text-xs text-danger" role="alert">⚠ {{ error.message }}</span>
+            }
+          }
+        </div>
+
+        <!-- Preview split calculation -->
+        <div
+          class="p-3.5 rounded-xl bg-main-bg border border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs"
+        >
+          <span class="text-text-muted">نسبة المركز المحسوبة تلقائياً:</span>
+          <span class="font-bold text-accent">
+            {{ 100 - (facade.assignForm.doctorPercentage().value() || 0) }}%
+          </span>
+        </div>
+
+        <!-- Footer Actions -->
+        <div
+          class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800"
+        >
+          <button
+            type="button"
+            (click)="facade.closeAssignModal()"
+            [disabled]="facade.actionLoading()"
+            class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            [disabled]="facade.actionLoading()"
+            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+          >
+            @if (facade.actionLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+              <span>جاري الإسناد...</span>
+            } @else {
+              <fa-icon [icon]="faCheck"></fa-icon>
+              <span>تأكيد الإسناد</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -11,7 +11,6 @@ import { Appointments } from '../models/Appointments';
 import {
   FilterAppointment,
   FilterAppointments,
-  FilterAppointmentsForExcel,
 } from '../models/FilterAppointment';
 import { CreateAppointments } from '../models/CreateAppointments';
 import { AppointmentUpdate } from '../models/AppointmentUpdate';
@@ -78,7 +77,14 @@ export class AppointmentFacade {
   readonly toDateFilter = signal<string>('');
   readonly doctorIdFilter = signal<string>('');
   readonly employeeIdFilter = signal<string>('');
+  readonly clinicIdFilter = signal<number | undefined>(undefined);
   readonly statusFilter = signal<AppointmentStatus | null>(null);
+
+  setClinicIdFilter(clinicId?: number): void {
+    this.clinicIdFilter.set(clinicId);
+    this.pageNumber.set(1);
+    this.loadAppointments();
+  }
 
   // ==========================================
   // Schedule Specific Appointments State
@@ -408,10 +414,14 @@ export class AppointmentFacade {
   exportAppointmentsExcel(): void {
     this.isExportingExcel.set(true);
 
-    const filter: FilterAppointmentsForExcel = {
+    const filter: FilterAppointments = {
       Period: this.periodFilter(),
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
+      DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,
+      EmployeeId: this.employeeIdFilter() ? this.employeeIdFilter() : undefined,
+      ClinicId: this.clinicIdFilter(),
+      Status: this.statusFilter(),
     };
 
     this._appointmentApiService.getExportAppointments(filter).subscribe({

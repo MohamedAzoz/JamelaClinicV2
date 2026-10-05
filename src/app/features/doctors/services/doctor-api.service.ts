@@ -4,6 +4,9 @@ import { Result } from '@core/models/Result';
 import { environment } from 'environments/environment';
 import { Doctor } from '../models/Doctor';
 import { UpdateDoctorRequest } from '../models/UpdateDoctorRequest';
+import { AssignDoctorClinics } from '../models/AssignDoctorClinics';
+import { UpdateDoctorClinics } from '../models/UpdateDoctorClinics';
+import { DoctorClinicsResponse } from '../models/DoctorClinicsResponse';
 
 @Service()
 export class DoctorApiService {
@@ -15,14 +18,15 @@ export class DoctorApiService {
   // /api/Doctors/all
   //isActive
 
-  getAllDoctors(isActive?: boolean) {
-    const url = `${this._baseUrl}/all` + (isActive ? `?isActive=${isActive}` : '');
+  getAllDoctors(isActive?: boolean, clinicId?: number) {
+    let url = `${this._baseUrl}/all` + (isActive ? `?isActive=${isActive}` : '');
+    if (clinicId) url = `${url}?clinicId=${clinicId}`;
     return this._httpClient.get<Result<Doctor[]>>(url);
   }
 
   // GET
   // /api/Doctors/{id}
-  getDoctorById(id: number) {
+  getDoctorById(id: string) {
     const url = `${this._baseUrl}/${id}`;
     return this._httpClient.get<Result<Doctor>>(url);
   }
@@ -46,5 +50,55 @@ export class DoctorApiService {
   toggleStatus(userId: string) {
     const url = `${this._baseUrl}/toggle-status/${userId}`;
     return this._httpClient.patch<Result<boolean>>(url, null);
+  }
+
+  /************************************************ */
+  //   DoctorClinics
+  //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+  private get _doctorClinicsUrl() {
+    return `${environment.appBaseUrl}/DoctorClinics`;
+  }
+
+  // POST
+  // /api/DoctorClinics/assign
+  assign(data: AssignDoctorClinics) {
+    return this._httpClient.post<Result<DoctorClinicsResponse>>(
+      `${this._doctorClinicsUrl}/assign`,
+      data,
+    );
+  }
+
+  // PUT
+  // /api/DoctorClinics/{id}
+  updateAssign(id: number | string, data: UpdateDoctorClinics) {
+    return this._httpClient.put<Result<DoctorClinicsResponse>>(
+      `${this._doctorClinicsUrl}/${id}`,
+      data,
+    );
+  }
+
+  // GET
+  // /api/DoctorClinics/doctor/{doctorId}
+  getDoctorClinicsByDoctorId(doctorId: string) {
+    return this._httpClient.get<Result<DoctorClinicsResponse[]>>(
+      `${this._doctorClinicsUrl}/doctor/${doctorId}`,
+    );
+  }
+
+  // GET
+  // /api/DoctorClinics/clinic/{clinicId}
+  getDoctorClinicsByClinicId(clinicId: number) {
+    return this._httpClient.get<Result<DoctorClinicsResponse[]>>(
+      `${this._doctorClinicsUrl}/clinic/${clinicId}`,
+    );
+  }
+
+  // DELETE
+  // /api/DoctorClinics/doctor/{doctorId}/clinic/{clinicId}
+  deleteDoctorClinics(doctorId: string, clinicId: number) {
+    return this._httpClient.delete<Result<boolean>>(
+      `${this._doctorClinicsUrl}/doctor/${doctorId}/clinic/${clinicId}`,
+    );
   }
 }

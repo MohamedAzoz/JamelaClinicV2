@@ -30,7 +30,7 @@
             <p class="text-xs text-text-muted">
               {{
                 facade.selectedDoctor()
-                  ? 'قم بتحديث الاسم والعيادة والنسبة المالية للطبيب'
+                  ? 'قم بتحديث الاسم وحالة حساب الطبيب'
                   : 'أدخل البيانات الأساسية لإنشاء حساب طبيب جديد في النظام'
               }}
             </p>
@@ -60,7 +60,9 @@
             الاسم الكامل للطبيب <span class="text-danger">*</span>
           </label>
           <div class="relative">
-            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted">
+            <div
+              class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+            >
               <fa-icon [icon]="faUser"></fa-icon>
             </div>
             <input
@@ -69,39 +71,13 @@
               [formField]="doctorForm.fullName"
               placeholder="د. أحمد محمود..."
               class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-              [class.border-danger]="doctorForm.fullName().touched() && doctorForm.fullName().invalid()"
+              [class.border-danger]="
+                doctorForm.fullName().touched() && doctorForm.fullName().invalid()
+              "
             />
           </div>
           @if (doctorForm.fullName().touched() && doctorForm.fullName().invalid()) {
             @for (error of doctorForm.fullName().errors(); track error.message) {
-              <span class="text-xs text-danger" role="alert">⚠ {{ error.message }}</span>
-            }
-          }
-        </div>
-
-        <!-- Clinic Dropdown Field -->
-        <div class="flex flex-col gap-1.5">
-          <label for="clinicId" class="text-xs sm:text-sm font-semibold text-text">
-            العيادة التابعة <span class="text-danger">*</span>
-          </label>
-          <div class="relative">
-            <div class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted">
-              <fa-icon [icon]="faHospital"></fa-icon>
-            </div>
-            <select
-              id="clinicId"
-              [formField]="doctorForm.clinicId"
-              class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all cursor-pointer"
-              [class.border-danger]="doctorForm.clinicId().touched() && doctorForm.clinicId().invalid()"
-            >
-              <option value="" disabled>اختر العيادة...</option>
-              @for (clinic of facade.clinics(); track clinic.id) {
-                <option [value]="clinic.id">{{ clinic.name }}</option>
-              }
-            </select>
-          </div>
-          @if (doctorForm.clinicId().touched() && doctorForm.clinicId().invalid()) {
-            @for (error of doctorForm.clinicId().errors(); track error.message) {
               <span class="text-xs text-danger" role="alert">⚠ {{ error.message }}</span>
             }
           }
@@ -115,7 +91,9 @@
               اسم المستخدم (مُعرف الدخول) <span class="text-danger">*</span>
             </label>
             <div class="relative">
-              <div class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted">
+              <div
+                class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+              >
                 <fa-icon [icon]="faUser"></fa-icon>
               </div>
               <input
@@ -124,7 +102,9 @@
                 [formField]="doctorForm.username"
                 placeholder="dr_ahmed..."
                 class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                [class.border-danger]="doctorForm.username().touched() && doctorForm.username().invalid()"
+                [class.border-danger]="
+                  doctorForm.username().touched() && doctorForm.username().invalid()
+                "
               />
             </div>
             @if (doctorForm.username().touched() && doctorForm.username().invalid()) {
@@ -140,7 +120,9 @@
               كلمة المرور <span class="text-danger">*</span>
             </label>
             <div class="relative">
-              <div class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted">
+              <div
+                class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted"
+              >
                 <fa-icon [icon]="faLock"></fa-icon>
               </div>
               <input
@@ -149,7 +131,9 @@
                 [formField]="doctorForm.password"
                 placeholder="••••••••"
                 class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                [class.border-danger]="doctorForm.password().touched() && doctorForm.password().invalid()"
+                [class.border-danger]="
+                  doctorForm.password().touched() && doctorForm.password().invalid()
+                "
               />
             </div>
             @if (doctorForm.password().touched() && doctorForm.password().invalid()) {
@@ -160,45 +144,17 @@
           </div>
         }
 
-        <!-- Edit Mode Specific Fields (Doctor Percentage & Active state) -->
+        <!-- Edit Mode Specific Fields (Active state) -->
         @if (facade.selectedDoctor()) {
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Doctor Percentage Field -->
-            <div class="flex flex-col gap-1.5">
-              <label for="doctorPercentage" class="text-xs sm:text-sm font-semibold text-text">
-                نسبة الطبيب (%) <span class="text-danger">*</span>
-              </label>
-              <div class="relative">
-                <div class="absolute inset-y-0 inset-s-0 flex items-center ps-3.5 pointer-events-none text-text-muted">
-                  <fa-icon [icon]="faPercent"></fa-icon>
-                </div>
-                <input
-                  id="doctorPercentage"
-                  type="number"
-                  [formField]="doctorForm.doctorPercentage"
-                  placeholder="70"
-                  class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                  [class.border-danger]="doctorForm.doctorPercentage().touched() && doctorForm.doctorPercentage().invalid()"
-                />
-              </div>
-              @if (doctorForm.doctorPercentage().touched() && doctorForm.doctorPercentage().invalid()) {
-                @for (error of doctorForm.doctorPercentage().errors(); track error.message) {
-                  <span class="text-xs text-danger" role="alert">⚠ {{ error.message }}</span>
-                }
-              }
-            </div>
-
-            <!-- Active Status Checkbox -->
-            <div class="flex flex-col justify-end pb-1">
-              <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  [formField]="doctorForm.isActive"
-                  class="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary/30 accent-primary cursor-pointer"
-                />
-                <span class="text-xs sm:text-sm font-semibold text-text">حساب نشط</span>
-              </label>
-            </div>
+          <div class="flex items-center gap-2.5 py-2">
+            <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                [formField]="doctorForm.isActive"
+                class="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-primary focus:ring-primary/30 accent-primary cursor-pointer"
+              />
+              <span class="text-xs sm:text-sm font-semibold text-text">حساب نشط</span>
+            </label>
           </div>
         }
 

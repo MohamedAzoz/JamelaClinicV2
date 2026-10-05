@@ -2,26 +2,29 @@ import { AppointmentStatus } from './AppointmentStatus';
 import { VisitType } from './VisitType';
 
 /*
-  {
+ {
         "id": 0,
         "patientName": "string",
         "patientPhoneNumber": "string",
         "patientAddress": "string",
+        "clinicName": "string",
         "visitType": 0,
         "queueNumber": 0,
-        "appointmentDate": "2026-09-26",
-        "createdAt": "2026-09-26T11:40:25.700Z",
+        "appointmentDate": "2026-10-05",
+        "createdAt": "2026-10-05T14:58:37.987Z",
         "doctorScheduleId": 0,
         "doctorName": "string",
         "employeeName": "string",
         "status": 0,
         "consultationFee": 0,
-        "discountAmount": 0, ///
+        "discountAmount": 0,
         "doctorPercentage": 0,
         "centerPercentage": 0,
         "doctorEarnings": 0,
         "centerEarnings": 0,
-        "finalPaidAmount": 0,///
+        "totalMaterialsCost": 0,
+        "netAppointmentAmount": 0,
+        "finalPaidAmount": 0,
         "cancelledByEmployeeName": "string"
       } */
 export interface Appointments {
@@ -29,6 +32,7 @@ export interface Appointments {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
+  clinicName: string; //
   visitType: VisitType;
   queueNumber: number;
   appointmentDate: Date;

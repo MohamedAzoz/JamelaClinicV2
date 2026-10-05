@@ -1,0 +1,55 @@
+@if (facade.isDeleteModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fadeIn"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="delete-modal-title"
+  >
+    <div
+      class="relative w-full max-w-md bg-surface rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xl p-6 text-center transform transition-all animate-scaleUp"
+    >
+      <div
+        class="w-14 h-14 rounded-2xl bg-danger/10 text-danger flex items-center justify-center mx-auto mb-4"
+      >
+        <fa-icon [icon]="faTrashCan" size="xl"></fa-icon>
+      </div>
+
+      <h3 id="delete-modal-title" class="text-base sm:text-lg font-bold text-text mb-2">
+        إلغاء إسناد العيادة
+      </h3>
+
+      <p class="text-xs sm:text-sm text-text-muted mb-6">
+        هل أنت تأكد من رغبتك في إلغاء إسناد عيادة
+        <span class="font-bold text-text">{{ facade.selectedClinicForDelete()?.clinicName }}</span>
+        من الطبيب؟
+      </p>
+
+      <div class="flex items-center justify-center gap-3">
+        <button
+          type="button"
+          (click)="facade.closeDeleteModal()"
+          [disabled]="facade.actionLoading()"
+          class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-surface text-text hover:bg-slate-50 dark:hover:bg-slate-800 text-xs sm:text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+        >
+          إلغاء
+        </button>
+
+        <button
+          type="button"
+          (click)="facade.confirmDelete()"
+          [disabled]="facade.actionLoading()"
+          class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-danger hover:bg-danger-dark text-white font-semibold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50"
+        >
+          @if (facade.actionLoading()) {
+            <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+            <span>جاري الإلغاء...</span>
+          } @else {
+            <fa-icon [icon]="faTrashCan"></fa-icon>
+            <span>تأكيد الإلغاء</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -44,9 +44,7 @@ export class DoctorFacade {
 
     return list.filter(
       (doc) =>
-        doc.fullName.toLowerCase().includes(term) ||
-        doc.username.toLowerCase().includes(term) ||
-        (doc.clinicName && doc.clinicName.toLowerCase().includes(term)),
+        doc.fullName.toLowerCase().includes(term) || doc.username.toLowerCase().includes(term),
     );
   });
 
@@ -98,7 +96,7 @@ export class DoctorFacade {
   /**
    * 2. API Wrap: DoctorApiService.getDoctorById
    */
-  getDoctorById(id: number): void {
+  getDoctorById(id: string): void {
     this.loading.set(true);
     this._doctorApiService
       .getDoctorById(id)

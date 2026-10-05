@@ -147,6 +147,29 @@ export class DoctorScheduleFacade {
     this.loadSchedules();
   }
 
+  readonly doctorClinics = signal<import('@features/doctors/models/DoctorClinicsResponse').DoctorClinicsResponse[]>([]);
+
+  /**
+   * Loads active assigned clinics for the selected doctor
+   */
+  loadDoctorClinics(doctorId?: string): void {
+    const targetId = doctorId ?? this.selectedDoctorId();
+    if (!targetId) {
+      this.doctorClinics.set([]);
+      return;
+    }
+    this._doctorApiService.getDoctorClinicsByDoctorId(targetId).subscribe({
+      next: (res) => {
+        if (res.isSuccess && Array.isArray(res.data)) {
+          this.doctorClinics.set(res.data.filter((c) => c.isActive));
+        } else {
+          this.doctorClinics.set([]);
+        }
+      },
+      error: () => this.doctorClinics.set([]),
+    });
+  }
+
   /**
    * Loads schedules for a specific doctorId with active filters.
    */
@@ -157,6 +180,8 @@ export class DoctorScheduleFacade {
       this.isLoading.set(false);
       return;
     }
+
+    this.loadDoctorClinics(targetId);
 
     const isActive = this.isActiveFilter();
     const onlyFuture = this.onlyFutureFilter();
@@ -205,12 +230,12 @@ export class DoctorScheduleFacade {
   /**
    * Creates a new doctor schedule.
    */
-  createSchedule(date: string): void {
+  createSchedule(date: string, doctorClinicId: number): void {
     const doctorId = this.selectedDoctorId();
     if (!doctorId) return;
 
     this.actionLoading.set(true);
-    const request: DoctorScheduleCreate = { doctorId, date };
+    const request: DoctorScheduleCreate = { doctorId, doctorClinicId, date };
 
     this._scheduleApiService.createDoctorSchedule(request).subscribe({
       next: (res) => {

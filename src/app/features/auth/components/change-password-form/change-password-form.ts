@@ -51,7 +51,7 @@ export class ChangePasswordFormComponent {
     minLength(path.currentPassword, 6, { message: 'كلمة المرور الحالية قصيرة جداً' });
 
     required(path.newPassword, { message: 'يرجى إدخال كلمة المرور الجديدة' });
-    minLength(path.newPassword, 8, { message: 'كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل' });
+    minLength(path.newPassword, 6, { message: 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل' });
     validate(path.newPassword, (ctx) => {
       if (ctx.value() && ctx.value() === this._model().currentPassword) {
         return { kind: 'samePrevious', message: 'كلمة المرور الجديدة يجب أن تختلف عن الحالية' };

@@ -1,0 +1,174 @@
+<!-- Table Container Card -->
+<div
+  class="w-full rounded-2xl bg-surface border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-hidden"
+>
+  <div
+    class="px-6 py-4 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between"
+  >
+    <div class="flex items-center gap-2">
+      <fa-icon [icon]="faSliders" class="text-primary text-sm"></fa-icon>
+      <h3 class="text-sm font-bold text-text">قائمة عيادات الطبيب ونسب التوزيع</h3>
+    </div>
+    <span class="text-xs text-text-muted font-mono">العدد: {{ facade.doctorClinics().length }}</span>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-start text-xs sm:text-sm border-collapse">
+      <thead
+        class="bg-main-bg/80 border-b border-slate-200 dark:border-slate-800 text-text-muted font-semibold uppercase tracking-wider select-none"
+      >
+        <tr>
+          <th scope="col" class="px-6 py-4 text-start">العيادة</th>
+          <th scope="col" class="px-6 py-4 text-start">نسبة الطبيب</th>
+          <th scope="col" class="px-6 py-4 text-start">نسبة المركز</th>
+          <th scope="col" class="px-6 py-4 text-start min-w-50">توزيع النسبة المالية</th>
+          <th scope="col" class="px-6 py-4 text-center">الحالة</th>
+          <th scope="col" class="px-6 py-4 text-center">الإجراءات</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-slate-200/60 dark:divide-slate-800/60 text-text">
+        @if (facade.loading()) {
+          @for (i of [1, 2, 3]; track i) {
+            <tr class="animate-pulse">
+              <td class="px-6 py-4">
+                <div class="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-4 w-16 bg-slate-200 dark:bg-slate-800 rounded"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-4 w-16 bg-slate-200 dark:bg-slate-800 rounded"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-3 w-36 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-5 w-16 bg-slate-200 dark:bg-slate-800 rounded-full mx-auto"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="h-8 w-24 bg-slate-200 dark:bg-slate-800 rounded-xl mx-auto"></div>
+              </td>
+            </tr>
+          }
+        } @else {
+          @for (item of facade.doctorClinics(); track item.id) {
+            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group">
+              <!-- Clinic Name -->
+              <td class="px-6 py-4 font-semibold text-text">
+                <div class="flex items-center gap-2.5">
+                  <div
+                    class="w-8 h-8 rounded-lg bg-main-bg border border-slate-200 dark:border-slate-800 text-primary dark:text-accent flex items-center justify-center shrink-0"
+                  >
+                    <fa-icon [icon]="faHospital" class="text-xs"></fa-icon>
+                  </div>
+                  <span>{{ item.clinicName }}</span>
+                </div>
+              </td>
+
+              <!-- Doctor Percentage -->
+              <td class="px-6 py-4 font-bold text-primary dark:text-accent">
+                {{ item.doctorPercentage }}%
+              </td>
+
+              <!-- Center Percentage -->
+              <td class="px-6 py-4 font-semibold text-text-muted">
+                {{ item.centerPercentage }}%
+              </td>
+
+              <!-- Visual Ratio Bar -->
+              <td class="px-6 py-4">
+                <div class="flex flex-col gap-1.5">
+                  <div
+                    class="flex items-center justify-between text-[11px] font-medium text-text-muted"
+                  >
+                    <span class="text-primary font-bold">طبيب: {{ item.doctorPercentage }}%</span>
+                    <span>مركز: {{ item.centerPercentage }}%</span>
+                  </div>
+                  <div
+                    class="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex"
+                  >
+                    <div
+                      class="h-full bg-primary transition-all duration-300"
+                      [style.width.%]="item.doctorPercentage"
+                    ></div>
+                    <div
+                      class="h-full bg-accent/40 transition-all duration-300"
+                      [style.width.%]="item.centerPercentage"
+                    ></div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Status Badge -->
+              <td class="px-6 py-4 text-center">
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
+                  [class.bg-success\/10]="item.isActive"
+                  [class.text-success]="item.isActive"
+                  [class.bg-danger\/10]="!item.isActive"
+                  [class.text-danger]="!item.isActive"
+                >
+                  <fa-icon
+                    [icon]="item.isActive ? faCircleCheck : faCircleXmark"
+                    class="text-[11px]"
+                  ></fa-icon>
+                  <span>{{ item.isActive ? 'نشط' : 'معطل' }}</span>
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td class="px-6 py-4 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    (click)="facade.openEditModal(item)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/20 bg-accent/5 px-2.5 text-xs font-bold text-accent hover:bg-accent/10 transition-all cursor-pointer"
+                    title="تعديل نسبة العيادة"
+                  >
+                    <fa-icon [icon]="faPen"></fa-icon>
+                    <span>تعديل النسبة</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="facade.openDeleteModal(item)"
+                    class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/20 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                    title="إلغاء إسناد العيادة"
+                  >
+                    <fa-icon [icon]="faTrashCan"></fa-icon>
+                    <span>إلغاء الإسناد</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  @if (!facade.loading() && facade.doctorClinics().length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div
+        class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800/80 text-text-muted flex items-center justify-center mb-4 shadow-inner"
+      >
+        <fa-icon [icon]="faHospital" size="2xl"></fa-icon>
+      </div>
+      <h3 class="text-base font-bold text-text mb-1">لا يوجد عيادات مسندة لهذا الطبيب</h3>
+      <p class="text-xs sm:text-sm text-text-muted max-w-sm mb-6">
+        لم يتم تحديد أي عيادة حتى الآن للطبيب {{ facade.doctor()?.fullName }}. يمكنك إسناد عيادة
+        بالنقر على الزر أدناه.
+      </p>
+      <button
+        type="button"
+        (click)="facade.openAssignModal()"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-medium text-xs sm:text-sm shadow-md hover:bg-primary-dark transition-all cursor-pointer"
+      >
+        <fa-icon [icon]="faPlus"></fa-icon>
+        <span>إسناد عيادة الآن</span>
+      </button>
+    </div>
+  }
+</div>

@@ -43,6 +43,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: RoutesManagement.DOCTOR_CLINICS.path,
+        loadComponent: () =>
+          import('./features/doctors/pages/doctor-clinics/doctor-clinics').then(
+            (m) => m.DoctorClinicsPage,
+          ),
+      },
+      {
         path: RoutesManagement.EMPLOYEES.path,
         loadComponent: () =>
           import('./features/employees/pages/employees-management/employees-management').then(

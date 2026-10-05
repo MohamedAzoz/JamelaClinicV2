@@ -26,12 +26,6 @@
       </div>
       @if (selectedDoctor(); as doc) {
         <div class="font-bold text-white text-base">د. {{ doc.fullName }}</div>
-        @if (doc.clinicName) {
-          <div class="text-xs text-accent/80 flex items-center gap-1 mt-0.5">
-            <fa-icon [icon]="faClinicMedical" class="text-[10px]"></fa-icon>
-            {{ doc.clinicName }}
-          </div>
-        }
       } @else {
         <div class="text-xs text-white/50 italic">لم يتم اختيار طبيب بعد</div>
       }

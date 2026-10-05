@@ -51,7 +51,7 @@
             </option>
             @for (doctor of facade.doctors(); track doctor.userId) {
               <option [value]="doctor.userId">
-                {{ doctor.fullName }} — {{ doctor.clinicName }}
+                {{ doctor.fullName }}
               </option>
             }
           </select>

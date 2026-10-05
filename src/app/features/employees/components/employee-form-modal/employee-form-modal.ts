@@ -58,9 +58,9 @@ export class EmployeeFormModalComponent {
       when: () => !this.facade.selectedEmployee(),
       message: 'اسم المستخدم مطلوب',
     });
-    minLength(path.username, 3, {
+    minLength(path.username, 6, {
       when: () => !this.facade.selectedEmployee(),
-      message: 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل',
+      message: 'اسم المستخدم يجب أن يكون 6 أحرف على الأقل',
     });
 
     required(path.password, {
