@@ -164,7 +164,7 @@ export class AppointmentFacade {
   readonly isAdminOrAccountant = computed(
     () => this._identityService.isAdmin() || this._identityService.isAccountant(),
   );
-
+ 
   readonly isDoctorOrAdmin = computed(
     () => this._identityService.isDoctor() || this._identityService.isAdmin(),
   );

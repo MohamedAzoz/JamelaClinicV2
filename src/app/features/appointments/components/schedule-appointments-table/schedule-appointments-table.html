@@ -29,7 +29,7 @@
           class="bg-primary/5 text-xs font-semibold text-text-muted border-b border-primary/10"
         >
           <tr>
-            <th scope="col" class="px-4 py-3.5 text-center">رقم الدور</th>
+            <th scope="col" class="px-4 py-2 text-center">رقم الدور</th>
             <th scope="col" class="px-4 py-3.5">بيانات المريض</th>
             <th scope="col" class="px-4 py-3.5">الطبيب والموظف</th>
             <th scope="col" class="px-4 py-3.5">تاريخ الحجز</th>
@@ -49,7 +49,7 @@
           @for (app of facade.scheduleAppointments(); track app.id) {
             <tr class="hover:bg-primary/5 transition">
               <!-- Queue Number -->
-              <td class="px-4 py-4 text-center">
+              <td class="px-2 py-0 text-center">
                 <span
                   class="inline-flex lg:h-9 lg:w-9 h-6 w-6 items-center justify-center rounded-xl bg-primary/10 font-semibold text-primary font-mono text-sm border border-primary/20"
                 >

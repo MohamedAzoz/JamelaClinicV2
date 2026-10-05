@@ -9,16 +9,20 @@
     <app-appointment-details-header [appointment]="appointment"></app-appointment-details-header>
 
     <!-- PAGE GRID BODY -->
-    <div class="grid gap-6 xl:grid-cols-12">
+    <div class="grid gap-6 lg:grid-cols-12">
       <!-- Main Content Left (Patient Info + Materials) -->
-      <div class="xl:col-span-8 space-y-6">
+      <div class="grid grid-cols-1 lg:col-span-8 gap-6">
         <app-appointment-patient-info [appointment]="appointment"></app-appointment-patient-info>
-        <app-appointment-materials-section [appointment]="appointment"></app-appointment-materials-section>
+        <app-appointment-materials-section
+          [appointment]="appointment"
+        ></app-appointment-materials-section>
       </div>
 
       <!-- Sidebar Right (Financial Summary) -->
-      <div class="xl:col-span-4 space-y-6">
-        <app-appointment-financial-summary [appointment]="appointment"></app-appointment-financial-summary>
+      <div class="grid grid-cols-1 lg:col-span-4 space-y-6">
+        <app-appointment-financial-summary
+          [appointment]="appointment"
+        ></app-appointment-financial-summary>
       </div>
     </div>
   } @else {
@@ -32,7 +36,8 @@
       </div>
       <h3 class="text-lg font-bold text-text">تعذر العثور على تفاصيل الحجز</h3>
       <p class="mt-1 text-sm text-text-muted max-w-md">
-        قد يكون رقم الحجز غير صحيح أو تم إزالته من النظام. يرجى العودة لجدول الحجوزات والمحاولة مرة أخرى.
+        قد يكون رقم الحجز غير صحيح أو تم إزالته من النظام. يرجى العودة لجدول الحجوزات والمحاولة مرة
+        أخرى.
       </p>
     </div>
   }

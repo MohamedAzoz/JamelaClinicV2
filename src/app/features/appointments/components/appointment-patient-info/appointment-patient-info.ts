@@ -11,7 +11,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentsMaterial } from '../../models/AppointmentsMaterial';
 import { VisitType } from '../../models/VisitType';
-import { AppointmentStatus } from '../../models/AppointmentStatus';
 
 @Component({
   selector: 'app-appointment-patient-info',

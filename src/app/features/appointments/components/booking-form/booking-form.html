@@ -76,8 +76,9 @@
               <option value="" disabled selected>-- اختر اليوم والموعد المناسب --</option>
               @for (sched of facade.schedules(); track sched.id) {
                 <option [value]="sched.id">
-                  {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }} (الحجوزات السابقة:
-                  {{ sched.appointmentsCount }})
+                  {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }} ({{
+                    sched.clinicName
+                  }})
                 </option>
               }
             }
