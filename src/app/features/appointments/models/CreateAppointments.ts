@@ -4,7 +4,7 @@ export interface CreateAppointments {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
-  visitType: VisitType;
+  visitType?: VisitType | null;
   doctorScheduleId: number;
   consultationFee: number;
   discountAmount?: number;

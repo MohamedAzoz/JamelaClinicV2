@@ -40,7 +40,7 @@
   @if (!facade.isAdminOrAccountant()) {
     <div class="flex flex-wrap items-center gap-2">
       <!-- Pay Button if status is Unpaid (1) -->
-      @if (!facade.isDoctor() && Number(appointment().status) === 1) {
+      @if (!facade.isDoctor() && getStatus(appointment().status) === 1) {
         <button
           type="button"
           (click)="pay()"
@@ -57,7 +57,7 @@
       }
 
       <!-- Complete Button if status is InProgress (2) -->
-      @if (Number(appointment().status) === 2) {
+      @if (getStatus(appointment().status) === 2) {
         <button
           type="button"
           (click)="complete()"
@@ -76,8 +76,8 @@
       <!-- Cancel Button if status is not Completed (3) and not Cancelled (4) -->
       @if (
         !facade.isDoctor() &&
-        Number(appointment().status) !== 4 &&
-        Number(appointment().status) !== 3
+        getStatus(appointment().status) !== 4 &&
+        getStatus(appointment().status) !== 3
       ) {
         <button
           type="button"

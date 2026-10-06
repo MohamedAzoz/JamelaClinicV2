@@ -99,16 +99,19 @@
               >
                 <option value="" disabled selected>اختر العيادة...</option>
                 @for (c of facade.doctorClinics(); track c.id) {
-                  <option [value]="c.id">{{ c.clinicName }} (نسبة الطبيب: {{ c.doctorPercentage }}%)</option>
+                  <option [value]="c.id">{{ c.clinicName }}</option>
                 }
               </select>
             </div>
             @if (facade.doctorClinics().length === 0) {
               <p class="text-xs text-warning mt-1">
-                ⚠ لم يتم إسناد عيادات نشطة لهذا الطبيب بعد. يرجى إسناد عيادة للطبيب من صفحة إدارة الأطباء.
+                ⚠ لم يتم إسناد عيادات نشطة لهذا الطبيب بعد. يرجى إسناد عيادة للطبيب من صفحة إدارة
+                الأطباء.
               </p>
             }
-            @if (scheduleForm.doctorClinicId().touched() && scheduleForm.doctorClinicId().invalid()) {
+            @if (
+              scheduleForm.doctorClinicId().touched() && scheduleForm.doctorClinicId().invalid()
+            ) {
               <div class="text-xs text-danger flex items-center gap-1 mt-0.5" role="alert">
                 @for (error of scheduleForm.doctorClinicId().errors(); track error.message) {
                   <span>⚠ {{ error.message }}</span>

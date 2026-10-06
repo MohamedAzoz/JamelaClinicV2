@@ -100,7 +100,20 @@ export class AppointmentMaterialsSectionComponent {
     const val = Number((event.target as HTMLInputElement).value);
     this.quantity.set(val > 0 ? val : 1);
   }
-
+  getStatus(status: string | null | undefined): boolean {
+    switch (status) {
+      case 'Unpaid':
+        return true;
+      case 'InProgress':
+        return true;
+      case 'Completed':
+        return false;
+      case 'Cancelled':
+        return false;
+      default:
+        return true;
+    }
+  }
   async addMaterial(event: Event): Promise<void> {
     event.preventDefault();
 

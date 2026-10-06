@@ -40,7 +40,7 @@ export interface BookingFormModel {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
-  visitType: number;
+  visitType: number | null;
   consultationFee: number;
   discountAmount: number;
   isPaid: boolean;
@@ -90,19 +90,19 @@ export class BookingFormComponent implements OnInit {
       icon: 'faCalendarCheck',
       desc: 'متابعة بعد الكشف',
     },
-    {
-      value: VisitType.Sessions,
-      label: 'جلسات',
-      icon: 'faUserCheck',
-      desc: 'جلسات متابعة مستمرة',
-    },
-    { value: VisitType.Laser, label: 'ليزر', icon: 'faCoins', desc: 'جلسات التجميل والليزر' },
-    {
-      value: VisitType.Fractional,
-      label: 'فراكشنال',
-      icon: 'faCreditCard',
-      desc: 'جلسات الجلدية والعناية',
-    },
+    // {
+    //   value: VisitType.Sessions,
+    //   label: 'جلسات',
+    //   icon: 'faUserCheck',
+    //   desc: 'جلسات متابعة مستمرة',
+    // },
+    // { value: VisitType.Laser, label: 'ليزر', icon: 'faCoins', desc: 'جلسات التجميل والليزر' },
+    // {
+    //   value: VisitType.Fractional,
+    //   label: 'فراكشنال',
+    //   icon: 'faCreditCard',
+    //   desc: 'جلسات الجلدية والعناية',
+    // },
   ];
 
   // Signal Form Model
@@ -112,7 +112,7 @@ export class BookingFormComponent implements OnInit {
     patientName: '',
     patientPhoneNumber: '',
     patientAddress: '',
-    visitType: VisitType.NewConsultation,
+    visitType: null,
     consultationFee: 0,
     discountAmount: 0,
     isPaid: false,
@@ -122,9 +122,7 @@ export class BookingFormComponent implements OnInit {
   readonly selectedDoctor = computed(() =>
     this.facade.doctors().find((doctor) => doctor.userId === this.model().doctorId),
   );
-  readonly maxDiscount = computed(() =>
-    getDoctorShare(this.model().consultationFee, 70),
-  );
+  readonly maxDiscount = computed(() => getDoctorShare(this.model().consultationFee, 70));
 
   readonly bookingForm = form(this._model, (path) => {
     required(path.doctorId, { message: 'يرجى اختيار الطبيب' });
@@ -155,11 +153,7 @@ export class BookingFormComponent implements OnInit {
           },
     );
     validate(path.discountAmount, ({ value }) => {
-      const message = getDiscountError(
-        this.model().consultationFee,
-        value(),
-        70,
-      );
+      const message = getDiscountError(this.model().consultationFee, value(), 70);
       return message ? { kind: 'discount', message } : null;
     });
   });
@@ -234,7 +228,7 @@ export class BookingFormComponent implements OnInit {
   onVisitTypeSelect(type: VisitType): void {
     this._model.update((m) => ({
       ...m,
-      visitType: type,
+      visitType: type ?? null,
     }));
   }
 
@@ -264,7 +258,7 @@ export class BookingFormComponent implements OnInit {
       patientName: val.patientName.trim(),
       patientPhoneNumber: val.patientPhoneNumber.trim(),
       patientAddress: val.patientAddress.trim(),
-      visitType: Number(val.visitType) as VisitType,
+      visitType: val.visitType ?? null,
       doctorScheduleId: Number(val.doctorScheduleId),
       consultationFee: Number(val.consultationFee),
       discountAmount: val.discountAmount,
@@ -284,7 +278,7 @@ export class BookingFormComponent implements OnInit {
       patientName: '',
       patientPhoneNumber: '',
       patientAddress: '',
-      visitType: VisitType.NewConsultation,
+      visitType: null,
       consultationFee: 0,
       discountAmount: 0,
       isPaid: false,

@@ -1,4 +1,3 @@
-import { AppointmentStatus } from './AppointmentStatus';
 import { MaterialItem } from './MaterialItem';
 /**{
     "id": 0,
@@ -37,7 +36,7 @@ export interface AppointmentsMaterial {
   patientPhoneNumber: string;
   patientAddress: string;
   clinicName: string; //added
-  visitType: string;
+  visitType: string | null;
   queueNumber: number;
   appointmentDate: string;
   status: string;

@@ -11,7 +11,6 @@ import {
   faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentFacade } from '../../services/appointment.facade';
-import { AppointmentStatus } from '../../models/AppointmentStatus';
 import { AppointmentsMaterial } from '../../models/AppointmentsMaterial';
 
 @Component({
@@ -66,6 +65,20 @@ export class AppointmentDetailsHeaderComponent {
     }
   }
 
+   getStatus(status: string | null | undefined): number {
+    switch (status) {
+      case 'Unpaid':
+        return 1;
+      case 'InProgress':
+        return 2;
+      case 'Completed':
+        return 3;
+      case 'Cancelled':
+        return 4;
+      default:
+        return 1;
+    }
+  }
   goBack(): void {
     this._location.back();
   }

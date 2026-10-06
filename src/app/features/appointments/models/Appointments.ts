@@ -33,7 +33,7 @@ export interface Appointments {
   patientPhoneNumber: string;
   patientAddress: string;
   clinicName: string; //
-  visitType: VisitType;
+  visitType: VisitType | null;
   queueNumber: number;
   appointmentDate: Date;
   createdAt: Date;
@@ -42,11 +42,11 @@ export interface Appointments {
   employeeName: string;
   status: AppointmentStatus;
   consultationFee: number;
-  discountAmount: number;////
+  discountAmount: number; ////
   doctorPercentage: number;
   centerPercentage: number;
   doctorEarnings: number;
   centerEarnings: number;
-  finalPaidAmount: number;////
+  finalPaidAmount: number; ////
   cancelledByEmployeeName: string | null | undefined;
 }

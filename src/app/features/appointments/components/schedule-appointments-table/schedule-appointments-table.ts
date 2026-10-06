@@ -52,7 +52,7 @@ export class ScheduleAppointmentsTableComponent {
       'تأكيد سداد الكشفية',
       [
         { label: 'اسم المريض', value: app.patientName },
-        { label: 'نوع الزيارة', value: this.getVisitTypeName(app.visitType) },
+        { label: 'نوع الزيارة', value: this.getVisitTypeName(app.visitType!) },
       ]
     );
     if (confirmed) {

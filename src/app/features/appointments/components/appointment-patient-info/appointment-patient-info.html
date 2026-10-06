@@ -65,15 +65,18 @@
     </div>
 
     <div class="grid gap-4 sm:grid-cols-3">
-      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
-        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
-          <fa-icon [icon]="faCalendarDay" class="text-xs text-primary"></fa-icon>
-          نوع الزيارة
+      @if (appointment().visitType !== null && appointment().visitType !== '') {
+        <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+          <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+            <fa-icon [icon]="faCalendarDay" class="text-xs text-primary"></fa-icon>
+            نوع الزيارة
+          </div>
+          <div class="text-sm font-bold text-text">
+            {{ getVisitTypeName(appointment().visitType) }}
+          </div>
         </div>
-        <div class="text-sm font-bold text-text">
-          {{ getVisitTypeName(appointment().visitType) }}
-        </div>
-      </div>
+      }
+
       <!-- Clinic Name -->
       <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
         <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">

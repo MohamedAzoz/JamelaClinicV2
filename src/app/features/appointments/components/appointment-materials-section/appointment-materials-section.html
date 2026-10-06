@@ -8,15 +8,13 @@
       </div>
       <div>
         <h3 class="text-sm font-bold text-text">الخدمات والمواد المستهلكة (Materials)</h3>
-        <p class="text-[11px] text-text-muted">
-          إضافة أو حذف الخدمات والأدوية المستخدمة للكشف
-        </p>
+        <p class="text-[11px] text-text-muted">إضافة أو حذف الخدمات والأدوية المستخدمة للكشف</p>
       </div>
     </div>
   </div>
 
   <!-- ADD MATERIAL FORM -->
-  @if (!facade.isAdminOrAccountant()) {
+  @if (getStatus(appointment().status) && !facade.isAdminOrAccountant()) {
     <form
       (submit)="addMaterial($event)"
       class="mb-5 rounded-2xl border border-primary/15 bg-main-bg p-4 space-y-3"
@@ -42,17 +40,25 @@
             <span class="truncate">
               @if (selectedMaterial(); as selected) {
                 <span class="font-bold text-text">{{ selected.name }}</span>
-                <span class="ms-1.5 text-text-muted font-mono text-[11px]">(السعر: {{ selected.price | number: '1.2-2' }} ج.م)</span>
+                <span class="ms-1.5 text-text-muted font-mono text-[11px]"
+                  >(السعر: {{ selected.price | number: '1.2-2' }} ج.م)</span
+                >
               } @else {
                 <span class="text-text-muted">-- اختر مادة من القائمة --</span>
               }
             </span>
-            <fa-icon [icon]="faChevronDown" class="text-xs text-text-muted transition-transform duration-200" [class.rotate-180]="isDropdownOpen()"></fa-icon>
+            <fa-icon
+              [icon]="faChevronDown"
+              class="text-xs text-text-muted transition-transform duration-200"
+              [class.rotate-180]="isDropdownOpen()"
+            ></fa-icon>
           </button>
 
           <!-- Floating Scrollable Dropdown Menu -->
           @if (isDropdownOpen()) {
-            <div class="absolute z-50 mt-1.5 w-full rounded-2xl border border-primary/20 bg-surface shadow-2xl backdrop-blur-md overflow-hidden animate-fadeIn text-right">
+            <div
+              class="absolute z-50 mt-1.5 w-full rounded-2xl border border-primary/20 bg-surface shadow-2xl backdrop-blur-md overflow-hidden animate-fadeIn text-right"
+            >
               <!-- Live Filter Search Box -->
               <div class="p-2 border-b border-primary/10 bg-main-bg/60">
                 <div class="relative flex items-center">
@@ -63,7 +69,10 @@
                     placeholder="ابحث باسم المادة أو الخدمة..."
                     class="w-full rounded-xl border border-primary/20 bg-surface pe-8 ps-3 py-1.5 text-xs text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                   />
-                  <fa-icon [icon]="faSearch" class="absolute inset-e-2.5 text-text-muted text-xs"></fa-icon>
+                  <fa-icon
+                    [icon]="faSearch"
+                    class="absolute inset-e-2.5 text-text-muted text-xs"
+                  ></fa-icon>
                 </div>
               </div>
 
@@ -85,7 +94,9 @@
                       }
                       <span class="font-bold">{{ mat.name }}</span>
                     </div>
-                    <span class="font-mono text-[11px] text-text-muted bg-primary/5 px-2 py-0.5 rounded-md">
+                    <span
+                      class="font-mono text-[11px] text-text-muted bg-primary/5 px-2 py-0.5 rounded-md"
+                    >
                       {{ mat.price | number: '1.2-2' }} ج.م
                     </span>
                   </div>
@@ -93,7 +104,9 @@
 
                 <!-- Initial Loading Spinner -->
                 @if (facade.isLoadingMaterials()) {
-                  <div class="flex items-center justify-center gap-2 py-4 text-xs font-semibold text-primary">
+                  <div
+                    class="flex items-center justify-center gap-2 py-4 text-xs font-semibold text-primary"
+                  >
                     <fa-icon [icon]="faSpinner" class="animate-spin text-sm"></fa-icon>
                     <span>جاري تحميل المواد...</span>
                   </div>
@@ -101,7 +114,9 @@
 
                 <!-- Infinite Scroll Loading Spinner -->
                 @if (facade.isLoadingMoreMaterials()) {
-                  <div class="flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-primary border-t border-primary/10 bg-primary/5">
+                  <div
+                    class="flex items-center justify-center gap-2 py-2.5 text-xs font-semibold text-primary border-t border-primary/10 bg-primary/5"
+                  >
                     <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
                     <span>جاري تحميل المزيد...</span>
                   </div>
