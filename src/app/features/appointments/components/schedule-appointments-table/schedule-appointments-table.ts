@@ -29,11 +29,7 @@ import { ConfirmDialogService } from '@shared/components/confirm-modal';
 
 @Component({
   selector: 'app-schedule-appointments-table',
-  imports: [
-    FontAwesomeModule,
-    DatePipe,
-    EditAppointmentModalComponent,
-  ],
+  imports: [FontAwesomeModule, DatePipe, EditAppointmentModalComponent],
   templateUrl: './schedule-appointments-table.html',
 })
 export class ScheduleAppointmentsTableComponent {
@@ -53,7 +49,7 @@ export class ScheduleAppointmentsTableComponent {
       [
         { label: 'اسم المريض', value: app.patientName },
         { label: 'نوع الزيارة', value: this.getVisitTypeName(app.visitType!) },
-      ]
+      ],
     );
     if (confirmed) {
       this.facade.payAppointment(app.id);
@@ -67,7 +63,7 @@ export class ScheduleAppointmentsTableComponent {
       [
         { label: 'اسم المريض', value: app.patientName },
         { label: 'الطبيب', value: app.doctorName || 'غير حدد' },
-      ]
+      ],
     );
     if (confirmed) {
       this.facade.completeAppointment(app.id);
@@ -80,7 +76,8 @@ export class ScheduleAppointmentsTableComponent {
       title: 'تأكيد إلغاء الحجز',
       itemName: `حجز #${app.id} - ${app.patientName}`,
       message: `هل أنت تأكد من رغبتك في إلغاء الحجز للمريض "${app.patientName}"؟`,
-      warningMessage: 'تحذير: هذا الإجراء سيؤدي إلى تغيير حالة الحجز إلى ملغى ولا يمكن التراجع عنه.',
+      warningMessage:
+        'تحذير: هذا الإجراء سيؤدي إلى تغيير حالة الحجز إلى ملغى ولا يمكن التراجع عنه.',
       confirmText: 'نعم، إلغاء الحجز',
       cancelText: 'تراجع',
     });

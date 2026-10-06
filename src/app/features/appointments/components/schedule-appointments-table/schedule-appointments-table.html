@@ -190,7 +190,7 @@
                           <span>دفع</span>
                         }
                       </button>
-                    } @else if (!facade.isDoctor() && Number(app.status) === 2) {
+                    } @else if (Number(app.status) === 2) {
                       <button
                         type="button"
                         (click)="completeAppointment(app)"
