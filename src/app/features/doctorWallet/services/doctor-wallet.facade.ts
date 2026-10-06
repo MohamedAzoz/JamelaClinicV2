@@ -94,8 +94,8 @@ export class DoctorWalletFacade {
       if (this.destroyRef.destroyed) return;
       if (!response.isSuccess) throw new Error(response.message);
       this.doctors.set(response.data ?? []);
-    } catch {
-      if (!this.destroyRef.destroyed) this.doctorsError.set('تعذر تحميل قائمة الأطباء');
+    } catch (error: any) {
+      if (!this.destroyRef.destroyed) this.doctorsError.set(error.error.message || 'تعذر تحميل قائمة الأطباء');
     } finally {
       if (!this.destroyRef.destroyed) this.loadingDoctors.set(false);
     }
@@ -113,12 +113,12 @@ export class DoctorWalletFacade {
       this.transactions.set(response.data?.items ?? []);
       this.totalCount.set(response.data?.totalCount ?? 0);
       this.totalPages.set(response.data?.totalPages ?? 0);
-    } catch {
+    } catch (error: any) {
       if (requestId !== this.reportRequestId || this.destroyRef.destroyed) return;
       this.transactions.set([]);
       this.totalCount.set(0);
       this.totalPages.set(0);
-      this.reportError.set('تعذر تحميل الحركات المالية. حاول مرة أخرى.');
+      this.reportError.set(error.error.message || 'تعذر تحميل الحركات المالية. حاول مرة أخرى.');
     } finally {
       if (requestId === this.reportRequestId && !this.destroyRef.destroyed)
         this.loadingReport.set(false);
@@ -142,9 +142,9 @@ export class DoctorWalletFacade {
       if (requestId !== this.transactionDetailsRequestId || this.destroyRef.destroyed) return;
       if (!response.isSuccess || !response.data) throw new Error(response.message);
       this.transactionDetails.set(response.data);
-    } catch {
+    } catch(error: any) {
       if (requestId !== this.transactionDetailsRequestId || this.destroyRef.destroyed) return;
-      this.transactionDetailsError.set('تعذر تحميل تفاصيل الحركة. تحقق من الرقم وحاول مرة أخرى.');
+      this.transactionDetailsError.set(error.error.message || 'تعذر تحميل تفاصيل الحركة. تحقق من الرقم وحاول مرة أخرى.');
     } finally {
       if (requestId === this.transactionDetailsRequestId && !this.destroyRef.destroyed) {
         this.loadingTransactionDetails.set(false);
@@ -162,10 +162,10 @@ export class DoctorWalletFacade {
       if (requestId !== this.summaryRequestId || this.destroyRef.destroyed) return;
       if (!response.isSuccess) throw new Error(response.message);
       this.summary.set(response.data ?? null);
-    } catch {
+    } catch(error: any) {
       if (requestId !== this.summaryRequestId || this.destroyRef.destroyed) return;
       this.summary.set(null);
-      this.summaryError.set('تعذر تحميل ملخص الحسابات. حاول مرة أخرى.');
+      this.summaryError.set(error.error.message || 'تعذر تحميل ملخص الحسابات. حاول مرة أخرى.');
     } finally {
       if (requestId === this.summaryRequestId && !this.destroyRef.destroyed)
         this.loadingSummary.set(false);

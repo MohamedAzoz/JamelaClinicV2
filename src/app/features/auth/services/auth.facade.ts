@@ -14,7 +14,6 @@ import { DoctorApiService } from '@features/doctors/services/doctor-api.service'
 import { EmployeeApiService } from '@features/employees/services/employee-api.service';
 import { Doctor } from '@features/doctors/models/Doctor';
 import { Employee } from '@features/employees/models/Employee';
-import { HttpErrorResponse } from '@angular/common/http';
 
 export type ManagedUser = Doctor | Employee;
 export type ManagedUserType = 'doctors' | 'employees';
@@ -58,9 +57,9 @@ export class AuthFacade {
         this.managedUsers.set([]);
         this._messages.addErrorMessage(result.message || 'تعذر تحميل قائمة المستخدمين');
       }
-    } catch {
+    } catch(e: any) {
       this.managedUsers.set([]);
-      this._messages.addErrorMessage('حدث خطأ أثناء تحميل قائمة المستخدمين');
+      this._messages.addErrorMessage(e.error.message || 'حدث خطأ أثناء تحميل قائمة المستخدمين');
     } finally {
       this.managedUsersLoading.set(false);
     }
@@ -187,8 +186,8 @@ export class AuthFacade {
       } else {
         this._messages.addErrorMessage(res.message || 'فشل في جلب بيانات الملف الشخصي');
       }
-    } catch {
-      this._messages.addErrorMessage('حدث خطأ أثناء الاتصال بالخادم لجلب الملف الشخصي');
+    } catch (error: any) {
+      this._messages.addErrorMessage(error.error.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب الملف الشخصي');
     } finally {
       this.profileLoading.set(false);
     }
@@ -247,8 +246,8 @@ export class AuthFacade {
       } else {
         this._messages.addErrorMessage(result.message || 'فشل في جلب سجلات تسجيل الدخول');
       }
-    } catch {
-      this._messages.addErrorMessage('حدث خطأ غير متوقع عند جلب سجلات تسجيل الدخول');
+    } catch (error: any) {
+      this._messages.addErrorMessage(error.error.message || 'حدث خطأ غير متوقع عند جلب سجلات تسجيل الدخول');
     } finally {
       this.loginLogsLoading.set(false);
     }

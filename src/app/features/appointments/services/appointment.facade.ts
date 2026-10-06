@@ -8,10 +8,7 @@ import { Doctor } from '@features/doctors/models/Doctor';
 import { Employee } from '@features/employees/models/Employee';
 import { DoctorSchedule } from '@features/doctorSchedules/models/DoctorSchedule';
 import { Appointments } from '../models/Appointments';
-import {
-  FilterAppointment,
-  FilterAppointments,
-} from '../models/FilterAppointment';
+import { FilterAppointment, FilterAppointments } from '../models/FilterAppointment';
 import { CreateAppointments } from '../models/CreateAppointments';
 import { AppointmentUpdate } from '../models/AppointmentUpdate';
 import { Period } from '../models/Period';
@@ -164,7 +161,7 @@ export class AppointmentFacade {
   readonly isAdminOrAccountant = computed(
     () => this._identityService.isAdmin() || this._identityService.isAccountant(),
   );
- 
+
   readonly isDoctorOrAdmin = computed(
     () => this._identityService.isDoctor() || this._identityService.isAdmin(),
   );
@@ -206,10 +203,12 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في جلب قائمة الأطباء المتاحين');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingDoctors.set(false);
         this.doctors.set([]);
-        this._toast.addErrorMessage('حدث خطأ أثناء الاتصال بالخادم لجلب الأطباء');
+        this._toast.addErrorMessage(
+          err.error.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب الأطباء',
+        );
       },
     });
   }
@@ -225,9 +224,12 @@ export class AppointmentFacade {
           this.employees.set([]);
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingEmployees.set(false);
         this.employees.set([]);
+        this._toast.addErrorMessage(
+          err.error.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب الموظفين',
+        );
       },
     });
   }
@@ -252,10 +254,12 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'لا توجد مواعيد متاحة لهذا الطبيب');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingSchedules.set(false);
         this.schedules.set([]);
-        this._toast.addErrorMessage('حدث خطأ أثناء جلب مواعيد الطبيب');
+        this._toast.addErrorMessage(
+          err.error.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب مواعيد الطبيب',
+        );
       },
     });
   }
@@ -277,9 +281,11 @@ export class AppointmentFacade {
             resolve(false);
           }
         },
-        error: () => {
+        error: (err) => {
           this.isSubmitting.set(false);
-          this._toast.addErrorMessage('حدث خطأ غير متوقع عند إجراء عملية الحجز');
+          this._toast.addErrorMessage(
+            err.error.message || 'حدث خطأ غير متوقع عند إجراء عملية الحجز',
+          );
           resolve(false);
         },
       });
@@ -312,9 +318,9 @@ export class AppointmentFacade {
             resolve(false);
           }
         },
-        error: () => {
+        error: (err) => {
           this.isUpdating.set(false);
-          this._toast.addErrorMessage('حدث خطأ غير متوقع أثناء تعديل الحجز');
+          this._toast.addErrorMessage(err.error.message || 'حدث خطأ غير متوقع أثناء تعديل الحجز');
           resolve(false);
         },
       });
@@ -358,9 +364,10 @@ export class AppointmentFacade {
           this.statistics.set(null);
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingStatistics.set(false);
         this.statistics.set(null);
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ غير متوقع أثناء جلب الإحصائيات');
       },
     });
   }
@@ -398,12 +405,12 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في جلب قائمة الحجوزات');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingAppointments.set(false);
         this.appointments.set([]);
         this.totalCount.set(0);
         this.totalPages.set(1);
-        this._toast.addErrorMessage('حدث خطأ أثناء تحميل سجل الحجوزات');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء تحميل سجل الحجوزات');
       },
     });
   }
@@ -435,9 +442,9 @@ export class AppointmentFacade {
         window.URL.revokeObjectURL(url);
         this._toast.addSuccessMessage('تم تصدير تقرير الحجوزات بنجاح');
       },
-      error: () => {
+      error: (err) => {
         this.isExportingExcel.set(false);
-        this._toast.addErrorMessage('حدث خطأ أثناء تصدير ملف الاكسل');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء تصدير ملف الاكسل');
       },
     });
   }
@@ -526,10 +533,10 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في جلب تفاصيل الحجز');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingAppointmentDetails.set(false);
         this.appointmentDetails.set(null);
-        this._toast.addErrorMessage('حدث خطأ أثناء تحميل تفاصيل الحجز');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء تحميل تفاصيل الحجز');
       },
     });
   }
@@ -575,10 +582,11 @@ export class AppointmentFacade {
           if (reset) this.availableMaterials.set([]);
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingMaterials.set(false);
         this.isLoadingMoreMaterials.set(false);
         if (reset) this.availableMaterials.set([]);
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء تحميل المواد');
       },
     });
   }
@@ -587,11 +595,7 @@ export class AppointmentFacade {
    * Fetch next page of materials on scroll
    */
   async loadMoreMaterials(): Promise<void> {
-    if (
-      this.isLoadingMaterials() ||
-      this.isLoadingMoreMaterials() ||
-      !this.hasMoreMaterials()
-    ) {
+    if (this.isLoadingMaterials() || this.isLoadingMoreMaterials() || !this.hasMoreMaterials()) {
       return;
     }
 
@@ -617,9 +621,9 @@ export class AppointmentFacade {
             resolve(false);
           }
         },
-        error: () => {
+        error: (err) => {
           this.isAddingMaterial.set(false);
-          this._toast.addErrorMessage('حدث خطأ أثناء إضافة المادة إلى الحجز');
+          this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء إضافة المادة إلى الحجز');
           resolve(false);
         },
       });
@@ -647,9 +651,9 @@ export class AppointmentFacade {
             resolve(false);
           }
         },
-        error: () => {
+        error: (err) => {
           this.removingMaterialId.set(null);
-          this._toast.addErrorMessage('حدث خطأ أثناء حذف المادة من الحجز');
+          this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء حذف المادة من الحجز');
           resolve(false);
         },
       });
@@ -673,10 +677,10 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في جلب قائمة الحجوزات للموعد المحدد');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingScheduleAppointments.set(false);
         this.scheduleAppointments.set([]);
-        this._toast.addErrorMessage('حدث خطأ أثناء جلب حجوزات الموعد');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء جلب حجوزات الموعد');
       },
     });
   }
@@ -701,9 +705,9 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في تغيير حالة السداد');
         }
       },
-      error: () => {
+      error: (err) => {
         this.actionLoadingId.set(null);
-        this._toast.addErrorMessage('حدث خطأ أثناء تغيير حالة السداد');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء تغيير حالة السداد');
       },
     });
   }
@@ -728,9 +732,9 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في إنهاء الموعد');
         }
       },
-      error: () => {
+      error: (err) => {
         this.actionLoadingId.set(null);
-        this._toast.addErrorMessage('حدث خطأ أثناء تحديث حالة الموعد');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء تحديث حالة الموعد');
       },
     });
   }
@@ -750,10 +754,12 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في جلب قائمة مواعيد اليوم الخاصة بك');
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingTodayAppointments.set(false);
         this.todayAppointments.set([]);
-        this._toast.addErrorMessage('حدث خطأ أثناء تحميل مواعيد اليوم الخاصة بك');
+        this._toast.addErrorMessage(
+          err.error.message || 'حدث خطأ أثناء تحميل مواعيد اليوم الخاصة بك',
+        );
       },
     });
   }
@@ -775,9 +781,9 @@ export class AppointmentFacade {
           this._toast.addErrorMessage(res.message || 'فشل في إلغاء الحجز');
         }
       },
-      error: () => {
+      error: (err) => {
         this.actionLoadingId.set(null);
-        this._toast.addErrorMessage('حدث خطأ أثناء إلغاء الحجز');
+        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء إلغاء الحجز');
       },
     });
   }

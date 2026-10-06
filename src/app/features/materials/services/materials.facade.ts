@@ -69,10 +69,12 @@ export class MaterialsFacade {
       this.materials.set(data?.items ?? []);
       this.totalCount.set(data?.totalCount ?? 0);
       this.totalPages.set(data?.totalPages ?? 0);
-    } catch {
+    } catch (error: any) {
       if (this.destroyRef.destroyed || requestId !== this.listRequestId) return;
       this.clearList();
-      this.listError.set('تعذر تحميل المواد. تحقق من الاتصال وحاول مرة أخرى.');
+      this.listError.set(
+        error.error.message || 'تعذر تحميل المواد. تحقق من الاتصال وحاول مرة أخرى.',
+      );
     } finally {
       if (!this.destroyRef.destroyed && requestId === this.listRequestId) this.loading.set(false);
     }
@@ -133,9 +135,9 @@ export class MaterialsFacade {
         return;
       }
       this.editor.set({ mode: 'edit', id: editor.id, material: response.data });
-    } catch {
+    } catch (error: any) {
       if (!this.destroyRef.destroyed && requestId === this.detailRequestId)
-        this.detailError.set('تعذر تحميل تفاصيل المادة. حاول مرة أخرى.');
+        this.detailError.set(error.error.message || 'تعذر تحميل تفاصيل المادة. حاول مرة أخرى.');
     } finally {
       if (!this.destroyRef.destroyed && requestId === this.detailRequestId)
         this.loadingDetails.set(false);
@@ -227,9 +229,9 @@ export class MaterialsFacade {
       onSuccess();
       this.messages.addSuccessMessage(success);
       await this.loadMaterials();
-    } catch (error) {
+    } catch (error: any) {
       if (!this.destroyRef.destroyed)
-        onError(this.messages.buildHttpErrorDetail(error, 'تعذر تنفيذ العملية. حاول مرة أخرى.'));
+        onError(error.error.message || 'تعذر تنفيذ العملية. حاول مرة أخرى.');
     } finally {
       if (!this.destroyRef.destroyed) this.actionLoading.set(false);
     }

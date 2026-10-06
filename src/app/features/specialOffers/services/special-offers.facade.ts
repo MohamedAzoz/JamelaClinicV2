@@ -89,9 +89,9 @@ export class SpecialOffersFacade {
       );
       if (!response.isSuccess) throw new Error(response.message);
       this.offers.set(response.data ?? []);
-    } catch {
+    } catch(error: any) {
       this.offers.set([]);
-      this.error.set('تعذر تحميل الخصومات. حاول تحديث الصفحة.');
+      this.error.set(error.error.message || 'تعذر تحميل الخصومات. حاول تحديث الصفحة.');
     } finally {
       this.isLoading.set(false);
     }
@@ -187,8 +187,8 @@ export class SpecialOffersFacade {
       this.isBookingFormOpen.set(false);
       this.bookingToEdit.set(null);
       await this.loadOfferDetails(offer.id);
-    } catch (error) {
-      this.bookingActionError.set('تعذر حفظ الحجز. راجع البيانات وحاول مرة أخرى.');
+    } catch (error: any) {
+      this.bookingActionError.set(error.error.message || 'تعذر حفظ الحجز. راجع البيانات وحاول مرة أخرى.');
       this.messages.showHttpError(error, 'تعذر حفظ الحجز');
     } finally {
       this.isSavingBooking.set(false);
@@ -214,8 +214,8 @@ export class SpecialOffersFacade {
       this.messages.addSuccessMessage('تم حذف الحجز من العرض');
       this.bookingToDelete.set(null);
       await this.loadOfferDetails(offer.id);
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر حذف الحجز');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر حذف الحجز');
     } finally {
       this.isDeletingBooking.set(false);
     }
@@ -244,8 +244,8 @@ export class SpecialOffersFacade {
       const response = await firstValueFrom(this.doctorApi.getAllDoctors(true));
       if (!response.isSuccess) throw new Error(response.message);
       this.doctors.set(response.data ?? []);
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر تحميل الأطباء النشطين');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر تحميل الأطباء النشطين');
     } finally {
       this.isLoadingDoctors.set(false);
     }
@@ -264,8 +264,8 @@ export class SpecialOffersFacade {
       );
       if (!response.isSuccess) throw new Error(response.message);
       this.schedules.set(response.data ?? []);
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر تحميل مواعيد الطبيب');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر تحميل مواعيد الطبيب');
     } finally {
       this.isLoadingSchedules.set(false);
     }
@@ -302,8 +302,8 @@ export class SpecialOffersFacade {
       this.conversionScheduleId.set(null);
       this.schedules.set([]);
       await this.loadOfferDetails(offer.id);
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر تحويل الحجز إلى موعد');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر تحويل الحجز إلى موعد');
     } finally {
       this.isConvertingBooking.set(false);
     }
@@ -340,8 +340,8 @@ export class SpecialOffersFacade {
       this.isFormOpen.set(false);
       this.selectedOffer.set(null);
       await this.loadOffers();
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر حفظ بيانات الخصم');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر حفظ بيانات الخصم');
     } finally {
       this.isSaving.set(false);
     }
@@ -365,8 +365,8 @@ export class SpecialOffersFacade {
       this.messages.addSuccessMessage('تم حذف الخصم بنجاح');
       this.offerToDelete.set(null);
       await this.loadOffers();
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر حذف الخصم');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر حذف الخصم');
     } finally {
       this.isDeleting.set(false);
     }
@@ -379,8 +379,8 @@ export class SpecialOffersFacade {
       if (!response.isSuccess || response.data !== true) throw new Error(response.message);
       this.messages.addSuccessMessage(offer.isActive ? 'تم إيقاف الخصم' : 'تم تفعيل الخصم');
       await this.loadOffers();
-    } catch (error) {
-      this.messages.showHttpError(error, 'تعذر تغيير حالة الخصم');
+    } catch (error: any) {
+      this.messages.addErrorMessage(error.error.message || 'تعذر تغيير حالة الخصم');
     }
   }
 }

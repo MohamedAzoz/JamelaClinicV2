@@ -73,9 +73,9 @@ export class TreasuryFacade {
       this.expenses.set(report?.items ?? []);
       this.totalCount.set(report?.totalCount ?? 0);
       this.totalPages.set(report?.totalPages ?? 0);
-    } catch (error) {
+    } catch (error: any) {
       if (requestId !== this.reportRequestId) return;
-      this._messages.showHttpError(error, 'تعذر تحميل تقرير المصروفات');
+      this._messages.addErrorMessage(error.error.message || 'تعذر تحميل تقرير المصروفات');
     } finally {
       if (requestId === this.reportRequestId) this.isLoadingReport.set(false);
     }
@@ -89,9 +89,9 @@ export class TreasuryFacade {
       const response = await firstValueFrom(this._api.getSummary(filters));
       if (requestId !== this.summaryRequestId) return;
       this.summary.set(response?.data ?? null);
-    } catch (error) {
+    } catch (error: any) {
       if (requestId !== this.summaryRequestId) return;
-      this._messages.showHttpError(error, 'تعذر تحميل ملخص الخزينة');
+      this._messages.addErrorMessage(error.error.message || 'تعذر تحميل ملخص الخزينة');
     } finally {
       if (requestId === this.summaryRequestId) this.isLoadingSummary.set(false);
     }
@@ -110,8 +110,8 @@ export class TreasuryFacade {
       link.click();
       window.URL.revokeObjectURL(downloadUrl);
       this._messages.addSuccessMessage('تم تصدير تقرير الخزينة بنجاح');
-    } catch (error) {
-      this._messages.showHttpError(error, 'تعذر تصدير تقرير الخزينة');
+    } catch (error: any) {
+      this._messages.addErrorMessage(error.error.message || 'تعذر تصدير تقرير الخزينة');
     } finally {
       this.isExportingExcel.set(false);
     }
