@@ -62,7 +62,6 @@
             <th scope="col" class="px-4 py-3.5 text-center">رقم الدور</th>
             <th scope="col" class="px-4 py-3.5">اسم المريض</th>
             <th scope="col" class="px-4 py-3.5">العيادة</th>
-            <th scope="col" class="px-4 py-3.5">نوع الزيارة</th>
             <th scope="col" class="px-4 py-3.5">تاريخ/موعد الكشف</th>
             <th scope="col" class="px-4 py-3.5 text-center">الحالة</th>
             <th scope="col" class="px-4 py-3.5 text-center">الإجراءات</th>
@@ -90,7 +89,6 @@
                   </div>
                   <div>
                     <div class="font-bold text-text text-sm">{{ app.patientName }}</div>
-                    <div class="text-[11px] text-text-muted">رقم الحجز #{{ app.id }}</div>
                   </div>
                 </div>
               </td>
@@ -102,15 +100,6 @@
                     <div class="font-semibold text-text text-sm">{{ app.clinicName || '---' }}</div>
                   </div>
                 </div>
-              </td>
-
-              <!-- Visit Type -->
-              <td class="px-4 py-4">
-                <span
-                  class="inline-flex items-center rounded-lg bg-main-bg border border-primary/10 px-2.5 py-1 text-xs font-semibold text-text"
-                >
-                  {{ getVisitTypeName(app.visitType) }}
-                </span>
               </td>
 
               <!-- Appointment Date -->

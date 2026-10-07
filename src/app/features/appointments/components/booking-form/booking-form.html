@@ -13,45 +13,89 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="grid grid-cols-1 gap-5">
       <!-- Doctor Selection Dropdown -->
-      <div>
-        <label for="doctorId" class="block text-sm font-semibold text-text mb-1.5">
-          الطبيب المعالج <span class="text-danger">*</span>
-        </label>
-        <div class="relative">
-          <select
-            id="doctorId"
-            [formField]="bookingForm.doctorId"
-            (change)="onDoctorChange($event)"
-            class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
-          >
-            <option value="" disabled selected>-- اختر الطبيب من القائمة --</option>
-            @for (doc of facade.doctors(); track doc.userId) {
-              <option [value]="doc.userId">د. {{ doc.fullName }}</option>
-            }
-          </select>
-          <div
-            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
-          >
-            <fa-icon [icon]="faUserMd"></fa-icon>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label for="doctorId" class="block text-sm font-semibold text-text mb-1.5">
+            الطبيب المعالج <span class="text-danger">*</span>
+          </label>
+          <div class="relative">
+            <select
+              id="doctorId"
+              [formField]="bookingForm.doctorId"
+              (change)="onDoctorChange($event)"
+              class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+            >
+              <option value="" disabled selected>-- اختر الطبيب من القائمة --</option>
+              @for (doc of facade.doctors(); track doc.userId) {
+                <option [value]="doc.userId">د. {{ doc.fullName }}</option>
+              }
+            </select>
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+            >
+              <fa-icon [icon]="faUserMd"></fa-icon>
+            </div>
+            <div
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+            >
+              @if (facade.isLoadingDoctors()) {
+                <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+              } @else {
+                <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+              }
+            </div>
           </div>
-          <div
-            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
-          >
-            @if (facade.isLoadingDoctors()) {
-              <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
-            } @else {
-              <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+
+          @if (bookingForm.doctorId().touched() && bookingForm.doctorId().errors(); as errors) {
+            @for (err of errors; track err.kind) {
+              <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
             }
-          </div>
+          }
         </div>
 
-        @if (bookingForm.doctorId().touched() && bookingForm.doctorId().errors(); as errors) {
-          @for (err of errors; track err.kind) {
-            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
-          }
-        }
+        <!-- Clinic Selection Dropdown -->
+        <div>
+          <label for="doctorClinicId" class="block text-sm font-semibold text-text mb-1.5">
+            العيادة <span class="text-danger">*</span>
+          </label>
+          <div class="relative">
+            <select
+              id="doctorClinicId"
+              [value]="model().doctorClinicId || ''"
+              (change)="onClinicChange($event)"
+              [disabled]="!facade.selectedDoctorId() || facade.isLoadingDoctorClinics()"
+              class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              @if (!facade.selectedDoctorId()) {
+                <option value="" disabled selected>-- اختر طبيباً أولاً --</option>
+              } @else if (facade.isLoadingDoctorClinics()) {
+                <option value="" disabled selected>جاري تحميل العيادات...</option>
+              } @else if (facade.doctorClinics().length === 0) {
+                <option value="" disabled selected>لا توجد عيادات مرتبطة بهذا الطبيب</option>
+              } @else {
+                @for (clinic of facade.doctorClinics(); track clinic.id) {
+                  <option [value]="clinic.id">{{ clinic.clinicName }}</option>
+                }
+              }
+            </select>
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+            >
+              <fa-icon [icon]="faHospital"></fa-icon>
+            </div>
+            <div
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+            >
+              @if (facade.isLoadingDoctorClinics()) {
+                <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+              } @else {
+                <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+              }
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Doctor Schedule Selection Dropdown -->
@@ -76,9 +120,7 @@
               <option value="" disabled selected>-- اختر اليوم والموعد المناسب --</option>
               @for (sched of facade.schedules(); track sched.id) {
                 <option [value]="sched.id">
-                  {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }} ({{
-                    sched.clinicName
-                  }})
+                  {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }}
                 </option>
               }
             }
@@ -212,70 +254,31 @@
         <fa-icon [icon]="faMoneyBillWave" class="text-lg"></fa-icon>
       </div>
       <div>
-        <h2 class="text-lg font-semibold text-text">نوع الزيارة والرسوم</h2>
-        <p class="text-xs text-text-muted">تحديد نوع الزيارة وقيمة الحجز وتأكيد سداد الرسوم</p>
-      </div>
-    </div>
-
-    <!-- Visit Type Grid Cards -->
-    <div class="mb-6">
-      <label class="block text-sm font-semibold text-text mb-3"> نوع الزيارة / الفحص </label>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        @for (opt of visitTypeOptions; track opt.value) {
-          <button
-            type="button"
-            (click)="onVisitTypeSelect(opt.value)"
-            [class.border-primary]="model().visitType === opt.value"
-            [class.bg-primary/10]="model().visitType === opt.value"
-            class="flex flex-col items-center justify-center text-center p-3.5 rounded-xl border border-primary/15 bg-main-bg transition hover:border-primary hover:bg-primary/5"
-          >
-            <span class="text-sm font-semibold text-text mb-1">
-              {{ opt.label }}
-            </span>
-            <span class="text-[11px] text-text-muted">
-              {{ opt.desc }}
-            </span>
-          </button>
-        }
+        <h2 class="text-lg font-semibold text-text">الرسوم والسداد</h2>
+        <p class="text-xs text-text-muted">تحديد قيمة الحجز وتأكيد سداد الرسوم</p>
       </div>
     </div>
 
     <!-- Fee and Payment Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
       <!-- Consultation Fee Input -->
-      <div class="box-border">
+      <div class="relative box-border">
+        <div
+          class="pointer-events-none absolute top-8 right-0 flex items-center pr-3 text-text-muted"
+        >
+          <fa-icon [icon]="faCoins"></fa-icon>
+        </div>
         <label for="consultationFee" class="block text-sm font-semibold text-text mb-1.5">
           مبلغ الحجز (رسوم الزيارة) <span class="text-danger">*</span>
         </label>
-        <div class="relative">
-          <input
-            id="consultationFee"
-            type="number"
-            step="0.01"
-            [formField]="bookingForm.consultationFee"
-            placeholder="0"
-            class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-semibold text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
-          />
-          <div
-            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
-          >
-            <fa-icon [icon]="faCoins"></fa-icon>
-          </div>
-          <div
-            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-text-muted"
-          >
-            جنية
-          </div>
-        </div>
-
-        @if (
-          bookingForm.consultationFee().touched() && bookingForm.consultationFee().errors();
-          as errors
-        ) {
-          @for (err of errors; track err.kind) {
-            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
-          }
-        }
+        <input
+          id="consultationFee"
+          type="number"
+          step="0.01"
+          [formField]="bookingForm.consultationFee"
+          placeholder="0"
+          class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-semibold text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+        />
       </div>
 
       <div class="box-border">
@@ -329,6 +332,112 @@
             </span>
           </div>
         </label>
+      </div>
+
+    </div>
+    <div class="mt-5 relative">
+      <!-- Optional Materials / Services Section Toggle -->
+      <div
+        class="rounded-2xl border border-dashed border-primary/30 bg-primary/5 overflow-hidden transition-all duration-300"
+      >
+        <!-- Toggle Header Button -->
+        <button
+          type="button"
+          (click)="toggleMaterialsSection()"
+          [attr.aria-expanded]="showMaterialsSection()"
+          aria-controls="materials-section-body"
+          class="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-primary hover:bg-primary/10 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-2xl"
+        >
+          <span class="flex items-center gap-2">
+            <fa-icon [icon]="faStethoscope" class="text-primary/70"></fa-icon>
+            إضافة مستلزمات / خدمات إضافية
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide"
+              [class]="
+                showMaterialsSection() ? 'bg-primary text-white' : 'bg-primary/20 text-primary'
+              "
+              >اختياري</span
+            >
+          </span>
+          <fa-icon
+            [icon]="faChevronDown"
+            class="text-xs transition-transform duration-300"
+            [style.transform]="showMaterialsSection() ? 'rotate(180deg)' : 'rotate(0deg)'"
+          ></fa-icon>
+        </button>
+
+        <!-- Collapsible Body -->
+        @if (showMaterialsSection()) {
+          <div
+            id="materials-section-body"
+            class="px-4 pb-4 pt-1 grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-primary/20"
+          >
+            <!-- Total Materials Cost -->
+            <div>
+              <label
+                for="totalMaterialsCost"
+                class="block text-sm font-semibold text-text mb-1.5"
+              >
+                تكلفة المستلزمات / الخدمات
+                <span class="text-xs font-normal text-text-muted">(اختياري)</span>
+              </label>
+              <div class="relative">
+                <input
+                  id="totalMaterialsCost"
+                  type="number"
+                  step="0.01"
+                  [formField]="bookingForm.totalMaterialsCost"
+                  placeholder="0.00"
+                  class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 pl-14 text-sm font-semibold text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faCoins"></fa-icon>
+                </div>
+                <div
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 border-r border-primary/20 pr-3 text-xs font-semibold text-text-muted"
+                >
+                  ج.م
+                </div>
+              </div>
+              @if (
+                bookingForm?.totalMaterialsCost().touched() &&
+                  bookingForm?.totalMaterialsCost().errors();
+                as errors
+              ) {
+                @for (err of errors; track err.kind) {
+                  <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+                }
+              }
+            </div>
+
+            <!-- Materials Description -->
+            <div>
+              <label
+                for="materialsDescription"
+                class="block text-sm font-semibold text-text mb-1.5"
+              >
+                وصف المستلزمات
+                <span class="text-xs font-normal text-text-muted">(اختياري)</span>
+              </label>
+              <div class="relative">
+                <input
+                  id="materialsDescription"
+                  type="text"
+                  [formField]="bookingForm.materialsDescription"
+                  placeholder="مثال: أدوات تعقيم، مواد تخدير، إلخ..."
+                  class="w-full rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pr-10 text-sm font-medium text-text placeholder-text-muted transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faStethoscope"></fa-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
   </div>

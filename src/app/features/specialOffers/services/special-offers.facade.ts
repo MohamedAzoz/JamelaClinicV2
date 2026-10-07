@@ -13,10 +13,9 @@ import {
   SpecialOfferBookingReport,
   SpecialOfferBookingReportItem,
 } from '../models/CreateSpecialOfferBookingResponse';
-import { CreateSpecialOfferAppointment } from '../models/CreateSpecialOfferAppointment';
-import { VisitType } from '../models/VisitType';
 import { DoctorApiService } from '@features/doctors/services/doctor-api.service';
 import { Doctor } from '@features/doctors/models/Doctor';
+import { DoctorClinicsResponse } from '@features/doctors/models/DoctorClinicsResponse';
 import { DoctorScheduleApiService } from '@features/doctorSchedules/services/doctor-schedule-api.service';
 import { DoctorSchedule } from '@features/doctorSchedules/models/DoctorSchedule';
 import { SpecialOffersApiService } from './special-offers-api.service';
@@ -55,6 +54,7 @@ export class SpecialOffersFacade {
   readonly isDeleting = signal(false);
   readonly isDeletingBooking = signal(false);
   readonly isConvertingBooking = signal(false);
+
   readonly isFormOpen = signal(false);
   readonly isBookingFormOpen = signal(false);
   readonly error = signal('');
@@ -63,7 +63,9 @@ export class SpecialOffersFacade {
   readonly bookingActionError = signal('');
   readonly conversionDoctorId = signal('');
   readonly conversionScheduleId = signal<number | null>(null);
-  readonly conversionVisitType = signal<VisitType>(VisitType.NewConsultation);
+  readonly conversionDoctorClinicId = signal<number | null>(null);
+  readonly doctorClinics = signal<DoctorClinicsResponse[]>([]);
+  readonly isLoadingDoctorClinics = signal(false);
   readonly isBookingOperator = computed(
     () =>
       this.identity.userRole() === ROLES.Admin ||
@@ -71,9 +73,7 @@ export class SpecialOffersFacade {
       this.identity.userRole() === ROLES.Reception,
   );
 
-  readonly activeStatusFilter = signal<boolean | undefined>(
-    this.isReception() ? true : undefined,
-  );
+  readonly activeStatusFilter = signal<boolean | undefined>(this.isReception() ? true : undefined);
 
   setActiveStatusFilter(status: boolean | undefined): void {
     this.activeStatusFilter.set(status);
@@ -89,7 +89,7 @@ export class SpecialOffersFacade {
       );
       if (!response.isSuccess) throw new Error(response.message);
       this.offers.set(response.data ?? []);
-    } catch(error: any) {
+    } catch (error: any) {
       this.offers.set([]);
       this.error.set(error.error.message || 'تعذر تحميل الخصومات. حاول تحديث الصفحة.');
     } finally {
@@ -188,7 +188,9 @@ export class SpecialOffersFacade {
       this.bookingToEdit.set(null);
       await this.loadOfferDetails(offer.id);
     } catch (error: any) {
-      this.bookingActionError.set(error.error.message || 'تعذر حفظ الحجز. راجع البيانات وحاول مرة أخرى.');
+      this.bookingActionError.set(
+        error.error.message || 'تعذر حفظ الحجز. راجع البيانات وحاول مرة أخرى.',
+      );
       this.messages.showHttpError(error, 'تعذر حفظ الحجز');
     } finally {
       this.isSavingBooking.set(false);
@@ -226,7 +228,9 @@ export class SpecialOffersFacade {
     this.bookingToConvert.set(booking);
     this.conversionDoctorId.set('');
     this.conversionScheduleId.set(null);
+    this.conversionDoctorClinicId.set(null);
     this.schedules.set([]);
+    this.doctorClinics.set([]);
     if (this.doctors().length === 0) await this.loadDoctors();
   }
 
@@ -235,7 +239,9 @@ export class SpecialOffersFacade {
     this.bookingToConvert.set(null);
     this.conversionDoctorId.set('');
     this.conversionScheduleId.set(null);
+    this.conversionDoctorClinicId.set(null);
     this.schedules.set([]);
+    this.doctorClinics.set([]);
   }
 
   async loadDoctors(): Promise<void> {
@@ -254,20 +260,33 @@ export class SpecialOffersFacade {
   async selectConversionDoctor(doctorId: string): Promise<void> {
     this.conversionDoctorId.set(doctorId);
     this.conversionScheduleId.set(null);
+    this.conversionDoctorClinicId.set(null);
     this.schedules.set([]);
+    this.doctorClinics.set([]);
     if (!doctorId) return;
 
     this.isLoadingSchedules.set(true);
+    this.isLoadingDoctorClinics.set(true);
     try {
-      const response = await firstValueFrom(
-        this.scheduleApi.getDoctorScheduleByDoctorId(doctorId, true, true),
-      );
-      if (!response.isSuccess) throw new Error(response.message);
-      this.schedules.set(response.data ?? []);
+      const [schedulesRes, clinicsRes] = await Promise.all([
+        firstValueFrom(this.scheduleApi.getDoctorScheduleByDoctorId(doctorId, true, true)),
+        firstValueFrom(this.doctorApi.getDoctorClinicsByDoctorId(doctorId)),
+      ]);
+      if (schedulesRes.isSuccess) {
+        this.schedules.set(schedulesRes.data ?? []);
+      }
+      if (clinicsRes.isSuccess) {
+        const clinics = clinicsRes.data ?? [];
+        this.doctorClinics.set(clinics);
+        if (clinics.length > 0) {
+          this.conversionDoctorClinicId.set(clinics[0].id);
+        }
+      }
     } catch (error: any) {
-      this.messages.addErrorMessage(error.error.message || 'تعذر تحميل مواعيد الطبيب');
+      this.messages.addErrorMessage(error.error.message || 'تعذر تحميل بيانات الطبيب');
     } finally {
       this.isLoadingSchedules.set(false);
+      this.isLoadingDoctorClinics.set(false);
     }
   }
 
@@ -275,12 +294,14 @@ export class SpecialOffersFacade {
     const booking = this.bookingToConvert();
     const offer = this.selectedOfferDetails();
     const scheduleId = this.conversionScheduleId();
+    const doctorClinicId = this.conversionDoctorClinicId();
     if (
       !this.isBookingOperator() ||
       !booking ||
       !offer ||
       !this.conversionDoctorId() ||
       !scheduleId ||
+      !doctorClinicId ||
       this.isConvertingBooking()
     )
       return;
@@ -292,7 +313,7 @@ export class SpecialOffersFacade {
           bookingId: booking.bookingId,
           doctorId: this.conversionDoctorId(),
           doctorScheduleId: scheduleId,
-          visitType: this.conversionVisitType(),
+          doctorClinicId: doctorClinicId,
         }),
       );
       if (!response.isSuccess || response.data !== true) throw new Error(response.message);
@@ -300,7 +321,9 @@ export class SpecialOffersFacade {
       this.bookingToConvert.set(null);
       this.conversionDoctorId.set('');
       this.conversionScheduleId.set(null);
+      this.conversionDoctorClinicId.set(null);
       this.schedules.set([]);
+      this.doctorClinics.set([]);
       await this.loadOfferDetails(offer.id);
     } catch (error: any) {
       this.messages.addErrorMessage(error.error.message || 'تعذر تحويل الحجز إلى موعد');

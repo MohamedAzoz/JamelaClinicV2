@@ -30,7 +30,7 @@ export class DoctorScheduleApiService {
 
   // GET
   // /api/DoctorSchedules/{scheduleId}
-  getDoctorScheduleByScheduleId(scheduleId: string) {
+  getDoctorScheduleByScheduleId(scheduleId: number) {
     return this._http.get<Result<DoctorSchedule>>(`${this.baseUrl}/${scheduleId}`);
   }
 

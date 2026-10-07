@@ -1,17 +1,14 @@
 import { AppointmentStatus } from './AppointmentStatus';
-import { VisitType } from './VisitType';
-
 /*
- {
+  {
         "id": 0,
         "patientName": "string",
         "patientPhoneNumber": "string",
         "patientAddress": "string",
         "clinicName": "string",
-        "visitType": 0,
         "queueNumber": 0,
-        "appointmentDate": "2026-10-05",
-        "createdAt": "2026-10-05T14:58:37.987Z",
+        "appointmentDate": "2026-10-07",
+        "createdAt": "2026-10-07T03:33:40.921Z",
         "doctorScheduleId": 0,
         "doctorName": "string",
         "employeeName": "string",
@@ -23,6 +20,7 @@ import { VisitType } from './VisitType';
         "doctorEarnings": 0,
         "centerEarnings": 0,
         "totalMaterialsCost": 0,
+        "materialsDescription": "string",
         "netAppointmentAmount": 0,
         "finalPaidAmount": 0,
         "cancelledByEmployeeName": "string"
@@ -33,7 +31,6 @@ export interface Appointments {
   patientPhoneNumber: string;
   patientAddress: string;
   clinicName: string; //
-  visitType: VisitType | null;
   queueNumber: number;
   appointmentDate: Date;
   createdAt: Date;
@@ -47,6 +44,9 @@ export interface Appointments {
   centerPercentage: number;
   doctorEarnings: number;
   centerEarnings: number;
+  totalMaterialsCost: number;
+  materialsDescription: string;
+  netAppointmentAmount: number;
   finalPaidAmount: number; ////
   cancelledByEmployeeName: string | null | undefined;
 }

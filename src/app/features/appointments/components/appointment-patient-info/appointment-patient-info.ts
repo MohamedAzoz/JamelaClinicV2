@@ -10,7 +10,6 @@ import {
   faUserMd,
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentsMaterial } from '../../models/AppointmentsMaterial';
-import { VisitType } from '../../models/VisitType';
 
 @Component({
   selector: 'app-appointment-patient-info',
@@ -43,22 +42,7 @@ export class AppointmentPatientInfoComponent {
     }
   });
 
-  getVisitTypeName(type: VisitType | number | string | null | undefined): string {
-    switch (Number(type)) {
-      case VisitType.NewConsultation:
-        return 'كشف جديد';
-      case VisitType.FollowUp:
-        return 'إعادة';
-      case VisitType.Sessions:
-        return 'جلسات';
-      case VisitType.Laser:
-        return 'ليزر';
-      case VisitType.Fractional:
-        return 'فراكشنال';
-      default:
-        return 'كشف';
-    }
-  }
+ 
 
   getStatusName(status: string | null | undefined): string {
     switch (status) {

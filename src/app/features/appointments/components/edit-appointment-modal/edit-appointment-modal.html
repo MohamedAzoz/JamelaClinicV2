@@ -258,29 +258,8 @@
               <fa-icon [icon]="faMoneyBillWave" class="text-base"></fa-icon>
             </div>
             <div>
-              <h3 class="text-sm font-bold text-text">نوع الزيارة والرسوم</h3>
-              <p class="text-[11px] text-text-muted">تحديد نوع الكشف وقيمة الرسوم</p>
-            </div>
-          </div>
-
-          <!-- Visit Type Selector -->
-          <div class="mb-4">
-            <label class="block text-xs font-semibold text-text mb-2">نوع الزيارة</label>
-            <div class="flex flex-wrap gap-2">
-              @for (vt of visitTypeOptions; track vt.value) {
-                <button
-                  type="button"
-                  (click)="onVisitTypeSelect(vt.value)"
-                  [class.bg-primary]="model().visitType === vt.value"
-                  [class.text-white]="model().visitType === vt.value"
-                  [class.border-primary]="model().visitType === vt.value"
-                  [class.bg-main-bg]="model().visitType !== vt.value"
-                  [class.text-text-muted]="model().visitType !== vt.value"
-                  class="rounded-xl border px-3 py-1.5 text-xs font-bold transition hover:bg-primary hover:text-white hover:border-primary cursor-pointer border-primary/20"
-                >
-                  {{ vt.label }}
-                </button>
-              }
+              <h3 class="text-sm font-bold text-text">الرسوم والخصم</h3>
+              <p class="text-[11px] text-text-muted">تحديد قيمة الكشف والخصم</p>
             </div>
           </div>
 

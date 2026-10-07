@@ -10,7 +10,6 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { SpecialOfferBookingReportItem } from '../../models/CreateSpecialOfferBookingResponse';
-import { VisitType } from '../../models/VisitType';
 import { SpecialOffersFacade } from '../../services/special-offers.facade';
 
 @Component({
@@ -20,13 +19,6 @@ import { SpecialOffersFacade } from '../../services/special-offers.facade';
 })
 export class SpecialOfferConvertBookingComponent {
   readonly booking = input.required<SpecialOfferBookingReportItem>();
-  readonly visitTypes = [
-    { value: VisitType.NewConsultation, label: 'كشف جديد' },
-    { value: VisitType.FollowUp, label: 'إعادة' },
-    { value: VisitType.Sessions, label: 'جلسات علاجية' },
-    { value: VisitType.Laser, label: 'ليزر' },
-    { value: VisitType.Fractional, label: 'فراكشنال' },
-  ];
 
   constructor(readonly facade: SpecialOffersFacade) {}
 
@@ -40,10 +32,9 @@ export class SpecialOfferConvertBookingComponent {
     this.facade.conversionScheduleId.set(Number.isSafeInteger(scheduleId) ? scheduleId : null);
   }
 
-  setVisitType(event: Event): void {
-    this.facade.conversionVisitType.set(
-      Number((event.target as HTMLSelectElement).value) as VisitType,
-    );
+  setClinic(event: Event): void {
+    const clinicId = Number((event.target as HTMLSelectElement).value);
+    this.facade.conversionDoctorClinicId.set(Number.isSafeInteger(clinicId) && clinicId > 0 ? clinicId : null);
   }
 
   readonly faCalendarDays = faCalendarDays;

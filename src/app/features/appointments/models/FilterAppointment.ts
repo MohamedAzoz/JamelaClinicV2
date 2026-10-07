@@ -1,4 +1,3 @@
-import { AppointmentStatus } from './AppointmentStatus';
 import { Period } from './Period';
 
 export interface FilterAppointment {
@@ -10,15 +9,5 @@ export interface FilterAppointment {
   ClinicId?: number;
   PageNumber?: number;
   PageSize?: number;
-}
-
-
-export interface FilterAppointments {
-  Period: Period | null;
-  FromDate?: string;
-  ToDate?: string;
-  ClinicId?: number;
-  DoctorId?: string;
-  EmployeeId?: string;
-  Status: AppointmentStatus | null;
+  DoctorScheduleId?: number;
 }

@@ -4,6 +4,4 @@ export interface Doctor {
   fullName: string;
   isActive: boolean;
   // clinics: clinicsItem[];
-  // clinicName?: string;
 }
-

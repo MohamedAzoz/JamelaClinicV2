@@ -15,8 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentFacade } from '../../services/appointment.facade';
 import { AppointmentStatus } from '../../models/AppointmentStatus';
-import { VisitType } from '../../models/VisitType';
-import { TodayAppointment } from '../../models/AppointmentsMaterial';
+import { TodayAppointment } from '@features/appointments/models/TodayAppointment';
 
 import { ConfirmDialogService } from '@shared/components/confirm-modal';
 
@@ -80,7 +79,7 @@ export class DoctorTodayTableComponent {
       [
         { label: 'اسم المريض', value: app.patientName },
         { label: 'رقم الدور', value: `#${app.queueNumber}` },
-      ]
+      ],
     );
     if (confirmed) {
       this.facade.completeAppointment(app.id);
@@ -90,24 +89,6 @@ export class DoctorTodayTableComponent {
   viewDetails(id: number): void {
     this._router.navigate(['/main/appointment-details', id]);
   }
-
-  getVisitTypeName(type: VisitType | number | string | null | undefined): string {
-    switch (Number(type)) {
-      case VisitType.NewConsultation:
-        return 'كشف جديد';
-      case VisitType.FollowUp:
-        return 'إعادة';
-      case VisitType.Sessions:
-        return 'جلسات';
-      case VisitType.Laser:
-        return 'ليزر';
-      case VisitType.Fractional:
-        return 'فراكشنال';
-      default:
-        return 'كشف';
-    }
-  }
-
   getStatusName(status: AppointmentStatus | number | string | null | undefined): string {
     switch (Number(status)) {
       case AppointmentStatus.Unpaid:

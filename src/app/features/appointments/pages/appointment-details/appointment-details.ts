@@ -35,7 +35,6 @@ export class AppointmentDetailsPage implements OnInit {
       const id = Number(idParam);
       this.appointmentId.set(id);
       this.facade.loadAppointmentDetails(id);
-      this.facade.loadActiveMaterials();
     }
   }
 }

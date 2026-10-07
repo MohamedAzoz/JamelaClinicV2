@@ -28,7 +28,7 @@ export class SpecialOfferFormModalComponent {
   readonly offerForm = form(this.model, (path) => {
     required(path.title, { message: 'عنوان الخصم مطلوب' });
     minLength(path.title, 3, { message: 'العنوان يجب أن يتكون من 3 أحرف على الأقل' });
-    required(path.description, { message: 'وصف الخصم مطلوب' });
+    // required(path.description, { message: 'وصف الخصم مطلوب' });
     min(path.offerPrice, 0.01, { message: 'السعر يجب أن يكون أكبر من صفر' });
     required(path.startDate, { message: 'تاريخ بداية العرض مطلوب' });
     required(path.endDate, { message: 'تاريخ نهاية العرض مطلوب' });

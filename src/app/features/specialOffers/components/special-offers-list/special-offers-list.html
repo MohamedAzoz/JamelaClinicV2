@@ -56,9 +56,9 @@
         <tbody class="divide-y divide-primary/10">
           @for (offer of facade.offers(); track offer.id) {
             <tr class="transition hover:bg-main-bg/60">
-              <th scope="row" class="min-w-56 px-4 py-4 text-right">
-                <span class="font-bold">{{ offer.title }}</span>
-                <span class="mt-1 block max-w-sm text-xs font-normal leading-5 text-text-muted">{{
+              <th scope="row" class="min-w-56 px-4 py-4 text-right flex flex-col gap-2">
+                <span class="font-bold block">{{ offer.title }}</span>
+                <span class="block max-w-sm text-wrap text-xs font-normal leading-5 text-text-muted">{{
                   offer.description
                 }}</span>
               </th>

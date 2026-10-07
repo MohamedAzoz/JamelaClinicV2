@@ -43,6 +43,7 @@ export class BookingSummaryCardComponent {
   readonly faStethoscope = faStethoscope;
 
   readonly selectedDoctor = computed(() => this.facade.selectedDoctor());
+  readonly selectedClinic = computed(() => this.facade.selectedClinic());
   readonly pricing = computed(() =>
     calculateAppointmentPricing(
       this.formData()?.consultationFee ?? 0,
@@ -57,21 +58,7 @@ export class BookingSummaryCardComponent {
     return this.facade.schedules().find((s) => s.id === Number(id)) ?? null;
   });
 
-  readonly visitTypeName = computed(() => {
-    const type = Number(this.formData()?.visitType);
-    switch (type) {
-      case 1:
-        return 'كشف جديد';
-      case 2:
-        return 'إعادة';
-      case 3:
-        return 'جلسات';
-      case 4:
-        return 'ليزر';
-      case 5:
-        return 'فراكشنال';
-      default:
-        return 'كشف جديد';
-    }
+  readonly clinicName = computed(() => {
+    return this.selectedClinic()?.clinicName || 'عيادة كشف';
   });
 }

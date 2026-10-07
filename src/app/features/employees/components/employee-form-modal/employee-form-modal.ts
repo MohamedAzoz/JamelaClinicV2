@@ -8,6 +8,8 @@ import {
   faSpinner,
   faLock,
   faUser,
+  faEyeSlash,
+  faEye,
 } from '@fortawesome/free-solid-svg-icons';
 import { EmployeeFacade } from '../../services/employee.facade';
 import { UpdateEmployee } from '../../models/UpdateEmployee';
@@ -30,6 +32,9 @@ interface EmployeeFormModel {
 export class EmployeeFormModalComponent {
   public facade = inject(EmployeeFacade);
 
+  readonly showPassword = signal(false);
+  readonly faEye = faEye;
+  readonly faEyeSlash = faEyeSlash;
   readonly faUserTie = faUserTie;
   readonly faXmark = faXmark;
   readonly faCheck = faCheck;

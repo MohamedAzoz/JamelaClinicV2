@@ -11,7 +11,6 @@
         </div>
         <div>
           <p class="text-sm font-semibold text-text-muted">{{ transactionLabel() }}</p>
-          <p class="mt-1 font-mono text-xs text-text-muted">معاملة رقم #{{ transaction().id }}</p>
         </div>
       </div>
 
@@ -44,7 +43,7 @@
             <fa-icon [icon]="faHashtag" class="text-primary"></fa-icon>
             رقم الحركة
           </dt>
-          <dd class="mt-2 font-mono text-sm font-bold text-text">#{{ transaction().id }}</dd>
+          <dd class="mt-2 font-mono text-sm font-bold text-text">{{ transaction().id }}</dd>
         </div>
 
         <div class="rounded-2xl border border-primary/10 bg-main-bg p-4">
@@ -60,13 +59,10 @@
         <div class="rounded-2xl border border-primary/10 bg-main-bg p-4">
           <dt class="flex items-center gap-2 text-xs font-semibold text-text-muted">
             <fa-icon [icon]="faUser" class="text-primary"></fa-icon>
-            الطبيب المستفيد
+            اسم الطبيب
           </dt>
           <dd class="mt-2 text-sm font-bold text-text">
             {{ transaction().doctorName || 'غير محدد' }}
-          </dd>
-          <dd class="mt-1 break-all font-mono text-xs text-text-muted">
-            {{ transaction().doctorId }}
           </dd>
         </div>
 
@@ -121,9 +117,6 @@
             </span>
             <div class="min-w-0 flex-1">
               <h2 class="text-sm font-bold text-text">حجز مرتبط</h2>
-              <p class="mt-1 text-xs text-text-muted">
-                رقم الحجز #{{ transaction().appointmentId }}
-              </p>
               <a
                 [routerLink]="['/main/appointment-details', transaction().appointmentId]"
                 class="mt-3 inline-flex min-h-9 items-center rounded-xl border border-accent/20 bg-surface px-3 py-2 text-xs font-bold text-accent transition hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

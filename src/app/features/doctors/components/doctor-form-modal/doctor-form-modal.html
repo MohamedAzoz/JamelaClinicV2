@@ -127,7 +127,7 @@
               </div>
               <input
                 id="password"
-                type="password"
+               [type]="showPassword() ? 'text' : 'password'"
                 [formField]="doctorForm.password"
                 placeholder="••••••••"
                 class="w-full ps-10 pe-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-main-bg text-text text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
@@ -135,6 +135,14 @@
                   doctorForm.password().touched() && doctorForm.password().invalid()
                 "
               />
+               <button
+              type="button"
+              (click)="showPassword.update((value) => !value)"
+              class="absolute inset-y-0 inset-e-0 flex w-11 items-center justify-center text-text-muted hover:text-primary"
+              [attr.aria-label]="showPassword() ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+            >
+              <fa-icon [icon]="showPassword() ? faEyeSlash : faEye"></fa-icon>
+            </button>
             </div>
             @if (doctorForm.password().touched() && doctorForm.password().invalid()) {
               @for (error of doctorForm.password().errors(); track error.message) {

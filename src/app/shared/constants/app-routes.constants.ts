@@ -12,7 +12,6 @@ export const RoutesManagement = {
   SPECIAL_OFFER_DETAILS: { path: 'special-offers/:id' },
   DOCTOR_WALLET: { path: 'doctor-wallet' },
   DOCTOR_WALLET_TRANSACTION_DETAILS: { path: 'doctor-wallet/transactions/:id' },
-  MATERIALS: { path: 'materials' },
   DOCTOR_SCHEDULES: { path: 'doctor-schedules' },
   TODAY_DOCTOR_SCHEDULES: { path: 'today-doctor-schedules' },
   USER_LOGIN_LOGS: { path: 'user-login-logs' },

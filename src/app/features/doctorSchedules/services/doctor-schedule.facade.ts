@@ -234,12 +234,12 @@ export class DoctorScheduleFacade {
   /**
    * Creates a new doctor schedule.
    */
-  createSchedule(date: string, doctorClinicId: number): void {
+  createSchedule(date: string): void {
     const doctorId = this.selectedDoctorId();
     if (!doctorId) return;
 
     this.actionLoading.set(true);
-    const request: DoctorScheduleCreate = { doctorId, doctorClinicId, date };
+    const request: DoctorScheduleCreate = { doctorId, date };
 
     this._scheduleApiService.createDoctorSchedule(request).subscribe({
       next: (res) => {
@@ -267,7 +267,7 @@ export class DoctorScheduleFacade {
     if (!doctorId) return;
 
     this.actionLoading.set(true);
-    const request: DoctorScheduleUpdate = { id, date, doctorId };
+    const request: DoctorScheduleUpdate = { id, date };
 
     this._scheduleApiService.updateDoctorSchedule(request).subscribe({
       next: (res) => {

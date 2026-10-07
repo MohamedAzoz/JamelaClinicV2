@@ -26,10 +26,10 @@ import {
   faCreditCard,
   faCalendarCheck,
   faChevronDown,
+  faHospital,
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentFacade } from '../../services/appointment.facade';
 import { CreateAppointments } from '../../models/CreateAppointments';
-import { VisitType } from '../../models/VisitType';
 import { DatePipe } from '@angular/common';
 import { getDiscountError, getDoctorShare, isValidMoney } from '../../utils/appointment-pricing';
 import { AppointmentFeeBreakdownComponent } from '../appointment-fee-breakdown/appointment-fee-breakdown';
@@ -40,10 +40,12 @@ export interface BookingFormModel {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
-  visitType: number | null;
+  doctorClinicId: number;
   consultationFee: number;
   discountAmount: number;
   isPaid: boolean;
+  totalMaterialsCost: number | null;
+  materialsDescription: string;
 }
 
 @Component({
@@ -61,6 +63,9 @@ export class BookingFormComponent implements OnInit {
   // Pending schedule selection from queryParams
   readonly pendingScheduleId = signal<string | null>(null);
 
+  /** Controls visibility of the optional materials/services section */
+  readonly showMaterialsSection = signal<boolean>(false);
+
   // FontAwesome Icons
   readonly faUser = faUser;
   readonly faPhone = faPhone;
@@ -75,35 +80,7 @@ export class BookingFormComponent implements OnInit {
   readonly faCreditCard = faCreditCard;
   readonly faCalendarCheck = faCalendarCheck;
   readonly faChevronDown = faChevronDown;
-
-  // Visit Types Enum options
-  readonly visitTypeOptions = [
-    {
-      value: VisitType.NewConsultation,
-      label: 'كشف جديد',
-      icon: 'faStethoscope',
-      desc: 'معاينة وفحص أول مرة',
-    },
-    {
-      value: VisitType.FollowUp,
-      label: 'إعادة',
-      icon: 'faCalendarCheck',
-      desc: 'متابعة بعد الكشف',
-    },
-    // {
-    //   value: VisitType.Sessions,
-    //   label: 'جلسات',
-    //   icon: 'faUserCheck',
-    //   desc: 'جلسات متابعة مستمرة',
-    // },
-    // { value: VisitType.Laser, label: 'ليزر', icon: 'faCoins', desc: 'جلسات التجميل والليزر' },
-    // {
-    //   value: VisitType.Fractional,
-    //   label: 'فراكشنال',
-    //   icon: 'faCreditCard',
-    //   desc: 'جلسات الجلدية والعناية',
-    // },
-  ];
+  readonly faHospital = faHospital;
 
   // Signal Form Model
   protected readonly _model = signal<BookingFormModel>({
@@ -112,10 +89,12 @@ export class BookingFormComponent implements OnInit {
     patientName: '',
     patientPhoneNumber: '',
     patientAddress: '',
-    visitType: null,
+    doctorClinicId: 0,
     consultationFee: 0,
     discountAmount: 0,
     isPaid: false,
+    totalMaterialsCost: null,
+    materialsDescription: '',
   });
 
   readonly model = this._model.asReadonly();
@@ -163,6 +142,15 @@ export class BookingFormComponent implements OnInit {
     effect(() => {
       const current = this._model();
       this.formValueChange.emit(current);
+    });
+
+    // Effect: Auto-sync selectedClinicId from facade into the form model
+    effect(() => {
+      const clinicId = this.facade.selectedClinicId();
+      this._model.update((m) => ({
+        ...m,
+        doctorClinicId: clinicId ?? 0,
+      }));
     });
 
     // Effect: Auto-select scheduleId when facade.schedules() are loaded and match pendingScheduleId
@@ -225,10 +213,13 @@ export class BookingFormComponent implements OnInit {
     }));
   }
 
-  onVisitTypeSelect(type: VisitType): void {
+  onClinicChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const clinicId = Number(select.value);
+    this.facade.selectedClinicId.set(clinicId > 0 ? clinicId : null);
     this._model.update((m) => ({
       ...m,
-      visitType: type ?? null,
+      doctorClinicId: clinicId > 0 ? clinicId : 0,
     }));
   }
 
@@ -254,20 +245,39 @@ export class BookingFormComponent implements OnInit {
       return;
     }
 
+    const hasMaterials = this.showMaterialsSection();
+
     const payload: CreateAppointments = {
       patientName: val.patientName.trim(),
       patientPhoneNumber: val.patientPhoneNumber.trim(),
       patientAddress: val.patientAddress.trim(),
-      visitType: val.visitType ?? null,
+      doctorClinicId: val.doctorClinicId,
       doctorScheduleId: Number(val.doctorScheduleId),
       consultationFee: Number(val.consultationFee),
       discountAmount: val.discountAmount,
       isPaid: Boolean(val.isPaid),
+      ...(hasMaterials && {
+        totalMaterialsCost: val.totalMaterialsCost ? Number(val.totalMaterialsCost) : undefined,
+        materialsDescription: val.materialsDescription?.trim() || undefined,
+      }),
     };
 
     const ok = await this.facade.createAppointment(payload);
     if (ok) {
       this.resetForm();
+    }
+  }
+
+  toggleMaterialsSection(): void {
+    const next = !this.showMaterialsSection();
+    this.showMaterialsSection.set(next);
+    // Clear values when hiding the section
+    if (!next) {
+      this._model.update((m) => ({
+        ...m,
+        totalMaterialsCost: null,
+        materialsDescription: '',
+      }));
     }
   }
 
@@ -278,12 +288,17 @@ export class BookingFormComponent implements OnInit {
       patientName: '',
       patientPhoneNumber: '',
       patientAddress: '',
-      visitType: null,
+      doctorClinicId: 0,
       consultationFee: 0,
       discountAmount: 0,
       isPaid: false,
+      totalMaterialsCost: null,
+      materialsDescription: '',
     });
+    this.showMaterialsSection.set(false);
     this.facade.selectedDoctorId.set('');
+    this.facade.selectedClinicId.set(null);
     this.facade.schedules.set([]);
+    this.facade.doctorClinics.set([]);
   }
 }

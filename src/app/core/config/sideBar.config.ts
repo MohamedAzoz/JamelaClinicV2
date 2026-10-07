@@ -5,13 +5,12 @@ export const ADMIN_NAV_ITEMS: readonly NavItem[] = [
   { icon: 'clinics', label: 'العيادات', route: '/main/clinics' },
   { icon: 'doctors', label: 'الأطباء', route: '/main/doctors' },
   { icon: 'users', label: 'الموظفين', route: '/main/employees' },
-  { icon: 'schedule', label: 'أطباء اليوم', route: '/main/today-doctor-schedules' },
   { icon: 'payment', label: 'إدارة المصروفات', route: '/main/treasury' },
   { icon: 'wallet', label: 'حسابات الأطباء', route: '/main/doctor-wallet' },
-  { icon: 'company', label: 'الشركات الموردة', route: '/main/companies' },
+  { icon: 'schedule', label: 'أطباء اليوم', route: '/main/today-doctor-schedules' },
   { icon: 'schedule', label: 'مواعيد الأطباء', route: '/main/doctor-schedules' },
   { icon: 'appointments', label: 'الحجوزات', route: '/main/appointments' },
-  { icon: 'lab', label: 'المواد والمستحضرات', route: '/main/materials' },
+  { icon: 'company', label: 'الشركات الموردة', route: '/main/companies' },
   { icon: 'discount', label: 'الخصومات والعروض', route: '/main/special-offers' },
   { icon: 'logs', label: 'سجلات الدخول', route: '/main/user-login-logs' },
   {
@@ -32,8 +31,8 @@ export const DOCTOR_NAV_ITEMS: readonly NavItem[] = [
 
 export const RECEPTIONIST_NAV_ITEMS: readonly NavItem[] = [
   { icon: 'dashboard', label: 'الرئيسية', route: '/main/dashboard' },
-  { icon: 'schedule', label: 'أطباء اليوم', route: '/main/today-doctor-schedules' },
   { icon: 'schedule', label: 'جدول المواعيد', route: '/main/doctor-schedules' },
+  { icon: 'schedule', label: 'أطباء اليوم', route: '/main/today-doctor-schedules' },
   { icon: 'appointments', label: 'حجز موعد مريض', route: '/main/appointment-booking' },
   { icon: 'discount', label: 'الخصومات والعروض', route: '/main/special-offers' },
   { icon: 'settings', label: 'الإعدادات', route: '/main/change-password' },

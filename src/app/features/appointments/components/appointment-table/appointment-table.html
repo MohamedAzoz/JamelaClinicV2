@@ -37,6 +37,9 @@
             @if (!facade.isDoctorOrAdminOrAccountant()) {
               <th scope="col" class="px-4 py-3.5 text-center">تعديل</th>
             }
+            @if (facade.isAdmin()) {
+              <th scope="col" class="px-4 py-3.5 text-center">حذف</th>
+            }
           </tr>
         </thead>
         <tbody class="divide-y divide-primary/5 text-text">
@@ -107,16 +110,12 @@
                 </div>
               </td>
 
-              <!-- Visit Type -->
+              <!-- Clinic -->
               <td class="px-4 py-4">
                 <span
                   class="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary border border-primary/15"
                 >
-                  {{
-                    app.visitType !== null
-                      ? getVisitTypeName(app.visitType)
-                      : 'عيادة ' + app.clinicName
-                  }}
+                  {{ app.clinicName }}
                 </span>
               </td>
 
@@ -183,6 +182,29 @@
                       <span>تعديل</span>
                     </button>
                   </div>
+                </td>
+              }
+              <!-- Hard Delete Button (Admin only, Cancelled status only) -->
+              @if (facade.isAdmin()) {
+                <td class="px-4 py-4 text-center">
+                  @if (Number(app.status) === 4) {
+                    <button
+                      type="button"
+                      (click)="hardDeleteAppointment(app)"
+                      [disabled]="facade.actionLoadingId() === app.id"
+                      title="حذف الحجز الملغى نهائياً من قاعدة البيانات"
+                      class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-danger/30 bg-danger/5 px-2.5 text-xs font-bold text-danger hover:bg-danger/15 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      @if (facade.actionLoadingId() === app.id) {
+                        <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
+                      } @else {
+                        <fa-icon [icon]="faTrash" class="text-xs"></fa-icon>
+                        <span>حذف</span>
+                      }
+                    </button>
+                  } @else {
+                    <span class="text-text-muted text-xs">--</span>
+                  }
                 </td>
               }
             </tr>

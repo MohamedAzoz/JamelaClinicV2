@@ -32,7 +32,6 @@ import {
 import { AppointmentFacade } from '../../services/appointment.facade';
 import { Appointments } from '../../models/Appointments';
 import { AppointmentUpdate } from '../../models/AppointmentUpdate';
-import { VisitType } from '../../models/VisitType';
 import { Doctor } from '@features/doctors/models/Doctor';
 import { getDiscountError, getDoctorShare, isValidMoney } from '../../utils/appointment-pricing';
 import { AppointmentFeeBreakdownComponent } from '../appointment-fee-breakdown/appointment-fee-breakdown';
@@ -43,7 +42,7 @@ export interface EditAppointmentFormModel {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
-  visitType: number;
+  doctorClinicId: number;
   consultationFee: number;
   discountAmount: number;
 }
@@ -76,14 +75,6 @@ export class EditAppointmentModalComponent implements OnInit {
   readonly faCalendarCheck = faCalendarCheck;
   readonly faChevronDown = faChevronDown;
 
-  readonly visitTypeOptions = [
-    { value: VisitType.NewConsultation, label: 'كشف جديد', desc: 'معاينة وفحص أول مرة' },
-    { value: VisitType.FollowUp, label: 'إعادة', desc: 'متابعة بعد الكشف' },
-    { value: VisitType.Sessions, label: 'جلسات', desc: 'جلسات متابعة مستمرة' },
-    { value: VisitType.Laser, label: 'ليزر', desc: 'جلسات التجميل والليزر' },
-    { value: VisitType.Fractional, label: 'فراكشنال', desc: 'جلسات الجلدية والعناية' },
-  ];
-
   readonly pendingScheduleId = signal<string | null>(null);
 
   protected readonly _model = signal<EditAppointmentFormModel>({
@@ -92,7 +83,7 @@ export class EditAppointmentModalComponent implements OnInit {
     patientName: '',
     patientPhoneNumber: '',
     patientAddress: '',
-    visitType: VisitType.NewConsultation,
+    doctorClinicId: 0,
     consultationFee: 0,
     discountAmount: 0,
   });
@@ -101,9 +92,7 @@ export class EditAppointmentModalComponent implements OnInit {
   readonly selectedDoctor = computed(() =>
     this.facade.doctors().find((doctor) => doctor.userId === this.model().doctorId),
   );
-  readonly maxDiscount = computed(() =>
-    getDoctorShare(this.model().consultationFee, 70),
-  );
+  readonly maxDiscount = computed(() => getDoctorShare(this.model().consultationFee, 70));
 
   readonly editForm = form(this._model, (path) => {
     required(path.doctorId, { message: 'يرجى اختيار الطبيب' });
@@ -133,11 +122,7 @@ export class EditAppointmentModalComponent implements OnInit {
           },
     );
     validate(path.discountAmount, ({ value }) => {
-      const message = getDiscountError(
-        this.model().consultationFee,
-        value(),
-        70,
-      );
+      const message = getDiscountError(this.model().consultationFee, value(), 70);
       return message ? { kind: 'discount', message } : null;
     });
   });
@@ -193,7 +178,7 @@ export class EditAppointmentModalComponent implements OnInit {
       patientName: app.patientName || '',
       patientPhoneNumber: app.patientPhoneNumber || '',
       patientAddress: app.patientAddress || '',
-      visitType: Number(app.visitType),
+      doctorClinicId: 0,
       consultationFee: app.consultationFee ?? 0,
       discountAmount: app.discountAmount ?? 0,
     });
@@ -233,10 +218,6 @@ export class EditAppointmentModalComponent implements OnInit {
     this._model.update((m) => ({ ...m, doctorScheduleId: select.value || '' }));
   }
 
-  onVisitTypeSelect(type: VisitType): void {
-    this._model.update((m) => ({ ...m, visitType: type }));
-  }
-
   async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
@@ -253,11 +234,10 @@ export class EditAppointmentModalComponent implements OnInit {
       patientName: val.patientName.trim(),
       patientPhoneNumber: val.patientPhoneNumber.trim(),
       patientAddress: val.patientAddress.trim(),
-      visitType: Number(val.visitType) as VisitType,
+      doctorClinicId: val.doctorClinicId,
       doctorScheduleId: Number(val.doctorScheduleId),
       consultationFee: Number(val.consultationFee),
       discountAmount: val.discountAmount,
-      // isPaid: Boolean(val.isPaid),
     };
 
     const ok = await this.facade.updateAppointment(payload);

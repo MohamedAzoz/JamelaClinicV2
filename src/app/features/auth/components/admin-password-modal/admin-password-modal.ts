@@ -33,7 +33,7 @@ export class AdminPasswordModalComponent {
   private readonly model = signal<AdminPasswordModel>({ newPassword: '' });
   readonly passwordForm = form(this.model, (path) => {
     required(path.newPassword, { message: 'كلمة المرور الجديدة مطلوبة' });
-    minLength(path.newPassword, 8, { message: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل' });
+    minLength(path.newPassword, 6, { message: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
   });
 
   async submit(event: Event): Promise<void> {

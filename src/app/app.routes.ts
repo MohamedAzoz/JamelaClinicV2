@@ -99,15 +99,7 @@ export const routes: Routes = [
             (m) => m.WalletTransactionDetailsPage,
           ),
       },
-      {
-        path: RoutesManagement.MATERIALS.path,
-        canActivate: [roleGuard],
-        data: { roles: [ROLES.Admin] },
-        loadComponent: () =>
-          import('./features/materials/pages/materials-management/materials-management').then(
-            (m) => m.MaterialsManagementPage,
-          ),
-      },
+
       {
         path: RoutesManagement.DOCTOR_SCHEDULES.path,
         loadComponent: () =>

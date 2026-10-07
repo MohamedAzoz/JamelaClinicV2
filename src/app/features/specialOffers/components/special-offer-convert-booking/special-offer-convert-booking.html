@@ -77,17 +77,21 @@
       </div>
 
       <div>
-        <label for="offer-convert-visit-type" class="mb-1.5 block text-sm font-semibold"
-          >نوع الزيارة</label
-        >
+        <label for="offer-convert-clinic" class="mb-1.5 block text-sm font-semibold">العيادة</label>
         <select
-          id="offer-convert-visit-type"
-          [value]="facade.conversionVisitType()"
-          (change)="setVisitType($event)"
-          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"
+          id="offer-convert-clinic"
+          [value]="facade.conversionDoctorClinicId() ?? ''"
+          (change)="setClinic($event)"
+          [disabled]="!facade.conversionDoctorId() || facade.isLoadingDoctorClinics()"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-50"
         >
-          @for (visitType of visitTypes; track visitType.value) {
-            <option [value]="visitType.value">{{ visitType.label }}</option>
+          <option value="">
+            {{ facade.isLoadingDoctorClinics() ? 'جاري تحميل العيادات...' : 'اختر عيادة الطبيب' }}
+          </option>
+          @for (clinic of facade.doctorClinics(); track clinic.id) {
+            <option [value]="clinic.id">
+              {{ clinic.clinicName }}
+            </option>
           }
         </select>
       </div>
@@ -117,7 +121,8 @@
           [disabled]="
             facade.isConvertingBooking() ||
             !facade.conversionDoctorId() ||
-            !facade.conversionScheduleId()
+            !facade.conversionScheduleId() ||
+            !facade.conversionDoctorClinicId()
           "
           class="inline-flex min-h-10 items-center gap-2 rounded-xl bg-success px-4 text-sm font-bold text-white disabled:opacity-50"
         >

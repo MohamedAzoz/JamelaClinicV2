@@ -10,6 +10,8 @@ import {
   faUser,
   faHospital,
   faPercent,
+  faEye,
+  faEyeSlash,
 } from '@fortawesome/free-solid-svg-icons';
 import { DoctorFacade } from '../../services/doctor.facade';
 import { UpdateDoctorRequest } from '../../models/UpdateDoctorRequest';
@@ -29,7 +31,10 @@ interface DoctorFormModel {
 })
 export class DoctorFormModalComponent {
   public facade = inject(DoctorFacade);
+  readonly showPassword = signal(false);
 
+  readonly faEye = faEye;
+  readonly faEyeSlash = faEyeSlash;
   readonly faUserMd = faUserMd;
   readonly faXmark = faXmark;
   readonly faCheck = faCheck;
