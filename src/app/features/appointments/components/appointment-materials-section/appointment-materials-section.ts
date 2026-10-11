@@ -1,9 +1,12 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faBoxOpen,
   faExclamationTriangle,
+  faFileLines,
+  faMoneyBillWave,
   faSave,
   faSpinner,
   faTrashAlt,
@@ -13,7 +16,7 @@ import { AppointmentsMaterial } from '../../models/AppointmentsMaterial';
 
 @Component({
   selector: 'app-appointment-materials-section',
-  imports: [FontAwesomeModule, FormsModule],
+  imports: [FontAwesomeModule, FormsModule, DecimalPipe], 
   templateUrl: './appointment-materials-section.html',
 })
 export class AppointmentMaterialsSectionComponent {
@@ -25,6 +28,8 @@ export class AppointmentMaterialsSectionComponent {
   readonly faTrashAlt = faTrashAlt;
   readonly faExclamationTriangle = faExclamationTriangle;
   readonly faSpinner = faSpinner;
+  readonly faFileLines = faFileLines;
+  readonly faMoneyBillWave = faMoneyBillWave;
 
   readonly materialsDescription = signal<string>('');
   readonly totalMaterialsCost = signal<number>(0);
@@ -42,7 +47,14 @@ export class AppointmentMaterialsSectionComponent {
   readonly hasMaterials = computed(
     () =>
       (this.appointment()?.totalMaterialsCost ?? 0) > 0 ||
-      !!this.appointment()?.materialsDescription,
+      !!this.appointment()?.materialsDescription?.trim(),
+  );
+
+  readonly canEdit = computed(
+    () =>
+      !this.facade.isAdminOrAccountant() &&
+      (this.facade.isDoctor() || this.facade.isReception()) &&
+      !this.chackStatus(),
   );
 
   saveMaterials(event?: Event): void {

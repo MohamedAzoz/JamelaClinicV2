@@ -13,7 +13,7 @@
         </p>
       </div>
     </div>
-    @if (hasMaterials() && !facade.isAdminOrAccountant() && !chackStatus() ) {
+    @if (hasMaterials() && canEdit()) {
       <button
         type="button"
         (click)="clearMaterials()"
@@ -29,7 +29,8 @@
       </button>
     }
   </div>
-  @if (!facade.isAdminOrAccountant() && !chackStatus()) {
+
+  @if (canEdit()) {
     <form (submit)="saveMaterials($event)" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
         <div class="md:col-span-8">
@@ -55,7 +56,6 @@
             <input
               id="totalMaterialsCost"
               type="number"
-              min="0"
               step="0.01"
               [ngModel]="totalMaterialsCost()"
               (ngModelChange)="totalMaterialsCost.set($event)"
@@ -80,5 +80,35 @@
         </div>
       </div>
     </form>
+  } @else {
+    @if (hasMaterials()) {
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-8 rounded-xl border border-primary/10 bg-main-bg p-4 flex flex-col justify-between">
+          <div>
+            <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+              <fa-icon [icon]="faFileLines" class="text-xs text-primary"></fa-icon>
+              <span>بيان المستلزمات والخدمات</span>
+            </div>
+            <p class="text-xs sm:text-sm text-text whitespace-pre-line leading-relaxed font-medium">
+              {{ appointment().materialsDescription || 'لا يوجد بيان تفصيلي مسجل' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="md:col-span-4 rounded-xl border border-primary/10 bg-main-bg p-4 flex flex-col justify-between">
+          <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+            <fa-icon [icon]="faMoneyBillWave" class="text-xs text-primary"></fa-icon>
+            <span>إجمالي تكلفة المستلزمات</span>
+          </div>
+          <div class="text-base sm:text-lg font-bold text-primary font-mono">
+            {{ (appointment().totalMaterialsCost || 0) | number: '1.2-2' }} ج.م
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="flex items-center justify-center rounded-xl border border-dashed border-primary/15 bg-main-bg/50 p-6 text-center text-xs text-text-muted">
+        لا توجد مستلزمات أو خدمات إضافية مسجلة لهذا الحجز
+      </div>
+    }
   }
 </section>
