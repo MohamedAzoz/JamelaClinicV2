@@ -56,6 +56,9 @@ export class AppointmentApiService {
     if (filter.PageSize !== undefined) {
       params.push(`PageSize=${filter.PageSize}`);
     }
+    if (filter.Status !== null && filter.Status !== undefined) {
+      params.push(`Status=${filter.Status}`);
+    }
     if (params.length > 0) {
       url += `?${params.join('&')}`;
     }
@@ -93,6 +96,9 @@ export class AppointmentApiService {
     }
     if (filter.PageSize !== undefined) {
       params.push(`PageSize=${filter.PageSize}`);
+    }
+    if (filter.Status !== null && filter.Status !== undefined) {
+      params.push(`Status=${filter.Status}`);
     }
     if (params.length > 0) {
       url += `?${params.join('&')}`;

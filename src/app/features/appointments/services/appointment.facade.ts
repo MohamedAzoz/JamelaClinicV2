@@ -416,6 +416,7 @@ export class AppointmentFacade {
       DoctorScheduleId: this.doctorScheduleIdFilter(),
       PageNumber: this.pageNumber(),
       PageSize: this.pageSize(),
+      Status: this.statusFilter(),
     };
 
     this._appointmentApiService.getAllAppointments(filter).subscribe({
@@ -461,6 +462,7 @@ export class AppointmentFacade {
       DoctorScheduleId: this.doctorScheduleIdFilter(),
       PageNumber: this.pageNumber(),
       PageSize: this.pageSize(),
+      Status: this.statusFilter(),
     };
 
     this._appointmentApiService.getExportAppointments(filter).subscribe({
