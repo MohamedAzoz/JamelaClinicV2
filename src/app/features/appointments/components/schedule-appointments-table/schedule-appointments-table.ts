@@ -83,6 +83,20 @@ export class ScheduleAppointmentsTableComponent {
     }
   }
 
+  getStatus(status: AppointmentStatus | null | undefined): number {
+    switch (status) {
+      case AppointmentStatus.Unpaid:
+        return 1;
+      case AppointmentStatus.InProgress:
+        return 2;
+      case AppointmentStatus.Completed:
+        return 3;
+      case AppointmentStatus.Cancelleted:
+        return 4;
+      default:
+        return 1;
+    }
+  }
   // Icons
   readonly faUser = faUser;
   readonly faPhone = faPhone;

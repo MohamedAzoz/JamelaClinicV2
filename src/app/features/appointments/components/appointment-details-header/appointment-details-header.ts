@@ -12,6 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentFacade } from '../../services/appointment.facade';
 import { AppointmentsMaterial } from '../../models/AppointmentsMaterial';
+import { ConfirmDialogService } from '@shared/components/confirm-modal';
 
 @Component({
   selector: 'app-appointment-details-header',
@@ -21,6 +22,7 @@ import { AppointmentsMaterial } from '../../models/AppointmentsMaterial';
 export class AppointmentDetailsHeaderComponent {
   readonly facade = inject(AppointmentFacade);
   private readonly _location = inject(Location);
+  private readonly _confirmService = inject(ConfirmDialogService);
 
   readonly appointment = input.required<AppointmentsMaterial>();
   readonly Number = Number;
@@ -65,7 +67,7 @@ export class AppointmentDetailsHeaderComponent {
     }
   }
 
-   getStatus(status: string | null | undefined): number {
+  getStatus(status: string | null | undefined): number {
     switch (status) {
       case 'Unpaid':
         return 1;
@@ -83,15 +85,45 @@ export class AppointmentDetailsHeaderComponent {
     this._location.back();
   }
 
-  pay(): void {
-    this.facade.payAppointment(this.appointment().id);
+  async pay(): Promise<void> {
+    const app = this.appointment();
+    const confirmed = await this._confirmService.pay(
+      `${app.finalPaidAmount || app.consultationFee || 0} ج.م`,
+      `هل أنت تأكد من رغبتك في سداد الكشف للحجز رقم #${app.id} للمريض "${app.patientName}"؟`,
+      'تأكيد سداد الكشفية',
+      [{ label: 'اسم المريض', value: app.patientName }],
+    );
+    if (confirmed) {
+      this.facade.payAppointment(app.id);
+    }
   }
 
-  complete(): void {
-    this.facade.completeAppointment(this.appointment().id);
+  async complete(): Promise<void> {
+    const app = this.appointment();
+    const confirmed = await this._confirmService.complete(
+      'تأكيد إنهاء الكشف',
+      `هل أنت تأكد من إتمام المعاينة وإنهاء الكشف للحجز رقم #${app.id} للمريض "${app.patientName}"؟`,
+      [{ label: 'اسم المريض', value: app.patientName }],
+    );
+    if (confirmed) {
+      this.facade.completeAppointment(app.id);
+    }
   }
 
-  cancel(): void {
-    this.facade.cancelAppointment(this.appointment().id);
+  async cancel(): Promise<void> {
+    const app = this.appointment();
+    const confirmed = await this._confirmService.confirm({
+      variant: 'danger',
+      title: 'تأكيد إلغاء الحجز',
+      itemName: `حجز #${app.id} - ${app.patientName}`,
+      message: `هل أنت تأكد من رغبتك في إلغاء الحجز للمريض "${app.patientName}"؟`,
+      warningMessage:
+        'تحذير: هذا الإجراء سيؤدي إلى تغيير حالة الحجز إلى ملغى ولا يمكن التراجع عنه.',
+      confirmText: 'نعم، إلغاء الحجز',
+      cancelText: 'تراجع',
+    });
+    if (confirmed) {
+      this.facade.cancelAppointment(app.id);
+    }
   }
 }

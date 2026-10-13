@@ -43,6 +43,9 @@
             @if (!facade.isAdminOrAccountant() && !facade.isDoctor()) {
               <th scope="col" class="px-4 py-3.5 text-center">تعديل</th>
             }
+            @if (facade.isAdmin()) {
+              <th scope="col" class="px-4 py-3.5 text-center">حزف</th>
+            }
           </tr>
         </thead>
         <tbody class="divide-y divide-primary/5 text-text">
@@ -165,23 +168,6 @@
                       بواسطة: {{ app.cancelledByEmployeeName }}
                     </div>
                   }
-
-                  @if (facade.isAdmin() && Number(app.status) === 4) {
-                    <button
-                      type="button"
-                      (click)="hardDeleteAppointment(app)"
-                      [disabled]="facade.actionLoadingId() === app.id"
-                      title="حذف الحجز الملغى نهائياً من قاعدة البيانات"
-                      class="inline-flex items-center gap-1 rounded-lg border border-danger/30 bg-danger/5 px-2.5 py-1 text-xs font-bold text-danger hover:bg-danger/15 transition-all cursor-pointer disabled:opacity-50"
-                    >
-                      @if (facade.actionLoadingId() === app.id) {
-                        <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
-                      } @else {
-                        <fa-icon [icon]="faTrash" class="text-xs"></fa-icon>
-                        <span>حذف</span>
-                      }
-                    </button>
-                  }
                 </div>
               </td>
 
@@ -221,7 +207,9 @@
                         }
                       </button>
                     } @else if (
-                      !facade.isDoctor() && Number(app.status) !== 4 && Number(app.status) !== 3
+                      !facade.isDoctor() &&
+                      getStatus(app.status) !== 4 &&
+                      getStatus(app.status) !== 3
                     ) {
                       <button
                         type="button"
@@ -269,6 +257,24 @@
                       <span>تعديل</span>
                     </button>
                   </div>
+                </td>
+              }
+              @if (facade.isAdmin()) {
+                <td class="px-4 py-4 text-center">
+                  <button
+                    type="button"
+                    (click)="hardDeleteAppointment(app)"
+                    [disabled]="facade.actionLoadingId() === app.id"
+                    title="حذف الحجز الملغى نهائياً من قاعدة البيانات"
+                    class="inline-flex items-center gap-1 rounded-lg border border-danger/30 bg-danger/5 px-2.5 py-1 text-xs font-bold text-danger hover:bg-danger/15 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    @if (facade.actionLoadingId() === app.id) {
+                      <fa-icon [icon]="faSpinner" class="animate-spin text-xs"></fa-icon>
+                    } @else {
+                      <fa-icon [icon]="faTrash" class="text-xs"></fa-icon>
+                      <span>حذف</span>
+                    }
+                  </button>
                 </td>
               }
             </tr>

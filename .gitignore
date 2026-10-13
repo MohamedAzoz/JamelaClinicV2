@@ -31,6 +31,13 @@ yarn-error.log
 .github/*
 .env
 
+# docker
+*.yml
+*.yaml
+docker-compose.yml
+Dockerfile
+nginx.conf
+.dockerignore
 
 # Miscellaneous
 /.angular/cache
