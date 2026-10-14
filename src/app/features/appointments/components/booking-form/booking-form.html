@@ -348,7 +348,8 @@
                   id="paymentMethod"
                   [value]="model().paymentMethod ?? ''"
                   (change)="onPaymentMethodChange($event)"
-                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                  [class.border-danger]="paymentMethodError() || (bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid())"
+                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 cursor-pointer"
                   aria-label="اختر طريقة الدفع"
                 >
                   <option value="" disabled>-- اختر طريقة الدفع --</option>
@@ -367,6 +368,11 @@
                   <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
                 </div>
               </div>
+              @if (paymentMethodError() || (bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid())) {
+                <p class="mt-1 text-xs text-danger font-semibold flex items-center gap-1" role="alert">
+                  <span>{{ paymentMethodError() || bookingForm.paymentMethod().errors()[0]?.message }}</span>
+                </p>
+              }
             </div>
           } @else {
             <div class="flex items-center justify-center p-3.5 rounded-xl border border-dashed border-primary/15 bg-main-bg/50">

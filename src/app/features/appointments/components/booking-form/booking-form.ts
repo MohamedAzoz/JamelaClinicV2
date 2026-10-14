@@ -145,7 +145,20 @@ export class BookingFormComponent implements OnInit {
       const message = getDiscountError(this.model().consultationFee, value(), 70);
       return message ? { kind: 'discount', message } : null;
     });
+
+    validate(path.paymentMethod, ({ value }) => {
+      if (this.model().isPaid && (value() === null || value() === undefined)) {
+        return {
+          kind: 'paymentMethod',
+          message: 'يرجى اختيار طريقة الدفع عند تفعيل استلام المبلغ',
+        };
+      }
+      return null;
+    });
   });
+
+  /** Explicit error message for payment method validation */
+  readonly paymentMethodError = signal<string | null>(null);
 
   constructor() {
     // Notify parent / summary of form value updates whenever model changes
@@ -235,17 +248,22 @@ export class BookingFormComponent implements OnInit {
 
   onPaidToggle(event: Event): void {
     const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    this.paymentMethodError.set(null);
     this._model.update((m) => ({
       ...m,
-      isPaid: input.checked,
-      // Clear payment method when unchecking isPaid
-      paymentMethod: input.checked ? m.paymentMethod : null,
+      isPaid: isChecked,
+      // Default to Cash when checking isPaid, or null when unchecking
+      paymentMethod: isChecked ? (m.paymentMethod ?? PaymentMethod.Cash) : null,
     }));
   }
 
   onPaymentMethodChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     const value = select.value ? (Number(select.value) as PaymentMethod) : null;
+    if (value !== null) {
+      this.paymentMethodError.set(null);
+    }
     this._model.update((m) => ({
       ...m,
       paymentMethod: value,
@@ -255,12 +273,19 @@ export class BookingFormComponent implements OnInit {
   async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
-    if (this.bookingForm().invalid() || this.facade.isSubmitting()) {
+    const val = this._model();
+
+    // Prevent submission if isPaid is true but no paymentMethod is selected
+    if (val.isPaid && (val.paymentMethod === null || val.paymentMethod === undefined)) {
+      this.paymentMethodError.set('يرجى اختيار طريقة الدفع عند تحديد "تم استلام المبلغ"');
       this.bookingForm().markAsTouched();
       return;
     }
 
-    const val = this._model();
+    if (this.bookingForm().invalid() || this.facade.isSubmitting()) {
+      this.bookingForm().markAsTouched();
+      return;
+    }
 
     if (!val.doctorScheduleId || Number(val.doctorScheduleId) <= 0) {
       return;
@@ -319,6 +344,7 @@ export class BookingFormComponent implements OnInit {
       totalMaterialsCost: null,
       materialsDescription: '',
     });
+    this.paymentMethodError.set(null);
     this.showMaterialsSection.set(false);
     this.facade.selectedDoctorId.set('');
     this.facade.selectedClinicId.set(null);
