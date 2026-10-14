@@ -366,6 +366,7 @@ export class AppointmentFacade {
   refreshData(): void {
     this.loadAppointments();
     this.loadStatistics();
+    this.isLoadingAppointmentDetails();
   }
 
   /**

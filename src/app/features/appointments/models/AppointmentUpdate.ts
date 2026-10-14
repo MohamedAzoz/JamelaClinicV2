@@ -8,7 +8,7 @@ export interface AppointmentUpdate {
   doctorScheduleId: number;
   doctorClinicId: number;
   consultationFee: number;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod | null;
   discountAmount?: number;
 }
 

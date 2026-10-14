@@ -17,7 +17,7 @@ import { PayAppointmentModalComponent } from '../pay-appointment-modal/pay-appoi
 
 @Component({
   selector: 'app-appointment-details-header',
-  imports: [FontAwesomeModule, PayAppointmentModalComponent], 
+  imports: [FontAwesomeModule, PayAppointmentModalComponent],
   templateUrl: './appointment-details-header.html',
 })
 export class AppointmentDetailsHeaderComponent {
@@ -29,7 +29,9 @@ export class AppointmentDetailsHeaderComponent {
   readonly Number = Number;
 
   /** Signal to control the pay modal — holds appointment data when open */
-  readonly payingAppointment = signal<{ id: number; patientName: string; amount: number } | null>(null);
+  readonly payingAppointment = signal<{ id: number; patientName: string; amount: number } | null>(
+    null,
+  );
 
   readonly faArrowRight = faArrowRight;
   readonly faReceipt = faReceipt;

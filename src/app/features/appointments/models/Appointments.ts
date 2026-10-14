@@ -41,7 +41,7 @@ export interface Appointments {
   doctorName: string;
   employeeName: string;
   status: AppointmentStatus;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod | null;
   paymentMethodText: string;
   consultationFee: number;
   discountAmount: number; ////

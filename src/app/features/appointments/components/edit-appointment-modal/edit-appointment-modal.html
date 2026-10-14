@@ -333,7 +333,7 @@
                 </div>
               }
             </div>
-            <!-- isPaid Toggle (commented — managed via Pay action) -->
+            
             <!-- Payment Method Select — full width -->
             <div class="md:col-span-2">
               <label for="edit-paymentMethod" class="block text-xs font-semibold text-text mb-1">
@@ -344,11 +344,14 @@
                   id="edit-paymentMethod"
                   [formField]="editForm.paymentMethod"
                   (change)="onPaymentMethodChange($event)"
-                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 cursor-pointer"
                   aria-label="اختر طريقة الدفع"
                 >
+                  @if (appointment().paymentMethod === null || appointment().paymentMethod === undefined || !model().paymentMethod) {
+                    <option value="" [selected]="!model().paymentMethod">-- غير محدد (اختر طريقة الدفع) --</option>
+                  }
                   @for (option of paymentMethodOptions; track option.value) {
-                    <option [value]="option.value">{{ option.label }}</option>
+                    <option [value]="option.value.toString()">{{ option.label }}</option>
                   }
                 </select>
                 <!-- Right icon: credit card -->
@@ -365,17 +368,20 @@
                 </div>
               </div>
               <!-- Friendly hint badge -->
-              <p class="mt-1.5 text-[11px] text-text-muted flex items-center gap-1">
+              <p class="mt-1.5 text-[11px] text-text-muted flex items-center gap-1.5">
                 <fa-icon [icon]="faCreditCard" class="text-primary/50"></fa-icon>
                 @switch (model().paymentMethod) {
-                  @case ("1") {
-                    سيتم تسجيل الدفع نقداً
+                  @case ('1') {
+                    <span class="text-emerald-600 font-semibold">الدفع نقداً 💵</span>
                   }
-                  @case ("2") {
-                    سيتم تسجيل الدفع عبر فودافون كاش
+                  @case ('2') {
+                    <span class="text-rose-600 font-semibold">الدفع عبر فودافون كاش 📱</span>
                   }
-                  @case ("3") {
-                    سيتم تسجيل الدفع عبر إنستا باي
+                  @case ('3') {
+                    <span class="text-violet-600 font-semibold">الدفع عبر إنستا باي ⚡</span>
+                  }
+                  @default {
+                    <span class="text-amber-600 font-medium">لم يتم تحديد طريقة الدفع بعد (الحجز غير مسدد)</span>
                   }
                 }
               </p>

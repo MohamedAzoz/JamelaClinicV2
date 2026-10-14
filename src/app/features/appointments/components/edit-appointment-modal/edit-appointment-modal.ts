@@ -7,7 +7,6 @@ import {
   min,
   minLength,
   required,
-  disabled,
   pattern,
   validate,
 } from '@angular/forms/signals';
@@ -171,8 +170,11 @@ export class EditAppointmentModalComponent implements OnInit {
     // 3. Auto-select payment method from appointment data
     effect(() => {
       const app = this.appointment();
-      if (app?.paymentMethod) {
-        this._model.update((m) => ({ ...m, paymentMethod: app.paymentMethod.toString() }));
+      if (app?.paymentMethod !== null) {
+        this._model.update((m) => ({
+          ...m,
+          paymentMethod: app.paymentMethod?.toString() ?? PaymentMethod.Cash.toString(),
+        }));
       }
     });
   }
@@ -197,7 +199,7 @@ export class EditAppointmentModalComponent implements OnInit {
       doctorClinicId: 0,
       consultationFee: app.consultationFee ?? 0,
       discountAmount: app.discountAmount ?? 0,
-      paymentMethod: app.paymentMethod?.toString() || PaymentMethod.Cash.toString(),
+      paymentMethod: app.paymentMethod != null ? String(app.paymentMethod) : '',
     });
 
     if (doctorId) {
@@ -237,8 +239,8 @@ export class EditAppointmentModalComponent implements OnInit {
 
   onPaymentMethodChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
-    const value = Number(select.value) as PaymentMethod;
-    this._model.update((m) => ({ ...m, paymentMethod: value.toString() }));
+    const value = select.value || '';
+    this._model.update((m) => ({ ...m, paymentMethod: value }));
   }
 
   async onSubmit(event: Event): Promise<void> {
@@ -261,7 +263,7 @@ export class EditAppointmentModalComponent implements OnInit {
       doctorScheduleId: Number(val.doctorScheduleId),
       consultationFee: Number(val.consultationFee),
       discountAmount: val.discountAmount,
-      paymentMethod: Number(val.paymentMethod),
+      paymentMethod: val.paymentMethod ? (Number(val.paymentMethod) as PaymentMethod) : null,
     };
 
     const ok = await this.facade.updateAppointment(payload);
