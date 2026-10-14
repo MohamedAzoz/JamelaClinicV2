@@ -81,6 +81,7 @@ export class AppointmentFacade {
   readonly clinicIdFilter = signal<number | undefined>(undefined);
   readonly doctorScheduleIdFilter = signal<number | undefined>(undefined);
   readonly statusFilter = signal<AppointmentStatus | null>(null);
+  readonly paymentMethodFilter = signal<PaymentMethod | null>(null);
 
   setClinicIdFilter(clinicId?: number): void {
     this.clinicIdFilter.set(clinicId);
@@ -383,6 +384,7 @@ export class AppointmentFacade {
       EmployeeId: this.employeeIdFilter() ? this.employeeIdFilter() : undefined,
       ClinicId: this.clinicIdFilter(),
       Status: this.statusFilter(),
+      PaymentMethod: this.paymentMethodFilter() || null,
     };
 
     this._appointmentApiService.getStatistics(filter).subscribe({
@@ -419,6 +421,7 @@ export class AppointmentFacade {
       PageNumber: this.pageNumber(),
       PageSize: this.pageSize(),
       Status: this.statusFilter(),
+      PaymentMethod: this.paymentMethodFilter() || null,
     };
 
     this._appointmentApiService.getAllAppointments(filter).subscribe({
@@ -465,6 +468,7 @@ export class AppointmentFacade {
       PageNumber: this.pageNumber(),
       PageSize: this.pageSize(),
       Status: this.statusFilter(),
+      PaymentMethod: this.paymentMethodFilter() || null,
     };
 
     this._appointmentApiService.getExportAppointments(filter).subscribe({
@@ -526,6 +530,12 @@ export class AppointmentFacade {
     this.refreshData();
   }
 
+  setPaymentMethodFilter(method: PaymentMethod | null): void {
+    this.paymentMethodFilter.set(method);
+    this.pageNumber.set(1);
+    this.refreshData();
+  }
+
   setPageNumber(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.pageNumber.set(page);
@@ -547,6 +557,7 @@ export class AppointmentFacade {
     this.clinicIdFilter.set(undefined);
     this.doctorScheduleIdFilter.set(undefined);
     this.statusFilter.set(null);
+    this.paymentMethodFilter.set(null);
     this.pageNumber.set(1);
     this.refreshData();
   }

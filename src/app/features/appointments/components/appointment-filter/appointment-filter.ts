@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faCalendarAlt,
@@ -14,16 +14,18 @@ import {
   faBuilding,
   faStethoscope,
   faChartPie,
+  faCreditCard,
+  faChevronDown,
+  faBan,
 } from '@fortawesome/free-solid-svg-icons';
 import { AppointmentFacade } from '../../services/appointment.facade';
 import { Period } from '../../models/Period';
 import { AppointmentStatus } from '../../models/AppointmentStatus';
-
-import { DecimalPipe } from '@angular/common';
+import { PaymentMethod } from '../../models/PaymentMethod';
 
 @Component({
   selector: 'app-appointment-filter',
-  imports: [FontAwesomeModule, DecimalPipe],
+  imports: [FontAwesomeModule],
   templateUrl: './appointment-filter.html',
 })
 export class AppointmentFilterComponent {
@@ -43,13 +45,29 @@ export class AppointmentFilterComponent {
   readonly faBuilding = faBuilding;
   readonly faStethoscope = faStethoscope;
   readonly faChartPie = faChartPie;
+  readonly faCreditCard = faCreditCard;
+  readonly faChevronDown = faChevronDown;
+  readonly faBan = faBan;
 
   readonly PeriodEnum = Period;
   readonly AppointmentStatusEnum = AppointmentStatus;
+  readonly PaymentMethodEnum = PaymentMethod;
 
   // Local inputs for custom date range
   readonly fromDate = signal<string>('');
   readonly toDate = signal<string>('');
+
+  /** Total count of currently active filters */
+  readonly activeFiltersCount = computed(() => {
+    let count = 0;
+    if (this.facade.periodFilter() !== null) count++;
+    if (this.facade.fromDateFilter() || this.facade.toDateFilter()) count++;
+    if (this.facade.doctorIdFilter()) count++;
+    if (this.facade.employeeIdFilter()) count++;
+    if (this.facade.statusFilter() !== null) count++;
+    if (this.facade.paymentMethodFilter() !== null) count++;
+    return count;
+  });
 
   onDoctorChange(event: Event): void {
     const val = (event.target as HTMLSelectElement).value;
@@ -67,6 +85,12 @@ export class AppointmentFilterComponent {
     this.facade.setStatusFilter(status || null);
   }
 
+  onPaymentMethodChange(event: Event): void {
+    const val = (event.target as HTMLSelectElement).value;
+    const method = val ? (Number(val) as PaymentMethod) : null;
+    this.facade.setPaymentMethodFilter(method || null);
+  }
+
   onPeriodSelect(event: Event): void {
     const val = (event.target as HTMLSelectElement).value;
     const period = val ? (Number(val) as Period) : null;
@@ -81,5 +105,17 @@ export class AppointmentFilterComponent {
     this.fromDate.set('');
     this.toDate.set('');
     this.facade.resetAllFilters();
+  }
+
+  formatMoney(value: number | undefined | null): string {
+    return `${(value ?? 0).toLocaleString('ar-EG')} ج.م`;
+  }
+
+  formatMoneyExact(value: number | undefined | null): string {
+    return `${(value ?? 0).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`;
+  }
+
+  formatCount(value: number | undefined | null): string {
+    return (value ?? 0).toLocaleString('ar-EG');
   }
 }

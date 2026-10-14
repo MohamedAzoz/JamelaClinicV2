@@ -60,6 +60,9 @@ export class AppointmentApiService {
     if (filter.Status !== null && filter.Status !== undefined) {
       params.push(`Status=${filter.Status}`);
     }
+    if (filter.PaymentMethod !== null && filter.PaymentMethod !== undefined) {
+      params.push(`PaymentMethod=${filter.PaymentMethod}`);
+    }
     if (params.length > 0) {
       url += `?${params.join('&')}`;
     }
@@ -100,6 +103,9 @@ export class AppointmentApiService {
     }
     if (filter.Status !== null && filter.Status !== undefined) {
       params.push(`Status=${filter.Status}`);
+    }
+    if (filter.PaymentMethod !== null && filter.PaymentMethod !== undefined) {
+      params.push(`PaymentMethod=${filter.PaymentMethod}`);
     }
     if (params.length > 0) {
       url += `?${params.join('&')}`;
@@ -176,6 +182,9 @@ export class AppointmentApiService {
     }
     if (filter.Status !== null && filter.Status !== undefined) {
       params.push(`Status=${filter.Status}`);
+    }
+    if (filter.PaymentMethod !== null && filter.PaymentMethod !== undefined) {
+      params.push(`PaymentMethod=${filter.PaymentMethod}`);
     }
     if (params.length > 0) {
       url += `?${params.join('&')}`;

@@ -1,4 +1,5 @@
 import { AppointmentStatus } from './AppointmentStatus';
+import { PaymentMethod } from './PaymentMethod';
 import { Period } from './Period';
 
 export interface FilterAppointment {
@@ -10,7 +11,7 @@ export interface FilterAppointment {
   ClinicId?: number;
   PageNumber?: number;
   PageSize?: number;
-  PaymentMethod?: number;
+  PaymentMethod: PaymentMethod | null;
   DoctorScheduleId?: number;
   Status: AppointmentStatus | null;
 }

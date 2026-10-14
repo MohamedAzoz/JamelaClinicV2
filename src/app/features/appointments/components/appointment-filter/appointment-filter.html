@@ -1,133 +1,230 @@
-<div class="space-y-4 mb-6">
+<div class="space-y-4 mb-6" dir="rtl">
   <!-- Statistics Summary Banner (from AppointmentApiService.getStatistics) -->
   @if (facade.statistics(); as stats) {
-    <div class="rounded-2xl bg-surface p-5 shadow-sm border border-primary/10">
-      <div class="flex items-center gap-2 mb-4 pb-2 border-b border-primary/10">
-        <fa-icon [icon]="faChartPie" class="text-primary text-base"></fa-icon>
-        <h3 class="text-sm font-bold text-text">إحصائيات المواعيد المفلترة</h3>
+    <section
+      class="rounded-2xl bg-surface p-5 shadow-xs border border-primary/10"
+      aria-label="إحصائيات المواعيد المفلترة"
+    >
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-primary/10">
+        <div class="flex items-center gap-2">
+          <fa-icon [icon]="faChartPie" class="text-primary text-base"></fa-icon>
+          <h3 class="text-sm font-bold text-text">إحصائيات المواعيد المفلترة</h3>
+        </div>
+        @if (activeFiltersCount() > 0) {
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-primary/10 text-primary border border-primary/20"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            فلاتر مفعلة: {{ activeFiltersCount() }}
+          </span>
+        }
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3">
-        <!-- Total Appointments -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-primary/10">
-          <div class="text-[11px] font-bold text-text-muted">إجمالي المواعيد</div>
-          <div class="text-lg font-extrabold text-primary mt-1 font-mono">{{ stats.totalAppointments }}</div>
-        </div>
-
-        <!-- Net Consultation Fees -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-success/20">
-          <div class="text-[11px] font-bold text-text-muted">صافي رسوم الكشف</div>
-          <div class="text-base font-extrabold text-success mt-1 font-mono">
-            {{ stats.totalNetConsultationFees | number: '1.2-2' }} <span class="text-[10px]">ج.م</span>
-          </div>
-        </div>
-
-        <!-- Materials Cost -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-warning/20">
-          <div class="text-[11px] font-bold text-text-muted">تكلفة المواد والخدمات</div>
-          <div class="text-base font-extrabold text-warning mt-1 font-mono">
-            {{ stats.totalMaterialsCost | number: '1.2-2' }} <span class="text-[10px]">ج.م</span>
-          </div>
-        </div>
-
-        <!-- Doctor Earnings -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-accent/20">
-          <div class="text-[11px] font-bold text-text-muted">مستحقات الطبيب</div>
-          <div class="text-base font-extrabold text-accent mt-1 font-mono">
-            {{ stats.totalDoctorEarnings | number: '1.2-2' }} <span class="text-[10px]">ج.م</span>
-          </div>
-        </div>
-
-        <!-- Center Earnings -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-primary/20">
-          <div class="text-[11px] font-bold text-text-muted">مستحقات المركز</div>
-          <div class="text-base font-extrabold text-primary mt-1 font-mono">
-            {{ stats.totalCenterEarnings | number: '1.2-2' }} <span class="text-[10px]">ج.م</span>
-          </div>
-        </div>
-
-        <!-- Unpaid Count -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-danger/20">
-          <div class="text-[11px] font-bold text-text-muted">غير مدفوع</div>
-          <div class="text-lg font-extrabold text-danger mt-1 font-mono">{{ stats.unpaidCount }}</div>
-        </div>
-
-        <!-- InProgress Count -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-accent/20">
-          <div class="text-[11px] font-bold text-text-muted">قيد الكشف</div>
-          <div class="text-lg font-extrabold text-accent mt-1 font-mono">{{ stats.inProgressCount }}</div>
-        </div>
-
-        <!-- Completed Count -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-success/20">
-          <div class="text-[11px] font-bold text-text-muted">مكتمل</div>
-          <div class="text-lg font-extrabold text-success mt-1 font-mono">{{ stats.completedCount }}</div>
-        </div>
-
-        <!-- Cancelled Count -->
-        <div class="rounded-xl bg-main-bg/70 p-3 border border-danger/20">
-          <div class="text-[11px] font-bold text-text-muted">ملغى</div>
-          <div class="text-lg font-extrabold text-danger mt-1 font-mono">{{ stats.cancelledCount }}</div>
-        </div>
+      <!-- Financial Metrics (4 Columns, formatted like Treasury Summary) -->
+      <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4 mb-3.5">
+        @for (
+          card of [
+            {
+              label: 'صافي رسوم الكشف',
+              value: stats.totalNetConsultationFees,
+              icon: faReceipt,
+              tone: 'text-success',
+              bg: 'bg-success/10',
+            },
+            {
+              label: 'مستحقات المركز',
+              value: stats.totalCenterEarnings,
+              icon: faBuilding,
+              tone: 'text-primary',
+              bg: 'bg-primary/10',
+            },
+            {
+              label: 'مستحقات الطبيب',
+              value: stats.totalDoctorEarnings,
+              icon: faUserMd,
+              tone: 'text-accent',
+              bg: 'bg-accent/10',
+            },
+            {
+              label: 'تكلفة المواد والخدمات',
+              value: stats.totalMaterialsCost,
+              icon: faCoins,
+              tone: 'text-warning',
+              bg: 'bg-warning/10',
+            },
+          ];
+          track card.label
+        ) {
+          <article
+            class="group flex items-center justify-between rounded-2xl border border-text-muted/10 bg-surface p-4 shadow-2xs hover:shadow-md hover:border-primary/20 transition-all duration-200"
+          >
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-semibold text-text-muted" [title]="card.label">
+                {{ card.label }}
+              </p>
+              <strong
+                class="mt-2 block text-lg font-bold"
+                [class]="card.tone"
+                [title]="formatMoneyExact(card.value)"
+              >
+                {{ formatMoney(card.value) }}
+              </strong>
+            </div>
+            <div
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105"
+              [class]="card.bg"
+              [class.text-success]="card.tone === 'text-success'"
+              [class.text-danger]="card.tone === 'text-danger'"
+              [class.text-primary]="card.tone === 'text-primary'"
+              [class.text-accent]="card.tone === 'text-accent'"
+              [class.text-warning]="card.tone === 'text-warning'"
+              aria-hidden="true"
+            >
+              <fa-icon [icon]="card.icon" class="text-lg"></fa-icon>
+            </div>
+          </article>
+        }
       </div>
-    </div>
+
+      <!-- Operational Status Counts (5 Columns) -->
+      <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-3 lg:grid-cols-5">
+        @for (
+          card of [
+            {
+              label: 'إجمالي المواعيد',
+              value: stats.totalAppointments,
+              icon: faCalendarAlt,
+              tone: 'text-primary',
+              bg: 'bg-primary/10',
+            },
+            {
+              label: 'مكتمل',
+              value: stats.completedCount,
+              icon: faCheckCircle,
+              tone: 'text-success',
+              bg: 'bg-success/10',
+            },
+            {
+              label: 'قيد الكشف',
+              value: stats.inProgressCount,
+              icon: faClock,
+              tone: 'text-accent',
+              bg: 'bg-accent/10',
+            },
+            {
+              label: 'غير مدفوع',
+              value: stats.unpaidCount,
+              icon: faTimesCircle,
+              tone: 'text-danger',
+              bg: 'bg-danger/10',
+            },
+            {
+              label: 'ملغى',
+              value: stats.cancelledCount,
+              icon: faBan,
+              tone: 'text-danger',
+              bg: 'bg-danger/10',
+            },
+          ];
+          track card.label
+        ) {
+          <article
+            class="group flex items-center justify-between rounded-2xl border border-text-muted/10 bg-surface p-3.5 shadow-2xs hover:shadow-md hover:border-primary/20 transition-all duration-200"
+          >
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-semibold text-text-muted truncate" [title]="card.label">
+                {{ card.label }}
+              </p>
+              <strong
+                class="mt-2 block text-lg font-bold font-mono tracking-tight truncate"
+                [class]="card.tone"
+                [title]="formatCount(card.value)"
+              >
+                {{ formatCount(card.value) }}
+              </strong>
+            </div>
+            <div
+              class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105"
+              [class]="card.bg"
+              [class.text-success]="card.tone === 'text-success'"
+              [class.text-danger]="card.tone === 'text-danger'"
+              [class.text-primary]="card.tone === 'text-primary'"
+              [class.text-accent]="card.tone === 'text-accent'"
+              aria-hidden="true"
+            >
+              <fa-icon [icon]="card.icon" class="text-base sm:text-lg"></fa-icon>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
   }
 
-  <!-- Main Filter Bar -->
-  <div class="rounded-2xl bg-surface p-5 shadow-sm border border-primary/10">
+  <!-- Main Filter Toolbar -->
+  <div class="rounded-2xl bg-surface p-5 shadow-xs border border-primary/10">
     <!-- Row 1: Period Presets & Actions -->
     <div
       class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-4 pb-4 border-b border-primary/10"
     >
-      <!-- Period Preset Tabs -->
-      <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
-        <span class="text-xs font-bold text-text-muted pl-2 flex items-center gap-1">
+      <!-- Period Preset Filter -->
+      <div class="flex items-center gap-2 flex-1 max-w-full sm:max-w-xs">
+        <label
+          for="period-filter-select"
+          class="text-xs font-bold text-text-muted flex items-center gap-1.5 shrink-0"
+        >
           <fa-icon [icon]="faCalendarAlt" class="text-primary"></fa-icon>
           الفترة:
-        </span>
-        <!--  [value]="facade.doctorIdFilter()"
-          (change)="onDoctorChange($event)"
-       -->
-        <select
-          [value]="facade.periodFilter()"
-          (change)="onPeriodSelect($event)"
-          class="w-full rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
-        >
-          <option value="null">جميع الفترات</option>
-          <option [value]="PeriodEnum.Today">اليوم</option>
-          <option [value]="PeriodEnum.ThisMonth">هذا الشهر</option>
-          <option [value]="PeriodEnum.ThisYear">هذا العام</option>
-        </select>
+        </label>
+        <div class="relative w-full">
+          <select
+            id="period-filter-select"
+            [value]="facade.periodFilter()"
+            (change)="onPeriodSelect($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-surface px-3 py-2 pl-8 text-xs font-semibold text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            [class.border-primary]="facade.periodFilter() !== null"
+            [class.bg-primary/5]="facade.periodFilter() !== null"
+          >
+            <option [value]="null">جميع الفترات</option>
+            <option [value]="PeriodEnum.Today">اليوم</option>
+            <option [value]="PeriodEnum.ThisMonth">هذا الشهر</option>
+            <option [value]="PeriodEnum.ThisYear">هذا العام</option>
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-text-muted"
+          >
+            <fa-icon [icon]="faChevronDown" class="text-[10px]"></fa-icon>
+          </div>
+        </div>
       </div>
 
       <!-- Custom Date Range & Reset Button -->
-      <div class="flex flex-wrap items-center gap-1 sm:gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <div
-          class="flex items-center md:flex-row flex-col gap-1 sm:gap-2 bg-main-bg/60 p-0.5 sm:p-1 lg:p-1.5 rounded-xl border border-primary/10"
+          class="flex items-center flex-wrap sm:flex-nowrap gap-2 bg-main-bg/70 p-1.5 rounded-xl border border-primary/15 shadow-2xs"
         >
-          <div class="w-full flex items-center gap-1 justify-center">
+          <div class="flex items-center gap-1.5">
             <span class="text-xs text-text-muted font-medium">من:</span>
             <input
               type="date"
               [value]="fromDate()"
               (input)="fromDate.set($any($event.target).value)"
-              class="rounded-lg border border-primary/20 bg-surface px-2.5 py-1 text-xs font-medium text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              class="rounded-lg border border-primary/20 bg-surface px-2.5 py-1 text-xs font-medium text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
             />
           </div>
-          <div class="w-full flex items-center gap-1 justify-center">
+          <div class="flex items-center gap-1.5">
             <span class="text-xs text-text-muted font-medium">إلى:</span>
             <input
               type="date"
               [value]="toDate()"
               (input)="toDate.set($any($event.target).value)"
-              class="rounded-lg border border-primary/20 bg-surface px-2.5 py-1 text-xs font-medium text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              class="rounded-lg border border-primary/20 bg-surface px-2.5 py-1 text-xs font-medium text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
             />
           </div>
 
           <button
             type="button"
             (click)="onDateRangeApply()"
-            class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-white hover:bg-primary-dark transition cursor-pointer"
+            class="rounded-lg bg-primary px-3.5 py-1 text-xs font-bold text-white hover:bg-primary-dark transition active:scale-95 shadow-xs cursor-pointer"
           >
             تطبيق
           </button>
@@ -137,70 +234,177 @@
           type="button"
           (click)="resetAll()"
           title="إعادة ضبط الفلاتر"
-          class="flex h-9 w-9 items-center justify-center rounded-xl border border-danger/30 bg-danger/5 text-danger hover:bg-danger/15 transition cursor-pointer"
+          aria-label="إعادة ضبط الفلاتر"
+          class="group flex h-9 px-3 items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/5 text-danger hover:bg-danger/15 active:scale-95 transition cursor-pointer"
         >
-          <fa-icon [icon]="faUndo" class="text-xs"></fa-icon>
+          <fa-icon
+            [icon]="faUndo"
+            class="text-xs transition-transform group-hover:-rotate-45 duration-200"
+          ></fa-icon>
+          <span class="text-xs font-bold hidden sm:inline">إعادة ضبط</span>
         </button>
       </div>
     </div>
 
-    <!-- Row 2: Doctor, Employee & Status Dropdown Filters -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <!-- Doctor Selection Filter -->
+    <!-- Row 2: Doctor, Employee, Status & PaymentMethod Dropdown Filters -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <!-- 1. Doctor Selection Filter -->
       <div class="relative">
-        <label class="text-xs font-bold text-text-muted mb-1 flex items-center gap-1">
-          <fa-icon [icon]="faUserMd" class="text-primary"></fa-icon>
-          تصفية حسب الطبيب:
-        </label>
-        <select
-          [value]="facade.doctorIdFilter()"
-          (change)="onDoctorChange($event)"
-          class="w-full rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+        <label
+          for="doctor-filter-select"
+          class="text-xs font-bold text-text-muted mb-1.5 flex items-center justify-between"
         >
-          <option value="">كافة الأطباء</option>
-          @for (doc of facade.doctors(); track doc.userId) {
-            <option [value]="doc.userId">
-              {{ doc.fullName }}
-            </option>
+          <span class="flex items-center gap-1.5">
+            <fa-icon [icon]="faUserMd" class="text-primary"></fa-icon>
+            تصفية حسب الطبيب:
+          </span>
+          @if (facade.doctorIdFilter()) {
+            <span
+              class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"
+              title="فلتر الطبيب نشط"
+            ></span>
           }
-        </select>
+        </label>
+        <div class="relative">
+          <select
+            id="doctor-filter-select"
+            [value]="facade.doctorIdFilter()"
+            (change)="onDoctorChange($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-surface px-3 py-2 pl-8 text-xs font-semibold text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            [class.border-primary]="facade.doctorIdFilter()"
+            [class.bg-primary/5]="facade.doctorIdFilter()"
+          >
+            <option value="">كافة الأطباء</option>
+            @for (doc of facade.doctors(); track doc.userId) {
+              <option [value]="doc.userId">
+                {{ doc.fullName }}
+              </option>
+            }
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-text-muted"
+          >
+            <fa-icon [icon]="faChevronDown" class="text-[10px]"></fa-icon>
+          </div>
+        </div>
       </div>
 
-      <!-- Employee Selection Filter -->
+      <!-- 2. Employee Selection Filter -->
       <div class="relative">
-        <label class="text-xs font-bold text-text-muted mb-1 flex items-center gap-1">
-          <fa-icon [icon]="faUserTie" class="text-primary"></fa-icon>
-          تصفية حسب الموظف:
-        </label>
-        <select
-          [value]="facade.employeeIdFilter()"
-          (change)="onEmployeeChange($event)"
-          class="w-full rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+        <label
+          for="employee-filter-select"
+          class="text-xs font-bold text-text-muted mb-1.5 flex items-center justify-between"
         >
-          <option value="">كافة الموظفين</option>
-          @for (emp of facade.employees(); track emp.userId) {
-            <option [value]="emp.userId">{{ emp.fullName }}</option>
+          <span class="flex items-center gap-1.5">
+            <fa-icon [icon]="faUserTie" class="text-primary"></fa-icon>
+            تصفية حسب الموظف:
+          </span>
+          @if (facade.employeeIdFilter()) {
+            <span
+              class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"
+              title="فلتر الموظف نشط"
+            ></span>
           }
-        </select>
+        </label>
+        <div class="relative">
+          <select
+            id="employee-filter-select"
+            [value]="facade.employeeIdFilter()"
+            (change)="onEmployeeChange($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-surface px-3 py-2 pl-8 text-xs font-semibold text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            [class.border-primary]="facade.employeeIdFilter()"
+            [class.bg-primary/5]="facade.employeeIdFilter()"
+          >
+            <option value="">كافة الموظفين</option>
+            @for (emp of facade.employees(); track emp.userId) {
+              <option [value]="emp.userId">{{ emp.fullName }}</option>
+            }
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-text-muted"
+          >
+            <fa-icon [icon]="faChevronDown" class="text-[10px]"></fa-icon>
+          </div>
+        </div>
       </div>
 
-      <!-- Status Selection Filter -->
+      <!-- 3. Status Selection Filter -->
       <div class="relative">
-        <label class="text-xs font-bold text-text-muted mb-1 flex items-center gap-1">
-          <fa-icon [icon]="faFilter" class="text-primary"></fa-icon>
-          تصفية حسب حالة الموعد:
-        </label>
-        <select
-          [value]="facade.statusFilter() ?? ''"
-          (change)="onStatusChange($event)"
-          class="w-full rounded-xl border border-primary/20 bg-surface px-3 py-2 text-xs font-semibold text-text transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+        <label
+          for="status-filter-select"
+          class="text-xs font-bold text-text-muted mb-1.5 flex items-center justify-between"
         >
-          <option value="">جميع الحالات</option>
-          <option [value]="AppointmentStatusEnum.Unpaid">غير مدفوع</option>
-          <option [value]="AppointmentStatusEnum.InProgress">قيد الكشف</option>
-          <option [value]="AppointmentStatusEnum.Completed">مكتمل</option>
-          <option [value]="AppointmentStatusEnum.Cancelleted">ملغى</option>
-        </select>
+          <span class="flex items-center gap-1.5">
+            <fa-icon [icon]="faFilter" class="text-primary"></fa-icon>
+            تصفية حسب حالة الموعد:
+          </span>
+          @if (facade.statusFilter() !== null) {
+            <span
+              class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"
+              title="فلتر الحالة نشط"
+            ></span>
+          }
+        </label>
+        <div class="relative">
+          <select
+            id="status-filter-select"
+            [value]="facade.statusFilter() ?? ''"
+            (change)="onStatusChange($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-surface px-3 py-2 pl-8 text-xs font-semibold text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            [class.border-primary]="facade.statusFilter() !== null"
+            [class.bg-primary/5]="facade.statusFilter() !== null"
+          >
+            <option value="">جميع الحالات</option>
+            <option [value]="AppointmentStatusEnum.Unpaid">غير مدفوع</option>
+            <option [value]="AppointmentStatusEnum.InProgress">قيد الكشف</option>
+            <option [value]="AppointmentStatusEnum.Completed">مكتمل</option>
+            <option [value]="AppointmentStatusEnum.Cancelleted">ملغى</option>
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-text-muted"
+          >
+            <fa-icon [icon]="faChevronDown" class="text-[10px]"></fa-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Payment Method Selection Filter -->
+      <div class="relative">
+        <label
+          for="payment-method-filter-select"
+          class="text-xs font-bold text-text-muted mb-1.5 flex items-center justify-between"
+        >
+          <span class="flex items-center gap-1.5">
+            <fa-icon [icon]="faCreditCard" class="text-primary"></fa-icon>
+            تصفية حسب طريقة الدفع:
+          </span>
+          @if (facade.paymentMethodFilter() !== null) {
+            <span
+              class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"
+              title="فلتر طريقة الدفع نشط"
+            ></span>
+          }
+        </label>
+        <div class="relative">
+          <select
+            id="payment-method-filter-select"
+            [value]="facade.paymentMethodFilter() ?? ''"
+            (change)="onPaymentMethodChange($event)"
+            class="w-full appearance-none rounded-xl border border-primary/20 bg-surface px-3 py-2 pl-8 text-xs font-semibold text-text transition hover:border-primary/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            [class.border-primary]="facade.paymentMethodFilter() !== null"
+            [class.bg-primary/5]="facade.paymentMethodFilter() !== null"
+          >
+            <option value="">كافة طرق الدفع</option>
+            <option [value]="PaymentMethodEnum.Cash">💵 نقداً</option>
+            <option [value]="PaymentMethodEnum.VodafoneCash">📱 فودافون كاش</option>
+            <option [value]="PaymentMethodEnum.InstaPay">⚡ إنستا باي</option>
+          </select>
+          <div
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-text-muted"
+          >
+            <fa-icon [icon]="faChevronDown" class="text-[10px]"></fa-icon>
+          </div>
+        </div>
       </div>
     </div>
   </div>
