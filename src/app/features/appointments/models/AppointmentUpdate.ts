@@ -1,3 +1,5 @@
+import { PaymentMethod } from './PaymentMethod';
+
 export interface AppointmentUpdate {
   id: number;
   patientName: string;
@@ -6,6 +8,7 @@ export interface AppointmentUpdate {
   doctorScheduleId: number;
   doctorClinicId: number;
   consultationFee: number;
+  paymentMethod: PaymentMethod;
   discountAmount?: number;
 }
 
@@ -17,5 +20,6 @@ export interface AppointmentUpdate {
 //   "doctorScheduleId": 0,
 //   "doctorClinicId": 0,
 //   "consultationFee": 0,
-//   "discountAmount": 0
+//   "discountAmount": 0,
+//   "paymentMethod": 0
 // }

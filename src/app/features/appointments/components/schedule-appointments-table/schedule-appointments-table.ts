@@ -27,9 +27,19 @@ import { EditAppointmentModalComponent } from '../edit-appointment-modal/edit-ap
 
 import { ConfirmDialogService } from '@shared/components/confirm-modal';
 
+import {
+  PayAppointmentModalComponent,
+  PayAppointmentData,
+} from '../pay-appointment-modal/pay-appointment-modal';
+
 @Component({
   selector: 'app-schedule-appointments-table',
-  imports: [FontAwesomeModule, DatePipe, EditAppointmentModalComponent],
+  imports: [
+    FontAwesomeModule,
+    DatePipe,
+    EditAppointmentModalComponent,
+    PayAppointmentModalComponent, 
+  ],
   templateUrl: './schedule-appointments-table.html',
 })
 export class ScheduleAppointmentsTableComponent {
@@ -40,17 +50,18 @@ export class ScheduleAppointmentsTableComponent {
   readonly Number = Number;
 
   readonly editingAppointment = signal<Appointments | null>(null);
+  readonly payingAppointment = signal<PayAppointmentData | null>(null);
 
-  async payAppointment(app: Appointments): Promise<void> {
-    const confirmed = await this._confirmService.pay(
-      `${app.finalPaidAmount || app.consultationFee || 0} ج.م`,
-      `هل أنت تأكد من رغبتك في سداد الكشف للحجز رقم #${app.id} للمريض "${app.patientName}"؟`,
-      'تأكيد سداد الكشفية',
-      [{ label: 'اسم المريض', value: app.patientName }],
-    );
-    if (confirmed) {
-      this.facade.payAppointment(app.id);
-    }
+  openPayModal(app: Appointments): void {
+    this.payingAppointment.set({
+      id: app.id,
+      patientName: app.patientName,
+      amount: app.finalPaidAmount || app.consultationFee || 0,
+    });
+  }
+
+  closePayModal(): void {
+    this.payingAppointment.set(null);
   }
 
   async completeAppointment(app: Appointments): Promise<void> {

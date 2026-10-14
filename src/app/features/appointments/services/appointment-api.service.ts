@@ -12,6 +12,7 @@ import { AppointmentsStatistics } from '../models/AppointmentsStatistics';
 import { AppointmentsMaterial } from '../models/AppointmentsMaterial';
 import { TodayAppointment } from '../models/TodayAppointment';
 import { UpdateAppointmentMaterial } from '../models/UpdateAppointmentMaterial';
+import { PaymentMethod } from '../models/PaymentMethod';
 
 @Service()
 export class AppointmentApiService {
@@ -120,8 +121,16 @@ export class AppointmentApiService {
 
   // PATCH
   // /api/Appointments/{id}/pay
-  payAppointment(id: number) {
-    return this._http.patch<Result<boolean>>(`${this._baseUrl}/${id}/pay`, null);
+  payAppointment(id: number, paymentMethod: PaymentMethod) {
+    let url = `${this._baseUrl}/${id}/pay`;
+    const params: string[] = [];
+    if (paymentMethod !== null && paymentMethod !== undefined) {
+      params.push(`paymentMethod=${paymentMethod}`);
+    }
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+    return this._http.patch<Result<boolean>>(url, null);
   }
 
   // PATCH

@@ -1,3 +1,5 @@
+import { PaymentMethod } from "@features/appointments/models/PaymentMethod";
+
 export interface CreateSpecialOfferBookingResponse {
   id: number;
   patientName: string;
@@ -27,6 +29,7 @@ export interface SpecialOfferBookingReportItem {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
+  paymentMethod: PaymentMethod;
   paidAmount: number;
   isRedeemed: boolean;
   createdByEmployeeName: string;

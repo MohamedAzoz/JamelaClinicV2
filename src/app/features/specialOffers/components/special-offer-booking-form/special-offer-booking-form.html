@@ -84,6 +84,30 @@
         }
       </div>
 
+      <div>
+        <label for="offer-booking-payment-method" class="mb-1.5 block text-sm font-semibold">
+          طريقة الدفع <span class="text-danger">*</span>
+        </label>
+        <select
+          id="offer-booking-payment-method"
+          [formField]="bookingForm.paymentMethod"
+          class="min-h-11 w-full rounded-xl border border-primary/20 bg-main-bg px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary cursor-pointer font-medium"
+        >
+          @for (method of paymentMethods; track method.value) {
+            <option [value]="method.value">
+              {{ method.icon }} {{ method.label }}
+            </option>
+          }
+        </select>
+        @if (
+          bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid()
+        ) {
+          @for (error of bookingForm.paymentMethod().errors(); track error.message) {
+            <p class="mt-1 text-xs text-danger" role="alert">{{ error.message }}</p>
+          }
+        }
+      </div>
+
       @if (facade.bookingActionError()) {
         <p class="text-sm text-danger" role="alert">{{ facade.bookingActionError() }}</p>
       }

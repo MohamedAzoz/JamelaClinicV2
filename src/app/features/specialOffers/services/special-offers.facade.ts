@@ -19,6 +19,7 @@ import { DoctorClinicsResponse } from '@features/doctors/models/DoctorClinicsRes
 import { DoctorScheduleApiService } from '@features/doctorSchedules/services/doctor-schedule-api.service';
 import { DoctorSchedule } from '@features/doctorSchedules/models/DoctorSchedule';
 import { SpecialOffersApiService } from './special-offers-api.service';
+import { PaymentMethod } from '@features/appointments/models/PaymentMethod';
 
 @Service()
 export class SpecialOffersFacade {
@@ -174,12 +175,14 @@ export class SpecialOffersFacade {
               ...booking,
               id: selected.bookingId,
               specialOfferId: offer.id,
+              paymentMethod:  booking.paymentMethod || PaymentMethod.Cash,
             } satisfies UpdateSpecialOfferBooking),
           )
         : await firstValueFrom(
             this.api.createSpecialOfferBooking({
               ...booking,
               specialOfferId: offer.id,
+              paymentMethod:  booking.paymentMethod || PaymentMethod.Cash,
             } satisfies CreateSpecialOfferBooking),
           );
       if (!response.isSuccess || !response.data) throw new Error(response.message);

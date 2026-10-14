@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  faArrowDown,
+  faCoins,
   faFileExcel,
   faMoneyBillTrendUp,
   faPlus,
@@ -19,4 +21,6 @@ export class TreasuryHeaderComponent {
   readonly faPlus = faPlus;
   readonly faRotateRight = faRotateRight;
   readonly faFileExcel = faFileExcel;
+  readonly faCoins = faCoins;
+  readonly faArrowDown = faArrowDown;
 }

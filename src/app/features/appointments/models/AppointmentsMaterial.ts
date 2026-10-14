@@ -1,9 +1,12 @@
-/**{
+import { PaymentMethod } from './PaymentMethod';
+
+/*{
     "id": 0,
     "patientName": "string",
     "patientPhoneNumber": "string",
     "patientAddress": "string",
     "clinicName": "string",
+    "paymentMethod": 0,
     "queueNumber": 0,
     "appointmentDate": "string",
     "status": "string",
@@ -24,6 +27,7 @@ export interface AppointmentsMaterial {
   patientPhoneNumber: string;
   patientAddress: string;
   clinicName: string;
+  paymentMethod: PaymentMethod;
   queueNumber: number;
   appointmentDate: string;
   status: string;

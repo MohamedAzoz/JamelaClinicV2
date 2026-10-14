@@ -3,11 +3,13 @@ import { form, FormField, FormRoot, minLength, pattern, required } from '@angula
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheck, faSpinner, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { SpecialOffersFacade } from '../../services/special-offers.facade';
+import { PaymentMethod } from '@features/appointments/models/PaymentMethod';
 
 interface BookingFormModel {
   patientName: string;
   patientPhoneNumber: string;
   patientAddress: string;
+  paymentMethod: string;
 }
 
 @Component({
@@ -24,7 +26,14 @@ export class SpecialOfferBookingFormComponent {
     patientName: '',
     patientPhoneNumber: '',
     patientAddress: '',
+    paymentMethod: PaymentMethod.Cash.toString(),
   });
+
+  readonly paymentMethods = [
+    { value: PaymentMethod.Cash.toString(), label: 'نقداً (كاش)', icon: '💵' },
+    { value: PaymentMethod.VodafoneCash.toString(), label: 'فودافون كاش', icon: '📱' },
+    { value: PaymentMethod.InstaPay.toString(), label: 'إنستا باي', icon: '⚡' },
+  ];
 
   readonly bookingForm = form(this.model, (path) => {
     required(path.patientName, { message: 'اسم المريض مطلوب' });
@@ -34,6 +43,7 @@ export class SpecialOfferBookingFormComponent {
       message: 'أدخل رقم هاتف مصري صحيحًا مكونًا من 11 رقمًا',
     });
     required(path.patientAddress, { message: 'عنوان المريض مطلوب' });
+    required(path.paymentMethod, { message: 'يرجى اختيار طريقة الدفع' });
   });
 
   constructor() {
@@ -43,6 +53,7 @@ export class SpecialOfferBookingFormComponent {
         patientName: booking?.patientName ?? '',
         patientPhoneNumber: booking?.patientPhoneNumber ?? '',
         patientAddress: booking?.patientAddress ?? '',
+        paymentMethod: booking?.paymentMethod?.toString() ?? PaymentMethod.Cash.toString(),
       });
     });
   }
@@ -53,6 +64,11 @@ export class SpecialOfferBookingFormComponent {
       this.bookingForm().markAsTouched();
       return;
     }
-    void this.facade.saveBooking(this.model());
+    const booking = {
+      ...this.model(),
+      paymentMethod: Number(this.model().paymentMethod) as PaymentMethod,
+    };
+
+    void this.facade.saveBooking(booking);
   }
 }

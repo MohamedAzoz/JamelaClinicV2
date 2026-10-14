@@ -35,6 +35,7 @@ import { AppointmentUpdate } from '../../models/AppointmentUpdate';
 import { Doctor } from '@features/doctors/models/Doctor';
 import { getDiscountError, getDoctorShare, isValidMoney } from '../../utils/appointment-pricing';
 import { AppointmentFeeBreakdownComponent } from '../appointment-fee-breakdown/appointment-fee-breakdown';
+import { PaymentMethod } from '@features/appointments/models/PaymentMethod';
 
 export interface EditAppointmentFormModel {
   doctorId: string;
@@ -45,6 +46,7 @@ export interface EditAppointmentFormModel {
   doctorClinicId: number;
   consultationFee: number;
   discountAmount: number;
+  paymentMethod: string;
 }
 
 @Component({
@@ -75,6 +77,13 @@ export class EditAppointmentModalComponent implements OnInit {
   readonly faCalendarCheck = faCalendarCheck;
   readonly faChevronDown = faChevronDown;
 
+  /** Payment method options derived from enum */
+  readonly paymentMethodOptions: { value: PaymentMethod; label: string }[] = [
+    { value: PaymentMethod.Cash, label: 'نقداً' },
+    { value: PaymentMethod.VodafoneCash, label: 'فودافون كاش' },
+    { value: PaymentMethod.InstaPay, label: 'إنستا باي' },
+  ];
+
   readonly pendingScheduleId = signal<string | null>(null);
 
   protected readonly _model = signal<EditAppointmentFormModel>({
@@ -86,6 +95,7 @@ export class EditAppointmentModalComponent implements OnInit {
     doctorClinicId: 0,
     consultationFee: 0,
     discountAmount: 0,
+    paymentMethod: '',
   });
 
   readonly model = this._model.asReadonly();
@@ -98,10 +108,6 @@ export class EditAppointmentModalComponent implements OnInit {
     required(path.doctorId, { message: 'يرجى اختيار الطبيب' });
 
     required(path.doctorScheduleId, { message: 'يرجى اختيار تاريخ وموعد الحجز' });
-    disabled(
-      path.doctorScheduleId,
-      () => !this.facade.selectedDoctorId() || this.facade.isLoadingSchedules(),
-    );
 
     required(path.patientName, { message: 'اسم المريض مطلوب' });
     minLength(path.patientName, 3, { message: 'اسم المريض يجب أن يتكون من 3 أحرف على الأقل' });
@@ -137,7 +143,10 @@ export class EditAppointmentModalComponent implements OnInit {
       if (docs.length > 0 && !currentDoctorId && app) {
         const matchedDoctorId = this.matchDoctorId(app.doctorName, docs);
         if (matchedDoctorId) {
-          this._model.update((m) => ({ ...m, doctorId: matchedDoctorId }));
+          this._model.update((m) => ({
+            ...m,
+            doctorId: matchedDoctorId,
+          }));
           this.facade.selectDoctor(matchedDoctorId);
         }
       }
@@ -157,6 +166,13 @@ export class EditAppointmentModalComponent implements OnInit {
           }));
           this.pendingScheduleId.set(null);
         }
+      }
+    });
+    // 3. Auto-select payment method from appointment data
+    effect(() => {
+      const app = this.appointment();
+      if (app?.paymentMethod) {
+        this._model.update((m) => ({ ...m, paymentMethod: app.paymentMethod.toString() }));
       }
     });
   }
@@ -181,6 +197,7 @@ export class EditAppointmentModalComponent implements OnInit {
       doctorClinicId: 0,
       consultationFee: app.consultationFee ?? 0,
       discountAmount: app.discountAmount ?? 0,
+      paymentMethod: app.paymentMethod?.toString() || PaymentMethod.Cash.toString(),
     });
 
     if (doctorId) {
@@ -218,6 +235,12 @@ export class EditAppointmentModalComponent implements OnInit {
     this._model.update((m) => ({ ...m, doctorScheduleId: select.value || '' }));
   }
 
+  onPaymentMethodChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const value = Number(select.value) as PaymentMethod;
+    this._model.update((m) => ({ ...m, paymentMethod: value.toString() }));
+  }
+
   async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
 
@@ -238,6 +261,7 @@ export class EditAppointmentModalComponent implements OnInit {
       doctorScheduleId: Number(val.doctorScheduleId),
       consultationFee: Number(val.consultationFee),
       discountAmount: val.discountAmount,
+      paymentMethod: Number(val.paymentMethod),
     };
 
     const ok = await this.facade.updateAppointment(payload);

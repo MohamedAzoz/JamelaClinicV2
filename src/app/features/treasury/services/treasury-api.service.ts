@@ -8,6 +8,7 @@ import { ReportExpense } from '../models/ReportExpense';
 import { Expense } from '../models/Expense';
 import { TreasurySummary } from '../models/TreasurySummary';
 import { PaginatedResult } from '@core/models/PaginatedResult';
+import { Deposit } from '../models/Deposit';
 
 @Service()
 export class TreasuryApiService {
@@ -19,6 +20,10 @@ export class TreasuryApiService {
   // /api/Treasury/expense
   postExpense(expense: CreateExpense) {
     return this._httpClient.post<Result<boolean>>(`${this._baseUrl}/expense`, expense);
+  }
+  // /api/Treasury/deposit
+  deposit(deposit: Deposit) {
+    return this._httpClient.post<Result<boolean>>(`${this._baseUrl}/deposit`, deposit);
   }
 
   // GET

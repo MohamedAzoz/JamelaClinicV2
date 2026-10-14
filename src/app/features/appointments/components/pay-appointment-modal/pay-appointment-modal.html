@@ -1,0 +1,126 @@
+<!-- Backdrop -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+  (click)="close()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="pay-modal-title"
+  dir="rtl"
+>
+  <!-- Modal Panel -->
+  <div
+    class="relative w-full max-w-md rounded-2xl bg-main-bg shadow-2xl border border-success/30 overflow-hidden"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div
+      class="flex items-center justify-between gap-3 bg-linear-to-l from-success/20 to-success/5 px-6 py-4 border-b border-success/20"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success/15 border border-success/20"
+        >
+          <fa-icon [icon]="faCoins" class="text-success text-lg"></fa-icon>
+        </div>
+        <div>
+          <h2 id="pay-modal-title" class="text-base font-bold text-text">تسديد الكشفية</h2>
+          <p class="text-xs text-text-muted">
+            المريض: <span class="font-bold text-success">{{ appointment().patientName }}</span>
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="close()"
+        class="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/20 bg-surface text-text hover:bg-danger/10 hover:border-danger/30 hover:text-danger transition cursor-pointer"
+        aria-label="إغلاق"
+      >
+        <fa-icon [icon]="faTimes" class="text-sm"></fa-icon>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 py-5 space-y-5">
+      <!-- Amount Badge -->
+      <div
+        class="flex items-center justify-between rounded-xl border border-success/20 bg-success/5 px-4 py-3"
+      >
+        <span class="text-sm font-semibold text-text-muted">المبلغ المستحق</span>
+        <span class="text-xl font-black text-success">{{ appointment().amount }} ج.م</span>
+      </div>
+
+      <!-- Payment Method Selection -->
+      <div>
+        <p class="text-sm font-bold text-text mb-3 flex items-center gap-2">
+          <fa-icon [icon]="faCreditCard" class="text-primary"></fa-icon>
+          اختر طريقة الدفع
+        </p>
+        <div class="grid grid-cols-3 gap-2.5">
+          @for (option of paymentMethodOptions; track option.value) {
+            <button
+              type="button"
+              (click)="selectMethod(option.value)"
+              [class]="
+                selectedMethod() === option.value
+                  ? 'ring-2 ring-primary border-primary bg-primary/10 text-primary'
+                  : 'border-primary/20 bg-surface text-text hover:border-primary/40 hover:bg-primary/5'
+              "
+              class="flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3.5 text-center transition-all duration-200 cursor-pointer"
+              [attr.aria-pressed]="selectedMethod() === option.value"
+            >
+              <span class="text-2xl leading-none">{{ option.icon }}</span>
+              <span class="text-[11px] font-bold leading-tight">{{ option.label }}</span>
+              @if (selectedMethod() === option.value) {
+                <span class="text-[9px] font-bold text-primary bg-primary/10 rounded-full px-1.5 py-0.5">
+                  ✓ محدد
+                </span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Selected method summary -->
+      <div class="rounded-xl border border-primary/15 bg-surface px-4 py-2.5 flex items-center gap-2">
+        <fa-icon [icon]="faCreditCard" class="text-primary text-xs"></fa-icon>
+        <span class="text-xs text-text-muted">
+          سيتم تسجيل الدفع بطريقة:
+          <span class="font-bold text-text">
+            @switch (selectedMethod()) {
+              @case (1) { نقداً }
+              @case (2) { فودافون كاش }
+              @case (3) { إنستا باي }
+            }
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="flex gap-3 px-6 pb-5">
+      <button
+        type="button"
+        (click)="confirmPay()"
+        [disabled]="facade.actionLoadingId() === appointment().id"
+        class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-success px-5 py-3 text-sm font-bold text-white shadow-lg shadow-success/20 hover:bg-success-dark focus:outline-none focus:ring-4 focus:ring-success/20 disabled:cursor-not-allowed disabled:opacity-60 transition cursor-pointer"
+      >
+        @if (facade.actionLoadingId() === appointment().id) {
+          <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+          <span>جاري تسجيل الدفع...</span>
+        } @else {
+          <fa-icon [icon]="faCheckCircle"></fa-icon>
+          <span>تأكيد السداد</span>
+        }
+      </button>
+
+      <button
+        type="button"
+        (click)="close()"
+        class="flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-surface px-5 py-3 text-sm font-bold text-text hover:bg-main-bg transition cursor-pointer"
+      >
+        <fa-icon [icon]="faTimes" class="text-danger text-xs"></fa-icon>
+        <span>إلغاء</span>
+      </button>
+    </div>
+  </div>
+</div>

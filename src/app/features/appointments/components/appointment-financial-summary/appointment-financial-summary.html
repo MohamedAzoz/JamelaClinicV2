@@ -33,6 +33,22 @@
       >
     </div>
 
+    <!-- Payment Method Card -->
+    <div class="flex items-center justify-between rounded-xl bg-main-bg px-3.5 py-2.5 text-sm">
+      <div class="flex items-center gap-2">
+        <fa-icon [icon]="faCreditCard" class="text-xs text-primary"></fa-icon>
+        <span class="text-text-muted text-xs">طريقة الدفع</span>
+      </div>
+      <div
+        class="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold"
+        [class]="paymentMethodDetails().badgeClass"
+      >
+        <span>{{ paymentMethodDetails().emoji }}</span>
+        <fa-icon [icon]="paymentMethodDetails().icon" class="text-[11px]"></fa-icon>
+        <span>{{ paymentMethodDetails().name }}</span>
+      </div>
+    </div>
+
     <div class="flex items-center justify-between rounded-xl bg-main-bg px-3.5 py-2.5 text-sm">
       <span class="text-text-muted text-xs">إجمالي تكلفة الخدمات / materials</span>
       <span class="font-bold text-primary"

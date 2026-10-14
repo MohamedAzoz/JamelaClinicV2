@@ -7,6 +7,7 @@ import { TreasuryApiService } from './treasury-api.service';
 import { firstValueFrom, finalize } from 'rxjs';
 import { TreasurySummary } from '../models/TreasurySummary';
 import { IdentityService } from '@core/services/identity-service';
+import { Deposit } from '../models/Deposit';
 
 @Service()
 export class TreasuryFacade {
@@ -45,6 +46,7 @@ export class TreasuryFacade {
   readonly totalPages = signal(0);
   readonly selectedExpense = signal<Expense | null>(null);
   readonly isFormModalOpen = signal(false);
+  readonly isDepositModalOpen = signal(false);
   readonly isDeleteModalOpen = signal(false);
   readonly expenseToDelete = signal<Expense | null>(null);
   readonly hasExpenses = computed(() => this.expenses().length > 0);
@@ -183,6 +185,14 @@ export class TreasuryFacade {
     this.selectedExpense.set(null);
   }
 
+  openDepositModal(): void {
+    this.isDepositModalOpen.set(true);
+  }
+
+  closeDepositModal(): void {
+    this.isDepositModalOpen.set(false);
+  }
+
   openDeleteModal(expense: Expense): void {
     this.expenseToDelete.set(expense);
     this.isDeleteModalOpen.set(true);
@@ -195,6 +205,10 @@ export class TreasuryFacade {
 
   createExpense(expense: CreateExpense): void {
     this.runMutation(this._api.postExpense(expense), 'تمت إضافة المصروف بنجاح');
+  }
+
+  deposit(deposit: Deposit): void {
+    this.runMutation(this._api.deposit(deposit), 'تم الإيداع بنجاح');
   }
 
   updateExpense(id: number, expense: CreateExpense): void {
@@ -218,12 +232,17 @@ export class TreasuryFacade {
           return;
         }
         this._messages.addSuccessMessage(response.message || successMessage);
-        if (isDelete) this.closeDeleteModal();
-        else this.closeFormModal();
+        if (isDelete) {
+          this.closeDeleteModal();
+        } else {
+          this.closeFormModal();
+          this.closeDepositModal();
+        }
         this.loadReport();
         this.loadSummary();
       },
-      error: (error) => this._messages.showHttpError(error, 'تعذر تنفيذ عملية المصروف'),
+      error: (error) => this._messages.showHttpError(error, 'تعذر تنفيذ العملية'),
     });
   }
 }
+

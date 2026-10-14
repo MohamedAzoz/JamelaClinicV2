@@ -64,14 +64,14 @@
       </div>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Clinic Name -->
       <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
         <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
           <fa-icon [icon]="faCalendarDay" class="text-xs text-primary"></fa-icon>
           عيادة
         </div>
-        <div class="text-sm font-bold text-text">{{ appointment().clinicName || '---' }}</div>
+        <div class="text-sm font-bold text-text truncate">{{ appointment().clinicName || '---' }}</div>
       </div>
 
       <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
@@ -90,6 +90,24 @@
           رقم الدور
         </div>
         <div class="text-sm font-bold text-text">{{ appointment().queueNumber }}</div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="rounded-xl border border-primary/10 bg-main-bg p-3">
+        <div class="mb-2 flex items-center gap-2 text-[11px] font-semibold text-text-muted">
+          <fa-icon [icon]="faCreditCard" class="text-xs text-primary"></fa-icon>
+          طريقة الدفع
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span
+            class="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-0.5 text-xs font-bold"
+            [class]="paymentMethodDetails().badgeClass"
+          >
+            <span>{{ paymentMethodDetails().emoji }}</span>
+            <fa-icon [icon]="paymentMethodDetails().icon" class="text-[11px]"></fa-icon>
+            <span>{{ paymentMethodDetails().name }}</span>
+          </span>
+        </div>
       </div>
     </div>
   </section>

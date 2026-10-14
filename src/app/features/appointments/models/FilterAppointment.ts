@@ -10,6 +10,7 @@ export interface FilterAppointment {
   ClinicId?: number;
   PageNumber?: number;
   PageSize?: number;
+  PaymentMethod?: number;
   DoctorScheduleId?: number;
   Status: AppointmentStatus | null;
 }

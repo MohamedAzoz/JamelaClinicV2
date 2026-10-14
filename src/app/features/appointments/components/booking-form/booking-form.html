@@ -314,24 +314,69 @@
           </div>
         }
       </div>
-      <!-- Payment Status Toggle Checkbox -->
-      <div class="pt-2 md:pt-6">
-        <label
-          class="relative flex items-center gap-3 cursor-pointer p-3.5 rounded-xl border border-primary/15 bg-main-bg"
-        >
-          <input
-            type="checkbox"
-            [checked]="model().isPaid"
-            (change)="onPaidToggle($event)"
-            class="h-5 w-5 rounded border-primary/30 text-primary focus:ring-primary"
-          />
-          <div class="flex flex-col">
-            <span class="text-sm font-semibold text-text flex items-center gap-2">
-              <fa-icon [icon]="faCreditCard" class="text-primary"></fa-icon>
-              تم استلام المبلغ (حالة الدفع: مدفوع)
-            </span>
-          </div>
-        </label>
+      <!-- Payment Status Toggle Checkbox + Payment Method -->
+      <div class="md:col-span-2 pt-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+          <!-- isPaid Checkbox -->
+          <label
+            class="relative flex items-center gap-3 cursor-pointer p-3.5 rounded-xl border border-primary/15 bg-main-bg h-full"
+          >
+            <input
+              id="isPaid"
+              type="checkbox"
+              [checked]="model().isPaid"
+              (change)="onPaidToggle($event)"
+              class="h-5 w-5 rounded border-primary/30 text-primary focus:ring-primary"
+            />
+            <div class="flex flex-col">
+              <span class="text-sm font-semibold text-text flex items-center gap-2">
+                <fa-icon [icon]="faCreditCard" class="text-primary"></fa-icon>
+                تم استلام المبلغ (حالة الدفع: مدفوع)
+              </span>
+              <span class="text-xs text-text-muted mt-0.5">فعّل هذا الخيار لتحديد طريقة الدفع</span>
+            </div>
+          </label>
+
+          <!-- Payment Method Select — shown only when isPaid is true -->
+          @if (model().isPaid) {
+            <div>
+              <label for="paymentMethod" class="block text-sm font-semibold text-text mb-1.5">
+                طريقة الدفع <span class="text-danger">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="paymentMethod"
+                  [value]="model().paymentMethod ?? ''"
+                  (change)="onPaymentMethodChange($event)"
+                  class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10"
+                  aria-label="اختر طريقة الدفع"
+                >
+                  <option value="" disabled>-- اختر طريقة الدفع --</option>
+                  @for (option of paymentMethodOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faCreditCard"></fa-icon>
+                </div>
+                <div
+                  class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
+                >
+                  <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="flex items-center justify-center p-3.5 rounded-xl border border-dashed border-primary/15 bg-main-bg/50">
+              <span class="text-xs text-text-muted text-center">
+                <fa-icon [icon]="faCreditCard" class="mb-1 text-primary/30 text-lg block mx-auto"></fa-icon>
+                فعّل «تم استلام المبلغ» لاختيار طريقة الدفع
+              </span>
+            </div>
+          }
+        </div>
       </div>
 
     </div>

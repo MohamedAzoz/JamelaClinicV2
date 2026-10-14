@@ -6,6 +6,7 @@ import { TreasurySummaryComponent } from '../../components/treasury-summary/trea
 import { ExpenseTableComponent } from '../../components/expense-table/expense-table';
 import { ExpenseFormModalComponent } from '../../components/expense-form-modal/expense-form-modal';
 import { ExpenseDeleteModalComponent } from '../../components/expense-delete-modal/expense-delete-modal';
+import { DepositModalComponent } from '../../components/deposit-modal/deposit-modal';
 import { PaginationComponent } from '@shared/components/pagination';
 
 @Component({
@@ -17,6 +18,7 @@ import { PaginationComponent } from '@shared/components/pagination';
     ExpenseTableComponent,
     ExpenseFormModalComponent,
     ExpenseDeleteModalComponent,
+    DepositModalComponent, 
     PaginationComponent,
   ],
   templateUrl: './treasury-management.html',

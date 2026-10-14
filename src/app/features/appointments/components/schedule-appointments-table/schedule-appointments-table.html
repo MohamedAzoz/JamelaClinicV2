@@ -179,7 +179,7 @@
                     @if (!facade.isDoctor() && Number(app.status) === 1) {
                       <button
                         type="button"
-                        (click)="payAppointment(app)"
+                        (click)="openPayModal(app)"
                         [disabled]="facade.actionLoadingId() === app.id"
                         title="سداد الكشفية (دفع)"
                         class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-success/20 bg-success/5 px-2.5 text-xs font-bold text-success hover:bg-success/10 transition-all cursor-pointer disabled:opacity-50"
@@ -289,3 +289,9 @@
 @if (editingAppointment()) {
   <app-edit-appointment-modal [appointment]="editingAppointment()!" (closed)="closeEditModal()" />
 }
+
+<!-- Pay Appointment Modal -->
+@if (payingAppointment()) {
+  <app-pay-appointment-modal [appointment]="payingAppointment()!" (closed)="closePayModal()" />
+}
+

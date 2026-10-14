@@ -182,6 +182,7 @@
             <tr>
               <th scope="col" class="px-4 py-3">بيانات المريض</th>
               <th scope="col" class="px-4 py-3">المبلغ</th>
+              <th scope="col" class="px-4 py-3">طريقة الدفع</th>
               <th scope="col" class="px-4 py-3">تاريخ التسجيل</th>
               <th scope="col" class="px-4 py-3">سجّله</th>
               <th scope="col" class="px-4 py-3">حالة الحجز</th>
@@ -204,6 +205,16 @@
                 </th>
                 <td class="whitespace-nowrap px-4 py-3 font-semibold">
                   {{ booking.paidAmount | number: '1.2-2' }} ج.م
+                </td>
+                <td class="whitespace-nowrap px-4 py-3">
+                  @let method = getPaymentMethodBadge(booking.paymentMethod);
+                  <span
+                    class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold"
+                    [class]="method.class"
+                  >
+                    <span>{{ method.emoji }}</span>
+                    <span>{{ method.label }}</span>
+                  </span>
                 </td>
                 <td class="whitespace-nowrap px-4 py-3 text-xs">
                   {{ booking.createdAt | date: 'yyyy-MM-dd (hh:mm a)' }}

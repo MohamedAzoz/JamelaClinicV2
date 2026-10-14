@@ -33,6 +33,7 @@ import { CreateAppointments } from '../../models/CreateAppointments';
 import { DatePipe } from '@angular/common';
 import { getDiscountError, getDoctorShare, isValidMoney } from '../../utils/appointment-pricing';
 import { AppointmentFeeBreakdownComponent } from '../appointment-fee-breakdown/appointment-fee-breakdown';
+import { PaymentMethod } from '@features/appointments/models/PaymentMethod';
 
 export interface BookingFormModel {
   doctorId: string;
@@ -44,6 +45,7 @@ export interface BookingFormModel {
   consultationFee: number;
   discountAmount: number;
   isPaid: boolean;
+  paymentMethod: PaymentMethod | null;
   totalMaterialsCost: number | null;
   materialsDescription: string;
 }
@@ -82,6 +84,13 @@ export class BookingFormComponent implements OnInit {
   readonly faChevronDown = faChevronDown;
   readonly faHospital = faHospital;
 
+  /** Payment method options derived from enum */
+  readonly paymentMethodOptions: { value: PaymentMethod; label: string }[] = [
+    { value: PaymentMethod.Cash, label: 'نقداً' },
+    { value: PaymentMethod.VodafoneCash, label: 'فودافون كاش' },
+    { value: PaymentMethod.InstaPay, label: 'إنستا باي' },
+  ];
+
   // Signal Form Model
   protected readonly _model = signal<BookingFormModel>({
     doctorId: '',
@@ -93,6 +102,7 @@ export class BookingFormComponent implements OnInit {
     consultationFee: 0,
     discountAmount: 0,
     isPaid: false,
+    paymentMethod: null,
     totalMaterialsCost: null,
     materialsDescription: '',
   });
@@ -228,6 +238,17 @@ export class BookingFormComponent implements OnInit {
     this._model.update((m) => ({
       ...m,
       isPaid: input.checked,
+      // Clear payment method when unchecking isPaid
+      paymentMethod: input.checked ? m.paymentMethod : null,
+    }));
+  }
+
+  onPaymentMethodChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value ? (Number(select.value) as PaymentMethod) : null;
+    this._model.update((m) => ({
+      ...m,
+      paymentMethod: value,
     }));
   }
 
@@ -256,6 +277,8 @@ export class BookingFormComponent implements OnInit {
       consultationFee: Number(val.consultationFee),
       discountAmount: val.discountAmount,
       isPaid: Boolean(val.isPaid),
+      // Include paymentMethod only when isPaid is true and a method is selected
+      ...(val.isPaid && val.paymentMethod != null && { paymentMethod: val.paymentMethod }),
       ...(hasMaterials && {
         totalMaterialsCost: val.totalMaterialsCost ? Number(val.totalMaterialsCost) : undefined,
         materialsDescription: val.materialsDescription?.trim() || undefined,
@@ -292,6 +315,7 @@ export class BookingFormComponent implements OnInit {
       consultationFee: 0,
       discountAmount: 0,
       isPaid: false,
+      paymentMethod: null,
       totalMaterialsCost: null,
       materialsDescription: '',
     });

@@ -15,6 +15,7 @@ import {
   faUser,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { PaymentMethod } from '@features/appointments/models/PaymentMethod';
 import { CreateSpecialOfferResponse } from '../../models/CreateSpecialOfferResponse';
 import { SpecialOffersFacade } from '../../services/special-offers.facade';
 
@@ -50,4 +51,33 @@ export class SpecialOfferDetailsViewComponent {
   readonly faTrash = faTrash;
   readonly faUser = faUser;
   readonly faUsers = faUsers;
+
+  getPaymentMethodBadge(method: PaymentMethod | number) {
+    switch (Number(method)) {
+      case PaymentMethod.Cash:
+        return {
+          label: 'نقداً',
+          class: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20',
+          emoji: '💵',
+        };
+      case PaymentMethod.VodafoneCash:
+        return {
+          label: 'فودافون كاش',
+          class: 'bg-rose-500/10 text-rose-500 border border-rose-500/20',
+          emoji: '📱',
+        };
+      case PaymentMethod.InstaPay:
+        return {
+          label: 'إنستا باي',
+          class: 'bg-violet-500/10 text-violet-500 border border-violet-500/20',
+          emoji: '⚡',
+        };
+      default:
+        return {
+          label: 'غير محدد',
+          class: 'bg-text-muted/10 text-text-muted border border-text-muted/20',
+          emoji: '💳',
+        };
+    }
+  }
 }

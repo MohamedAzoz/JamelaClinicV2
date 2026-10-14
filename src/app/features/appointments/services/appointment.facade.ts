@@ -17,6 +17,7 @@ import { AppointmentsStatistics } from '../models/AppointmentsStatistics';
 import { AppointmentsMaterial } from '../models/AppointmentsMaterial';
 import { UpdateAppointmentMaterial } from '../models/UpdateAppointmentMaterial';
 import { TodayAppointment } from '../models/TodayAppointment';
+import { PaymentMethod } from '../models/PaymentMethod';
 import { AppMessageService } from '@core/services/app-message-service';
 import { IdentityService } from '@core/services/identity-service';
 import { DoctorClinicsResponse } from '@features/doctors/models/DoctorClinicsResponse';
@@ -648,9 +649,9 @@ export class AppointmentFacade {
   /**
    * Status change action methods for individual appointments
    */
-  payAppointment(id: number): void {
+  payAppointment(id: number, paymentMethod: PaymentMethod): void {
     this.actionLoadingId.set(id);
-    this._appointmentApiService.payAppointment(id).subscribe({
+    this._appointmentApiService.payAppointment(id, paymentMethod).subscribe({
       next: (res) => {
         this.actionLoadingId.set(null);
         if (res.isSuccess) {

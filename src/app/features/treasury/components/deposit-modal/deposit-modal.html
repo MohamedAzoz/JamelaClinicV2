@@ -1,0 +1,128 @@
+@if (facade.isDepositModalOpen()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-sidebar-bg/70 p-4 backdrop-blur-sm"
+    dir="rtl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deposit-form-title"
+  >
+    <div
+      class="w-full max-w-lg overflow-hidden rounded-2xl border border-success/30 bg-surface shadow-2xl"
+    >
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between border-b border-success/20 bg-linear-to-l from-success/20 to-success/5 px-5 py-4"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-success/15 border border-success/20 text-success"
+          >
+            <fa-icon [icon]="faCoins" class="text-base"></fa-icon>
+          </div>
+          <div>
+            <h2 id="deposit-form-title" class="font-bold text-text">إيداع رصيد في الخزينة</h2>
+            <p class="text-xs text-text-muted">إضافة رصيد نقدي خارجي لزيادة سيولة الخزينة</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="close()"
+          class="rounded-xl p-2 text-text-muted hover:bg-danger/10 hover:text-danger transition cursor-pointer"
+          aria-label="إغلاق"
+        >
+          <fa-icon [icon]="faXmark"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form
+        [formRoot]="depositForm"
+        (submit)="submit($event)"
+        class="flex flex-col gap-4 p-5"
+        novalidate
+      >
+        <!-- Amount Field -->
+        <div class="grid grid-cols-1 gap-1.5">
+          <label class="flex items-center gap-1.5 text-xs font-semibold text-text">
+            <span>مبلغ الإيداع</span>
+            <span class="text-danger">*</span>
+            <span class="text-[11px] text-text-muted font-normal">(بالجنيه المصري)</span>
+          </label>
+          <div class="relative">
+            <input
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              [formField]="depositForm.amount"
+              class="w-full rounded-xl border border-text-muted/15 bg-main-bg px-3 py-3 text-sm font-bold text-text outline-none focus:border-success focus:ring-2 focus:ring-success/20 transition"
+            />
+            <div
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-success"
+            >
+              ج.م
+            </div>
+          </div>
+          @if (depositForm.amount().touched() && depositForm.amount().invalid()) {
+            @for (error of depositForm.amount().errors(); track error.message) {
+              <span class="text-xs text-danger" role="alert">{{ error.message }}</span>
+            }
+          }
+        </div>
+
+        <!-- Description Field -->
+        <div class="grid grid-cols-1 gap-1.5">
+          <label class="flex items-center gap-1.5 text-xs font-semibold text-text">
+            <span>بيان وسبب الإيداع</span>
+            <span class="text-danger">*</span>
+            <span class="text-[11px] text-text-muted font-normal">(مصدر الرصيد أو الغرض منه)</span>
+          </label>
+          <textarea
+            rows="3"
+            placeholder="مثال: تغذية الخزينة برصيد افتتاحي، إيداع تمويل إضافي..."
+            [formField]="depositForm.description"
+            class="resize-none rounded-xl border border-text-muted/15 bg-main-bg px-3 py-3 text-sm text-text outline-none focus:border-success focus:ring-2 focus:ring-success/20 transition"
+          ></textarea>
+          @if (depositForm.description().touched() && depositForm.description().invalid()) {
+            @for (error of depositForm.description().errors(); track error.message) {
+              <span class="text-xs text-danger" role="alert">{{ error.message }}</span>
+            }
+          }
+        </div>
+
+        <!-- Tip Box -->
+        <div
+          class="flex items-center gap-2.5 rounded-xl border border-success/20 bg-success/5 p-3 text-xs text-text-muted"
+        >
+          <fa-icon [icon]="faArrowDown" class="text-success text-sm shrink-0"></fa-icon>
+          <span>
+            سيتم قيد هذا المبلغ كإيداع إيجابي في الخزينة وستنعكس الزيادة مباشرة على الإجمالي والرصيد المتوفر.
+          </span>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="flex justify-end gap-2 border-t border-text-muted/10 pt-4">
+          <button
+            type="button"
+            (click)="close()"
+            class="rounded-xl border border-text-muted/15 px-5 py-2.5 text-xs font-semibold text-text hover:bg-main-bg transition cursor-pointer"
+          >
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            [disabled]="facade.actionLoading()"
+            class="inline-flex items-center gap-2 rounded-xl bg-success px-5 py-2.5 text-xs font-semibold text-white shadow-md shadow-success/20 hover:bg-success-dark focus:outline-none focus:ring-2 focus:ring-success/30 disabled:opacity-50 transition cursor-pointer"
+          >
+            @if (facade.actionLoading()) {
+              <fa-icon [icon]="faSpinner" class="animate-spin"></fa-icon>
+              <span>جاري الإيداع...</span>
+            } @else {
+              <fa-icon [icon]="faCheck"></fa-icon>
+              <span>تأكيد الإيداع</span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
