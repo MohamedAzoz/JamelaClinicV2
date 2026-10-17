@@ -9,7 +9,7 @@
   "projects": {
     "ClinicManagementSystem": {
       "projectType": "application",
-      "schematics": {},      
+      "schematics": {},
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -41,7 +41,8 @@
                   "maximumError": "30kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
