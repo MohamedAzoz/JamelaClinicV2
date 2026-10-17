@@ -377,7 +377,7 @@ export class AppointmentFacade {
     this.isLoadingStatistics.set(true);
 
     const filter: FilterAppointments = {
-      Period: this.periodFilter() || null,
+      Period: this.periodFilter() || Period.Today,
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
       DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,
@@ -411,7 +411,7 @@ export class AppointmentFacade {
     this.isLoadingAppointments.set(true);
 
     const filter: FilterAppointment = {
-      Period: this.periodFilter() || null,
+      Period: this.periodFilter() || Period.Today,
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
       DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,
@@ -458,7 +458,7 @@ export class AppointmentFacade {
     this.isExportingExcel.set(true);
 
     const filter: FilterAppointment = {
-      Period: this.periodFilter() || null,
+      Period: this.periodFilter() || Period.Today,
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
       DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,

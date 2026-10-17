@@ -56,7 +56,7 @@ export class DoctorWalletFacade {
   readonly actionLoading = signal(false);
   readonly actionTarget = signal<WalletActionTarget | null>(null);
   readonly doctorIdFilter = signal('');
-  readonly periodFilter = signal<Period | null>(null);
+  readonly periodFilter = signal<Period>(Period.Today);
   readonly fromDateFilter = signal('');
   readonly toDateFilter = signal('');
   readonly pageNumber = signal(1);

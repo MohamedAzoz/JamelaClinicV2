@@ -7,6 +7,7 @@ import { DoctorWalletFilter } from '../models/DoctorWalletFilter';
 import { DoctorWalletTransaction } from '../models/DoctorWalletTransaction';
 import { DoctorWalletSummary } from '../models/DoctorWalletSummary';
 import { DoctorWalletReport } from '../models/DoctorWalletReport';
+import { Period } from '../models/Period';
 
 @Service()
 export class DoctorWalletApiService {
@@ -18,8 +19,8 @@ export class DoctorWalletApiService {
     let url = `${this._baseUrl}transactions-report`;
     const params: string[] = [];
 
+    params.push(`Period=${searchParams.Period ?? Period.Today}`);
     if (searchParams.DoctorId) params.push(`DoctorId=${searchParams.DoctorId}`);
-    if (searchParams.Period) params.push(`Period=${searchParams.Period}`);
     if (searchParams.FromDate) params.push(`FromDate=${searchParams.FromDate}`);
     if (searchParams.ToDate) params.push(`ToDate=${searchParams.ToDate}`);
     if (searchParams.Type) params.push(`Type=${searchParams.Type}`);
@@ -40,8 +41,8 @@ export class DoctorWalletApiService {
     let url = `${this._baseUrl}summary-report`;
     const params: string[] = [];
 
+    params.push(`Period=${searchParams.Period ?? Period.Today}`);
     if (searchParams.DoctorId) params.push(`DoctorId=${searchParams.DoctorId}`);
-    if (searchParams.Period) params.push(`Period=${searchParams.Period}`);
     if (searchParams.FromDate) params.push(`FromDate=${searchParams.FromDate}`);
     if (searchParams.ToDate) params.push(`ToDate=${searchParams.ToDate}`);
     if (searchParams.Type) params.push(`Type=${searchParams.Type}`);

@@ -1,10 +1,10 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Service } from '@angular/core';
 import { Result } from '@core/models/Result';
 import { environment } from 'environments/environment';
 import { CreateExpense } from '../models/CreateExpense';
-import { ReportExpense } from '../models/ReportExpense';
+import { ReportExpense, TreasuryPeriod } from '../models/ReportExpense';
 import { Expense } from '../models/Expense';
 import { TreasurySummary } from '../models/TreasurySummary';
 import { PaginatedResult } from '@core/models/PaginatedResult';
@@ -30,11 +30,9 @@ export class TreasuryApiService {
   // /api/Treasury/report
   getReport(report: ReportExpense) {
     const params: string[] = [];
+    params.push(`Period=${report.Period ?? TreasuryPeriod.Today}`);
     if (report.Type) {
       params.push(`Type=${report.Type}`);
-    }
-    if (report.Period) {
-      params.push(`Period=${report.Period}`);
     }
     if (report.FromDate) {
       params.push(`FromDate=${report.FromDate}`);
@@ -60,11 +58,9 @@ export class TreasuryApiService {
   // /api/Treasury/summary
   getSummary(summary: ReportExpense) {
     const params: string[] = [];
+    params.push(`Period=${summary.Period ?? TreasuryPeriod.Today}`);
     if (summary.Type) {
       params.push(`Type=${summary.Type}`);
-    }
-    if (summary.Period) {
-      params.push(`Period=${summary.Period}`);
     }
     if (summary.FromDate) {
       params.push(`FromDate=${summary.FromDate}`);
@@ -102,8 +98,8 @@ export class TreasuryApiService {
   // /api/Treasury/export-excel
   exportExcel(report: ReportExpense) {
     const params: string[] = [];
+    params.push(`Period=${report.Period ?? TreasuryPeriod.Today}`);
     if (report.Type) params.push(`Type=${report.Type}`);
-    if (report.Period) params.push(`Period=${report.Period}`);
     if (report.FromDate) params.push(`FromDate=${report.FromDate}`);
     if (report.ToDate) params.push(`DateTo=${report.ToDate}`);
     if (report.PageNumber) params.push(`PageNumber=${report.PageNumber}`);
