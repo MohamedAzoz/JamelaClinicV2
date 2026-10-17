@@ -13,7 +13,6 @@ import { AppointmentsMaterial } from '../models/AppointmentsMaterial';
 import { TodayAppointment } from '../models/TodayAppointment';
 import { UpdateAppointmentMaterial } from '../models/UpdateAppointmentMaterial';
 import { PaymentMethod } from '../models/PaymentMethod';
-import { Period } from '../models/Period';
 
 @Service()
 export class AppointmentApiService {
@@ -31,7 +30,9 @@ export class AppointmentApiService {
   getAllAppointments(filter: FilterAppointment) {
     let url = `${this._baseUrl}/get-all-appointments`;
     const params: string[] = [];
-    params.push(`Period=${filter.Period ?? Period.Today}`);
+    if (filter.Period) {
+      params.push(`Period=${filter.Period}`);
+    }
     if (filter.FromDate !== undefined && filter.FromDate !== '') {
       params.push(`FromDate=${filter.FromDate}`);
     }
@@ -73,7 +74,9 @@ export class AppointmentApiService {
   getExportAppointments(filter: FilterAppointment) {
     let url = `${this._baseUrl}/export-excel`;
     const params: string[] = [];
-    params.push(`Period=${filter.Period ?? Period.Today}`);
+    if (filter.Period) {
+      params.push(`Period=${filter.Period}`);
+    }
     if (filter.FromDate !== undefined && filter.FromDate !== '') {
       params.push(`FromDate=${filter.FromDate}`);
     }
@@ -159,7 +162,9 @@ export class AppointmentApiService {
   getStatistics(filter: FilterAppointments) {
     let url = `${this._baseUrl}/statistics`;
     const params: string[] = [];
-    params.push(`Period=${filter.Period ?? Period.Today}`);
+    if (filter.Period) {
+      params.push(`Period=${filter.Period}`);
+    }
     if (filter.FromDate !== undefined && filter.FromDate !== '') {
       params.push(`FromDate=${filter.FromDate}`);
     }

@@ -30,7 +30,9 @@ export class TreasuryApiService {
   // /api/Treasury/report
   getReport(report: ReportExpense) {
     const params: string[] = [];
-    params.push(`Period=${report.Period ?? TreasuryPeriod.Today}`);
+    if (report.Period) {
+      params.push(`Period=${report.Period}`);
+    }
     if (report.Type) {
       params.push(`Type=${report.Type}`);
     }
@@ -58,7 +60,9 @@ export class TreasuryApiService {
   // /api/Treasury/summary
   getSummary(summary: ReportExpense) {
     const params: string[] = [];
-    params.push(`Period=${summary.Period ?? TreasuryPeriod.Today}`);
+    if (summary.Period) {
+      params.push(`Period=${summary.Period}`);
+    }
     if (summary.Type) {
       params.push(`Type=${summary.Type}`);
     }
@@ -98,7 +102,7 @@ export class TreasuryApiService {
   // /api/Treasury/export-excel
   exportExcel(report: ReportExpense) {
     const params: string[] = [];
-    params.push(`Period=${report.Period ?? TreasuryPeriod.Today}`);
+    if (report.Period) params.push(`Period=${report.Period}`);
     if (report.Type) params.push(`Type=${report.Type}`);
     if (report.FromDate) params.push(`FromDate=${report.FromDate}`);
     if (report.ToDate) params.push(`DateTo=${report.ToDate}`);

@@ -24,7 +24,7 @@ export class TreasuryFiltersComponent {
       fromDate: this.facade.fromDateFilter(),
       toDate: this.facade.toDateFilter(),
     }),
-    computation: ({ fromDate, toDate }) => ({ fromDate, toDate }),
+    computation: ({ fromDate, toDate, period }) => ({ fromDate, toDate, period }),
   });
   readonly dateForm = form(this.dateRange);
   readonly invalidDateRange = computed(() => {
@@ -40,18 +40,19 @@ export class TreasuryFiltersComponent {
   onPeriodSelect(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.facade.setPeriodFilter(value ? (Number(value) as TreasuryPeriod) : null);
-    if (value) this.dateRange.set({ fromDate: '', toDate: '' });
+    if (value) this.dateRange.set({ fromDate: '', toDate: '', period: null });
   }
 
   onDateRangeApply(event: Event): void {
     event.preventDefault();
     if (this.invalidDateRange()) return;
-    const { fromDate, toDate } = this.dateRange();
+    const { fromDate, toDate, period } = this.dateRange();
+    this.facade.setPeriodFilter(period);
     this.facade.setDateRangeFilter(fromDate, toDate);
   }
 
   resetAll(): void {
     this.facade.resetAllFilters();
-    this.dateRange.set({ fromDate: '', toDate: '' });
+    this.dateRange.set({ fromDate: '', toDate: '', period: TreasuryPeriod.Today });
   }
 }

@@ -73,7 +73,7 @@ export class AppointmentFacade {
   readonly isUpdating = signal<boolean>(false);
 
   // Filter Signals
-  readonly periodFilter = signal<Period | null>(null);
+  readonly periodFilter = signal<Period | null>(Period.Today);
   readonly fromDateFilter = signal<string>('');
   readonly toDateFilter = signal<string>('');
   readonly doctorIdFilter = signal<string>('');
@@ -377,7 +377,9 @@ export class AppointmentFacade {
     this.isLoadingStatistics.set(true);
 
     const filter: FilterAppointments = {
-      Period: this.periodFilter() || Period.Today,
+      Period:
+        this.periodFilter() ??
+        (this.fromDateFilter() || this.toDateFilter() ? null : Period.Today),
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
       DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,
@@ -411,7 +413,9 @@ export class AppointmentFacade {
     this.isLoadingAppointments.set(true);
 
     const filter: FilterAppointment = {
-      Period: this.periodFilter() || Period.Today,
+      Period:
+        this.periodFilter() ??
+        (this.fromDateFilter() || this.toDateFilter() ? null : Period.Today),
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
       DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,
@@ -458,7 +462,9 @@ export class AppointmentFacade {
     this.isExportingExcel.set(true);
 
     const filter: FilterAppointment = {
-      Period: this.periodFilter() || Period.Today,
+      Period:
+        this.periodFilter() ??
+        (this.fromDateFilter() || this.toDateFilter() ? null : Period.Today),
       FromDate: this.fromDateFilter() ? this.fromDateFilter() : undefined,
       ToDate: this.toDateFilter() ? this.toDateFilter() : undefined,
       DoctorId: this.doctorIdFilter() ? this.doctorIdFilter() : undefined,
@@ -549,7 +555,7 @@ export class AppointmentFacade {
   }
 
   resetAllFilters(): void {
-    this.periodFilter.set(null);
+    this.periodFilter.set(Period.Today);
     this.fromDateFilter.set('');
     this.toDateFilter.set('');
     this.doctorIdFilter.set('');

@@ -36,7 +36,7 @@ export class DoctorScheduleFacade {
 
   // Filter Signals
   readonly isActiveFilter = signal<boolean | undefined>(undefined);
-  readonly onlyFutureFilter = signal<boolean | undefined>(undefined);
+  readonly onlyFutureFilter = signal<boolean>(false);
 
   // Computed Reactive States
   readonly isDoctor = computed(() => this._identityService.isDoctor());
@@ -136,13 +136,13 @@ export class DoctorScheduleFacade {
   }
 
   setOnlyFutureFilter(onlyFuture?: boolean): void {
-    this.onlyFutureFilter.set(onlyFuture);
+    this.onlyFutureFilter.set(onlyFuture ?? false);
     this.loadSchedules();
   }
 
   resetFilters(): void {
     this.isActiveFilter.set(undefined);
-    this.onlyFutureFilter.set(undefined);
+    this.onlyFutureFilter.set(false);
     this.loadSchedules();
   }
 

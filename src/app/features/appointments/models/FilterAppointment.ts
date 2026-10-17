@@ -3,7 +3,7 @@ import { PaymentMethod } from './PaymentMethod';
 import { Period } from './Period';
 
 export interface FilterAppointment {
-  Period: Period | null;
+  Period?: Period | null;
   FromDate?: string;
   ToDate?: string;
   DoctorId?: string;

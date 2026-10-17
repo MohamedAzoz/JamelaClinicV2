@@ -95,6 +95,10 @@ export class AppointmentFilterComponent {
     const val = (event.target as HTMLSelectElement).value;
     const period = val ? (Number(val) as Period) : null;
     this.facade.setPeriodFilter(period || null);
+    if (period) {
+      this.fromDate.set('');
+      this.toDate.set('');
+    }
   }
 
   onDateRangeApply(): void {

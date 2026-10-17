@@ -56,7 +56,7 @@ export class DoctorWalletFacade {
   readonly actionLoading = signal(false);
   readonly actionTarget = signal<WalletActionTarget | null>(null);
   readonly doctorIdFilter = signal('');
-  readonly periodFilter = signal<Period>(Period.Today);
+  readonly periodFilter = signal<Period | null>(Period.Today);
   readonly fromDateFilter = signal('');
   readonly toDateFilter = signal('');
   readonly pageNumber = signal(1);
@@ -66,7 +66,9 @@ export class DoctorWalletFacade {
   readonly loading = computed(() => this.loadingReport() || this.loadingSummary());
   readonly filters = computed<DoctorWalletFilter>(() => ({
     DoctorId: this.isDoctor() ? this.identity.userId() : this.doctorIdFilter() || undefined,
-    Period: this.periodFilter(),
+    Period:
+      this.periodFilter() ??
+      (this.fromDateFilter() || this.toDateFilter() ? undefined : Period.Today),
     FromDate: this.fromDateFilter() || undefined,
     ToDate: this.toDateFilter() || undefined,
     PageNumber: this.pageNumber(),
@@ -197,7 +199,7 @@ export class DoctorWalletFacade {
 
   resetFilters(): void {
     this.doctorIdFilter.set('');
-    this.periodFilter.set(null);
+    this.periodFilter.set(Period.Today);
     this.fromDateFilter.set('');
     this.toDateFilter.set('');
     this.applyFilters();
