@@ -273,24 +273,27 @@ export class AppointmentFacade {
 
   loadDoctorSchedules(doctorId: string): void {
     this.isLoadingSchedules.set(true);
-    this._scheduleApiService.getDoctorScheduleByDoctorId(doctorId, true, true).subscribe({
-      next: (res) => {
-        this.isLoadingSchedules.set(false);
-        if (res.isSuccess && res.data) {
-          this.schedules.set(res.data);
-        } else {
+    this._scheduleApiService
+      .getDoctorScheduleByDoctorId(doctorId, undefined, undefined, true, true)
+      .subscribe({
+        next: (res) => {
+          this.isLoadingSchedules.set(false);
+          if (res.isSuccess && res.data) {
+            const schedules = Array.isArray(res.data) ? res.data : (res.data.items ?? []);
+            this.schedules.set(schedules);
+          } else {
+            this.schedules.set([]);
+            this._toast.addErrorMessage(res.message || 'لا توجد مواعيد متاحة لهذا الطبيب');
+          }
+        },
+        error: (err) => {
+          this.isLoadingSchedules.set(false);
           this.schedules.set([]);
-          this._toast.addErrorMessage(res.message || 'لا توجد مواعيد متاحة لهذا الطبيب');
-        }
-      },
-      error: (err) => {
-        this.isLoadingSchedules.set(false);
-        this.schedules.set([]);
-        this._toast.addErrorMessage(
-          err.error.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب مواعيد الطبيب',
-        );
-      },
-    });
+          this._toast.addErrorMessage(
+            err.error?.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب مواعيد الطبيب',
+          );
+        },
+      });
   }
 
   async createAppointment(data: CreateAppointments): Promise<boolean> {

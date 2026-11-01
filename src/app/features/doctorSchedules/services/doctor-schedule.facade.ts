@@ -2,6 +2,7 @@ import { computed, inject, Service, signal } from '@angular/core';
 import { DoctorScheduleApiService } from './doctor-schedule-api.service';
 import { DoctorApiService } from '@features/doctors/services/doctor-api.service';
 import { IdentityService } from '@core/services/identity-service';
+import { PaginatedResult } from '@core/models/PaginatedResult';
 import { DoctorSchedule } from '../models/DoctorSchedule';
 import { DoctorScheduleItem } from '../models/DoctorScheduleItem';
 import { Doctor } from '@features/doctors/models/Doctor';
@@ -38,6 +39,12 @@ export class DoctorScheduleFacade {
   readonly isActiveFilter = signal<boolean | undefined>(undefined);
   readonly onlyFutureFilter = signal<boolean>(false);
 
+  // Pagination Signals
+  readonly pageNumber = signal<number>(1);
+  readonly pageSize = signal<number>(10);
+  readonly totalCount = signal<number>(0);
+  readonly totalPages = signal<number>(0);
+
   // Computed Reactive States
   readonly isDoctor = computed(() => this._identityService.isDoctor());
   readonly isAdminOrReception = computed(
@@ -46,7 +53,7 @@ export class DoctorScheduleFacade {
   readonly selectedDoctor = computed(
     () => this.doctors().find((d) => d.userId === this.selectedDoctorId()) ?? null,
   );
-  readonly totalSchedulesCount = computed(() => this.schedules().length);
+  readonly totalSchedulesCount = computed(() => this.totalCount() || this.schedules().length);
   readonly activeSchedulesCount = computed(() => this.schedules().filter((s) => s.isActive).length);
   readonly inactiveSchedulesCount = computed(
     () => this.schedules().filter((s) => !s.isActive).length,
@@ -124,6 +131,7 @@ export class DoctorScheduleFacade {
   selectDoctor(doctorId: string): void {
     if (this.selectedDoctorId() === doctorId) return;
     this.selectedDoctorId.set(doctorId);
+    this.pageNumber.set(1);
     this.loadSchedules(doctorId);
   }
 
@@ -132,17 +140,20 @@ export class DoctorScheduleFacade {
    */
   setIsActiveFilter(isActive?: boolean): void {
     this.isActiveFilter.set(isActive);
+    this.pageNumber.set(1);
     this.loadSchedules();
   }
 
   setOnlyFutureFilter(onlyFuture?: boolean): void {
     this.onlyFutureFilter.set(onlyFuture ?? false);
+    this.pageNumber.set(1);
     this.loadSchedules();
   }
 
   resetFilters(): void {
     this.isActiveFilter.set(undefined);
     this.onlyFutureFilter.set(false);
+    this.pageNumber.set(1);
     this.loadSchedules();
   }
 
@@ -175,12 +186,14 @@ export class DoctorScheduleFacade {
   }
 
   /**
-   * Loads schedules for a specific doctorId with active filters.
+   * Loads schedules for a specific doctorId with active filters and pagination.
    */
   loadSchedules(doctorId?: string): void {
     const targetId = doctorId ?? this.selectedDoctorId();
     if (!targetId) {
       this.schedules.set([]);
+      this.totalCount.set(0);
+      this.totalPages.set(0);
       this.isLoading.set(false);
       return;
     }
@@ -189,24 +202,61 @@ export class DoctorScheduleFacade {
 
     const isActive = this.isActiveFilter();
     const onlyFuture = this.onlyFutureFilter();
+    const pageNumber = this.pageNumber();
+    const pageSize = this.pageSize();
 
     this.isLoading.set(true);
-    this._scheduleApiService.getDoctorScheduleByDoctorId(targetId, isActive, onlyFuture).subscribe({
-      next: (res) => {
-        this.isLoading.set(false);
-        if (res.isSuccess && res.data) {
-          this.schedules.set(res.data);
-        } else {
+    this._scheduleApiService
+      .getDoctorScheduleByDoctorId(targetId, pageNumber, pageSize, isActive, onlyFuture)
+      .subscribe({
+        next: (res) => {
+          this.isLoading.set(false);
+          if (res.isSuccess && res.data) {
+            if ('items' in (res.data as any) && Array.isArray((res.data as any).items)) {
+              const paginated = res.data as PaginatedResult<DoctorSchedule[]>;
+              this.schedules.set(paginated.items);
+              this.totalCount.set(paginated.totalCount ?? paginated.items.length);
+              this.totalPages.set(paginated.totalPages ?? 1);
+            } else if (Array.isArray(res.data)) {
+              this.schedules.set(res.data);
+              this.totalCount.set(res.data.length);
+              this.totalPages.set(Math.ceil(res.data.length / this.pageSize()) || 1);
+            } else {
+              this.schedules.set([]);
+              this.totalCount.set(0);
+              this.totalPages.set(0);
+            }
+          } else {
+            this.schedules.set([]);
+            this.totalCount.set(0);
+            this.totalPages.set(0);
+            this._toast.addErrorMessage(res.message || 'فشل في جلب جدول المواعيد');
+          }
+        },
+        error: (err) => {
+          this.isLoading.set(false);
           this.schedules.set([]);
-          this._toast.addErrorMessage(res.message || 'فشل في جلب جدول المواعيد');
-        }
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        this.schedules.set([]);
-        this._toast.addErrorMessage(err.error.message || 'حدث خطأ أثناء جلب جدول المواعيد للطبيب');
-      },
-    });
+          this.totalCount.set(0);
+          this.totalPages.set(0);
+          this._toast.addErrorMessage(err.error?.message || 'حدث خطأ أثناء جلب جدول المواعيد للطبيب');
+        },
+      });
+  }
+
+  /**
+   * Pagination Controls
+   */
+  setPage(page: number): void {
+    if (page < 1 || (this.totalPages() > 0 && page > this.totalPages()) || page === this.pageNumber()) return;
+    this.pageNumber.set(page);
+    this.loadSchedules();
+  }
+
+  setPageSize(size: number): void {
+    if (size <= 0 || size === this.pageSize()) return;
+    this.pageSize.set(size);
+    this.pageNumber.set(1);
+    this.loadSchedules();
   }
 
   /**

@@ -2,6 +2,7 @@ import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { Result } from '@core/models/Result';
+import { PaginatedResult } from '@core/models/PaginatedResult';
 import { DoctorSchedule } from '../models/DoctorSchedule';
 import { DoctorScheduleItem } from '../models/DoctorScheduleItem';
 import { DoctorScheduleUpdate } from '../models/DoctorScheduleUpdate';
@@ -34,7 +35,7 @@ export class DoctorScheduleApiService {
     if (params.length > 0) {
       url += `?${params.join('&')}`;
     }
-    return this._http.get<Result<DoctorSchedule[]>>(url);
+    return this._http.get<Result<PaginatedResult<DoctorSchedule[]> | DoctorSchedule[]>>(url);
   }
 
   // GET

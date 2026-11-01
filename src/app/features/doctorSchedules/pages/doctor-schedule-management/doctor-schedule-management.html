@@ -5,6 +5,19 @@
   <!-- Schedules Table Container -->
   <app-schedule-table></app-schedule-table>
 
+  <!-- Pagination Controls -->
+  @if (facade.schedules().length > 0 || facade.totalCount() > 0) {
+    <app-pagination
+      [pageNumber]="facade.pageNumber()"
+      [pageSize]="facade.pageSize()"
+      [totalCount]="facade.totalCount()"
+      [totalPages]="facade.totalPages()"
+      [disabled]="facade.isLoading()"
+      (pageChange)="facade.setPage($event)"
+      (pageEvent)="facade.setPageSize($event.pageSize)"
+    />
+  }
+
   <!-- Add/Edit Form Modal -->
   <app-schedule-form-modal></app-schedule-form-modal>
 

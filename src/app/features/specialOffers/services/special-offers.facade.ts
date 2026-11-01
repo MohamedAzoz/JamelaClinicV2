@@ -272,11 +272,18 @@ export class SpecialOffersFacade {
     this.isLoadingDoctorClinics.set(true);
     try {
       const [schedulesRes, clinicsRes] = await Promise.all([
-        firstValueFrom(this.scheduleApi.getDoctorScheduleByDoctorId(doctorId, true, true)),
+        firstValueFrom(
+          this.scheduleApi.getDoctorScheduleByDoctorId(doctorId, undefined, undefined, true, true),
+        ),
         firstValueFrom(this.doctorApi.getDoctorClinicsByDoctorId(doctorId)),
       ]);
-      if (schedulesRes.isSuccess) {
-        this.schedules.set(schedulesRes.data ?? []);
+      if (schedulesRes.isSuccess && schedulesRes.data) {
+        const schedules = Array.isArray(schedulesRes.data)
+          ? schedulesRes.data
+          : (schedulesRes.data.items ?? []);
+        this.schedules.set(schedules);
+      } else {
+        this.schedules.set([]);
       }
       if (clinicsRes.isSuccess) {
         const clinics = clinicsRes.data ?? [];

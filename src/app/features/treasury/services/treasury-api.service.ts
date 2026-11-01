@@ -30,7 +30,8 @@ export class TreasuryApiService {
   // /api/Treasury/report
   getReport(report: ReportExpense) {
     const params: string[] = [];
-    if (report.Period) {
+    const hasCustomDates = Boolean(report.FromDate || report.ToDate);
+    if (!hasCustomDates && report.Period) {
       params.push(`Period=${report.Period}`);
     }
     if (report.Type) {
@@ -60,7 +61,8 @@ export class TreasuryApiService {
   // /api/Treasury/summary
   getSummary(summary: ReportExpense) {
     const params: string[] = [];
-    if (summary.Period) {
+    const hasCustomDates = Boolean(summary.FromDate || summary.ToDate);
+    if (!hasCustomDates && summary.Period) {
       params.push(`Period=${summary.Period}`);
     }
     if (summary.Type) {
@@ -102,7 +104,8 @@ export class TreasuryApiService {
   // /api/Treasury/export-excel
   exportExcel(report: ReportExpense) {
     const params: string[] = [];
-    if (report.Period) params.push(`Period=${report.Period}`);
+    const hasCustomDates = Boolean(report.FromDate || report.ToDate);
+    if (!hasCustomDates && report.Period) params.push(`Period=${report.Period}`);
     if (report.Type) params.push(`Type=${report.Type}`);
     if (report.FromDate) params.push(`FromDate=${report.FromDate}`);
     if (report.ToDate) params.push(`DateTo=${report.ToDate}`);

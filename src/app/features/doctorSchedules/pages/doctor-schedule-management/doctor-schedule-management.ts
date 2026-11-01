@@ -4,12 +4,14 @@ import { ScheduleToolbarComponent } from '../../components/schedule-toolbar/sche
 import { ScheduleTableComponent } from '../../components/schedule-table/schedule-table';
 import { ScheduleFormModalComponent } from '../../components/schedule-form-modal/schedule-form-modal';
 import { ScheduleDeleteModalComponent } from '../../components/schedule-delete-modal/schedule-delete-modal';
+import { PaginationComponent } from '@shared/components/pagination/pagination';
 
 @Component({
   selector: 'app-doctor-schedule-management',
   imports: [
     ScheduleToolbarComponent,
     ScheduleTableComponent,
+    PaginationComponent,
     ScheduleFormModalComponent,
     ScheduleDeleteModalComponent,
   ],

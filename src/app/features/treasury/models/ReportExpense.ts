@@ -1,6 +1,6 @@
 export interface ReportExpense {
-  Type?: TreasuryType;
-  Period?: TreasuryPeriod;
+  Type?: TreasuryType | null;
+  Period?: TreasuryPeriod | null;
   FromDate?: string;
   ToDate?: string;
   PageNumber?: number;

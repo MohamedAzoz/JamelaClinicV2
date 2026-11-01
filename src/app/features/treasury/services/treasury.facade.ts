@@ -34,16 +34,17 @@ export class TreasuryFacade {
   readonly toDateFilter = signal('');
   readonly pageNumber = signal(1);
   readonly pageSize = signal(10);
-  readonly filters = computed<ReportExpense>(() => ({
-    Type: this.typeFilter() ?? undefined,
-    Period:
-      this.periodFilter() ??
-      (this.fromDateFilter() || this.toDateFilter() ? undefined : TreasuryPeriod.Today),
-    FromDate: this.fromDateFilter() || undefined,
-    ToDate: this.toDateFilter() || undefined,
-    PageNumber: this.pageNumber(),
-    PageSize: this.pageSize(),
-  }));
+  readonly filters = computed<ReportExpense>(() => {
+    const hasCustomDates = Boolean(this.fromDateFilter() || this.toDateFilter());
+    return {
+      Type: this.typeFilter() ?? undefined,
+      Period: hasCustomDates ? undefined : (this.periodFilter() ?? TreasuryPeriod.Today),
+      FromDate: this.fromDateFilter() || undefined,
+      ToDate: this.toDateFilter() || undefined,
+      PageNumber: this.pageNumber(),
+      PageSize: this.pageSize(),
+    };
+  });
   readonly totalCount = signal(0);
   readonly totalPages = signal(0);
   readonly selectedExpense = signal<Expense | null>(null);

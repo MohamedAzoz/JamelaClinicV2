@@ -46,8 +46,7 @@ export class TreasuryFiltersComponent {
   onDateRangeApply(event: Event): void {
     event.preventDefault();
     if (this.invalidDateRange()) return;
-    const { fromDate, toDate, period } = this.dateRange();
-    this.facade.setPeriodFilter(period);
+    const { fromDate, toDate } = this.dateRange();
     this.facade.setDateRangeFilter(fromDate, toDate);
   }
 
