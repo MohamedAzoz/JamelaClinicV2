@@ -102,7 +102,7 @@
     </div>
 
     <!-- Reset Filter Button -->
-    @if (facade.isActiveFilter() !== undefined || facade.onlyFutureFilter() !== undefined) {
+    @if (facade.isActiveFilter() !== undefined || facade.onlyFutureFilter() !== false) {
       <button
         type="button"
         (click)="facade.resetFilters()"

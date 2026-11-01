@@ -64,16 +64,17 @@ export class DoctorWalletFacade {
   readonly totalCount = signal(0);
   readonly totalPages = signal(0);
   readonly loading = computed(() => this.loadingReport() || this.loadingSummary());
-  readonly filters = computed<DoctorWalletFilter>(() => ({
-    DoctorId: this.isDoctor() ? this.identity.userId() : this.doctorIdFilter() || undefined,
-    Period:
-      this.periodFilter() ??
-      (this.fromDateFilter() || this.toDateFilter() ? undefined : Period.Today),
-    FromDate: this.fromDateFilter() || undefined,
-    ToDate: this.toDateFilter() || undefined,
-    PageNumber: this.pageNumber(),
-    PageSize: this.pageSize(),
-  }));
+  readonly filters = computed<DoctorWalletFilter>(() => {
+    const hasCustomDates = Boolean(this.fromDateFilter() || this.toDateFilter());
+    return {
+      DoctorId: this.isDoctor() ? this.identity.userId() : this.doctorIdFilter() || undefined,
+      Period: hasCustomDates ? undefined : (this.periodFilter() ?? Period.Today),
+      FromDate: this.fromDateFilter() || undefined,
+      ToDate: this.toDateFilter() || undefined,
+      PageNumber: this.pageNumber(),
+      PageSize: this.pageSize(),
+    };
+  });
 
   initialize(): void {
     if (!this.canView()) return;

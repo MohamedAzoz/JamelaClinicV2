@@ -7,19 +7,22 @@ import { DoctorWalletFilter } from '../models/DoctorWalletFilter';
 import { DoctorWalletTransaction } from '../models/DoctorWalletTransaction';
 import { DoctorWalletSummary } from '../models/DoctorWalletSummary';
 import { DoctorWalletReport } from '../models/DoctorWalletReport';
-import { Period } from '../models/Period';
 
 @Service()
 export class DoctorWalletApiService {
   private _http = inject(HttpClient);
   private _baseUrl = `${environment.appBaseUrl}/DoctorWallet/`;
+  
   // GET
   // /api/DoctorWallet/transactions-report
   getTransactionsReport(searchParams: DoctorWalletFilter) {
     let url = `${this._baseUrl}transactions-report`;
     const params: string[] = [];
 
-    params.push(`Period=${searchParams.Period ?? Period.Today}`);
+    const hasCustomDates = Boolean(searchParams.FromDate || searchParams.ToDate);
+    if (!hasCustomDates && searchParams.Period) {
+      params.push(`Period=${searchParams.Period}`);
+    }
     if (searchParams.DoctorId) params.push(`DoctorId=${searchParams.DoctorId}`);
     if (searchParams.FromDate) params.push(`FromDate=${searchParams.FromDate}`);
     if (searchParams.ToDate) params.push(`ToDate=${searchParams.ToDate}`);
@@ -36,12 +39,14 @@ export class DoctorWalletApiService {
   // GET
   // /api/DoctorWallet/summary-report
   //Ex:   /transactions-report?FromDate=2026-09-20&ToDate=2026-09-22
-
   getSummaryReport(searchParams: DoctorWalletFilter) {
     let url = `${this._baseUrl}summary-report`;
     const params: string[] = [];
 
-    params.push(`Period=${searchParams.Period ?? Period.Today}`);
+    const hasCustomDates = Boolean(searchParams.FromDate || searchParams.ToDate);
+    if (!hasCustomDates && searchParams.Period) {
+      params.push(`Period=${searchParams.Period}`);
+    }
     if (searchParams.DoctorId) params.push(`DoctorId=${searchParams.DoctorId}`);
     if (searchParams.FromDate) params.push(`FromDate=${searchParams.FromDate}`);
     if (searchParams.ToDate) params.push(`ToDate=${searchParams.ToDate}`);

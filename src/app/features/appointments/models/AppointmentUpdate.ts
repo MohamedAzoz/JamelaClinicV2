@@ -12,7 +12,7 @@ export interface AppointmentUpdate {
   discountAmount?: number;
 }
 
-// {
+//{
 //   "id": 0,
 //   "patientName": "string",
 //   "patientPhoneNumber": "string",

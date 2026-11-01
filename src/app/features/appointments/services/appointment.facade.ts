@@ -335,10 +335,13 @@ export class AppointmentFacade {
           this.isUpdating.set(false);
           if (res.isSuccess) {
             this._toast.addSuccessMessage(res.message || 'تم تعديل بيانات الحجز بنجاح');
+            if (this.appointmentDetails()?.id === appointment.id) {
+              this.loadAppointmentDetails(appointment.id);
+            }
             const currSchedId = this.currentScheduleId();
             if (currSchedId) {
               this.loadAppointmentsByScheduleId(currSchedId);
-            } else {
+            } else if (this.appointments().length > 0 || !this.appointmentDetails()) {
               this.refreshData();
             }
             resolve(true);
@@ -367,7 +370,7 @@ export class AppointmentFacade {
   refreshData(): void {
     this.loadAppointments();
     this.loadStatistics();
-    this.isLoadingAppointmentDetails();
+    this.isLoadingAppointments.set(true);
   }
 
   /**
@@ -674,10 +677,13 @@ export class AppointmentFacade {
         this.actionLoadingId.set(null);
         if (res.isSuccess) {
           this._toast.addSuccessMessage(res.message || 'تم تحديث حالة الحجز إلى مدفوع بنجاح');
+          if (this.appointmentDetails()?.id === id) {
+            this.loadAppointmentDetails(id);
+          }
           const currSchedId = this.currentScheduleId();
           if (currSchedId) {
             this.loadAppointmentsByScheduleId(currSchedId);
-          } else {
+          } else if (this.appointments().length > 0 || !this.appointmentDetails()) {
             this.refreshData();
           }
         } else {
@@ -698,10 +704,13 @@ export class AppointmentFacade {
         this.actionLoadingId.set(null);
         if (res.isSuccess) {
           this._toast.addSuccessMessage(res.message || 'تم إكتمال الكشف والحجز بنجاح');
+          if (this.appointmentDetails()?.id === id) {
+            this.loadAppointmentDetails(id);
+          }
           const currSchedId = this.currentScheduleId();
           if (currSchedId) {
             this.loadAppointmentsByScheduleId(currSchedId);
-          } else {
+          } else if (this.appointments().length > 0 || !this.appointmentDetails()) {
             this.refreshData();
           }
           if (this.todayAppointments().length > 0) {
@@ -750,10 +759,13 @@ export class AppointmentFacade {
         this.actionLoadingId.set(null);
         if (res.isSuccess) {
           this._toast.addSuccessMessage(res.message || 'تم إلغاء الحجز بنجاح');
+          if (this.appointmentDetails()?.id === id) {
+            this.loadAppointmentDetails(id);
+          }
           const currSchedId = this.currentScheduleId();
           if (currSchedId) {
             this.loadAppointmentsByScheduleId(currSchedId);
-          } else {
+          } else if (this.appointments().length > 0 || !this.appointmentDetails()) {
             this.refreshData();
           }
         } else {
@@ -774,10 +786,13 @@ export class AppointmentFacade {
         this.actionLoadingId.set(null);
         if (res.isSuccess) {
           this._toast.addSuccessMessage(res.message || 'تم حذف الحجز نهائياً بنجاح');
+          if (this.appointmentDetails()?.id === id) {
+            this.appointmentDetails.set(null);
+          }
           const currSchedId = this.currentScheduleId();
           if (currSchedId) {
             this.loadAppointmentsByScheduleId(currSchedId);
-          } else {
+          } else if (this.appointments().length > 0 || !this.appointmentDetails()) {
             this.refreshData();
           }
         } else {

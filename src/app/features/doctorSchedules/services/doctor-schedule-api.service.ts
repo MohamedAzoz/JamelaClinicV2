@@ -13,14 +13,23 @@ export class DoctorScheduleApiService {
   private baseUrl = `${environment.appBaseUrl}/DoctorSchedules`;
   //     GET
   // /api/DoctorSchedules/doctor/{doctorId}
-  getDoctorScheduleByDoctorId(doctorId: string, isActive?: boolean, onlyFuture?: boolean) {
+  getDoctorScheduleByDoctorId(
+    doctorId: string,
+    pageNumber?: number,
+    pageSize?: number,
+    isActive?: boolean,
+    onlyFuture?: boolean,
+  ) {
     let url = `${this.baseUrl}/doctor/${doctorId}`;
     const params: string[] = [];
+
     if (isActive !== undefined) {
-      params.push(`isActive=${isActive}`);
+      params.push(`IsActive=${isActive}`);
     }
+    if (pageNumber !== undefined) params.push(`PageNumber=${pageNumber}`);
+    if (pageSize !== undefined) params.push(`PageSize=${pageSize}`);
     if (onlyFuture !== undefined) {
-      params.push(`onlyFuture=${onlyFuture}`);
+      params.push(`OnlyFuture=${onlyFuture}`);
     }
     if (params.length > 0) {
       url += `?${params.join('&')}`;

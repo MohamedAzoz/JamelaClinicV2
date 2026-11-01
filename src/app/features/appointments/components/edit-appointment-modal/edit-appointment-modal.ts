@@ -35,6 +35,7 @@ import { Doctor } from '@features/doctors/models/Doctor';
 import { getDiscountError, getDoctorShare, isValidMoney } from '../../utils/appointment-pricing';
 import { AppointmentFeeBreakdownComponent } from '../appointment-fee-breakdown/appointment-fee-breakdown';
 import { PaymentMethod } from '@features/appointments/models/PaymentMethod';
+import { AppointmentStatus } from '@features/appointments/models/AppointmentStatus';
 
 export interface EditAppointmentFormModel {
   doctorId: string;
@@ -59,6 +60,7 @@ export class EditAppointmentModalComponent implements OnInit {
   readonly appointment = input.required<Appointments>();
   readonly closed = output<void>();
 
+  readonly AppointmentStatus = AppointmentStatus;
   // FontAwesome Icons
   readonly faEdit = faEdit;
   readonly faTimes = faTimes;
