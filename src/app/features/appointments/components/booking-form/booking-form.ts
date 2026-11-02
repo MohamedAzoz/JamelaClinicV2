@@ -108,6 +108,8 @@ export class BookingFormComponent implements OnInit {
   });
 
   readonly model = this._model.asReadonly();
+  /** Expose String() for use in template comparisons */
+  readonly String = String;
   readonly selectedDoctor = computed(() =>
     this.facade.doctors().find((doctor) => doctor.userId === this.model().doctorId),
   );
@@ -234,6 +236,24 @@ export class BookingFormComponent implements OnInit {
       ...m,
       doctorScheduleId: select.value || '',
     }));
+  }
+
+  /** Called when user clicks/selects a schedule item from the infinite scroll list */
+  onScheduleItemSelect(schedId: number): void {
+    this._model.update((m) => ({
+      ...m,
+      doctorScheduleId: String(schedId),
+    }));
+  }
+
+  /** Infinite scroll handler: load more when the user scrolls near the bottom */
+  onScheduleListScroll(event: Event): void {
+    const el = event.target as HTMLElement;
+    const threshold = 40; // px before bottom to trigger load
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= threshold;
+    if (atBottom) {
+      this.facade.loadMoreSchedules();
+    }
   }
 
   onClinicChange(event: Event): void {

@@ -98,55 +98,107 @@
         </div>
       </div>
 
-      <!-- Doctor Schedule Selection Dropdown -->
+      <!-- Doctor Schedule Selection - Infinite Scroll List -->
       <div>
         <label for="doctorScheduleId" class="block text-sm font-semibold text-text mb-1.5">
           المواعيد المتاحة للطبيب <span class="text-danger">*</span>
         </label>
-        <div class="relative">
-          <select
-            id="doctorScheduleId"
-            [formField]="bookingForm.doctorScheduleId"
-            (change)="onScheduleChange($event)"
-            class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            @if (!facade.selectedDoctorId()) {
-              <option value="" disabled selected>-- اختر طبيباً أولاً لعرض مواعيده --</option>
-            } @else if (facade.isLoadingSchedules()) {
-              <option value="" disabled selected>جاري تحميل المواعيد المتاحة...</option>
-            } @else if (facade.schedules().length === 0) {
-              <option value="" disabled selected>لا توجد مواعيد قادمة متاحة لهذا الطبيب</option>
-            } @else {
-              <option value="" disabled selected>-- اختر اليوم والموعد المناسب --</option>
-              @for (sched of facade.schedules(); track sched.id) {
-                <option [value]="sched.id">
-                  {{ sched.dayName }} - {{ sched.date | date: 'yyyy-MM-dd' }}
-                </option>
-              }
-            }
-          </select>
-          <div
-            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-text-muted"
-          >
-            <fa-icon [icon]="faCalendarDay"></fa-icon>
-          </div>
-          <div
-            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-text-muted"
-          >
-            @if (facade.isLoadingSchedules()) {
-              <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
-            } @else {
-              <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
-            }
-          </div>
-        </div>
 
-        @if (
-          bookingForm.doctorScheduleId().touched() && bookingForm.doctorScheduleId().errors();
-          as errors
-        ) {
-          @for (err of errors; track err.kind) {
-            <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+        @if (!facade.selectedDoctorId()) {
+          <div
+            class="flex items-center gap-2 rounded-xl border border-primary/20 bg-main-bg px-4 py-3 text-sm text-text-muted"
+          >
+            <fa-icon [icon]="faCalendarDay" class="text-primary/50"></fa-icon>
+            <span>اختر طبيباً أولاً لعرض مواعيده</span>
+          </div>
+        } @else {
+          <!-- Hidden real input for form binding -->
+          <input id="doctorScheduleId" type="hidden" [formField]="bookingForm.doctorScheduleId" />
+
+          <!-- Scrollable schedules list -->
+          <div
+            class="relative rounded-xl border border-primary/20 bg-main-bg overflow-hidden"
+            [class.opacity-60]="facade.isLoadingSchedules() && facade.schedules().length === 0"
+          >
+            @if (facade.isLoadingSchedules() && facade.schedules().length === 0) {
+              <!-- Initial loading skeleton -->
+              <div class="flex flex-col items-center justify-center py-4 gap-2 text-text-muted">
+                <fa-icon [icon]="faSpinner" class="animate-spin text-primary text-xl"></fa-icon>
+                <span class="text-xs font-medium">جاري تحميل المواعيد المتاحة...</span>
+              </div>
+            } @else if (facade.schedules().length === 0) {
+              <div class="flex flex-col items-center justify-center py-4 gap-2 text-text-muted">
+                <fa-icon [icon]="faCalendarDay" class="text-xl"></fa-icon>
+                <span class="text-xs font-medium">لا توجد مواعيد قادمة متاحة لهذا الطبيب</span>
+              </div>
+            } @else {
+              <!-- Schedule items list with scroll -->
+              <div
+                class="max-h-20 overflow-y-auto divide-y divide-primary/5"
+                (scroll)="onScheduleListScroll($event)"
+                role="listbox"
+                aria-label="المواعيد المتاحة للطبيب"
+                [attr.aria-activedescendant]="
+                  model().doctorScheduleId ? 'sched-' + model().doctorScheduleId : null
+                "
+              >
+                @for (sched of facade.schedules(); track sched.id) {
+                  <div
+                    [id]="'sched-' + sched.id"
+                    role="option"
+                    [attr.aria-selected]="model().doctorScheduleId === String(sched.id)"
+                    (click)="onScheduleItemSelect(sched.id)"
+                    (keydown.enter)="onScheduleItemSelect(sched.id)"
+                    (keydown.space)="onScheduleItemSelect(sched.id)"
+                    tabindex="0"
+                    class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:bg-primary/10"
+                    [class.bg-primary/10]="model().doctorScheduleId === String(sched.id)"
+                    [class.text-primary]="model().doctorScheduleId === String(sched.id)"
+                    [class.font-semibold]="model().doctorScheduleId === String(sched.id)"
+                    [class.text-text]="model().doctorScheduleId !== String(sched.id)"
+                  >
+                    <fa-icon
+                      [icon]="faCalendarDay"
+                      class="shrink-0 text-sm"
+                      [class.text-primary]="model().doctorScheduleId === String(sched.id)"
+                      [class.text-text-muted]="model().doctorScheduleId !== String(sched.id)"
+                    ></fa-icon>
+                    <span class="text-sm">
+                      {{ sched.dayName }} &ndash; {{ sched.date | date: 'yyyy-MM-dd' }}
+                    </span>
+                    @if (model().doctorScheduleId === String(sched.id)) {
+                      <fa-icon
+                        [icon]="faCheckCircle"
+                        class="mr-auto text-primary text-sm shrink-0"
+                      ></fa-icon>
+                    }
+                  </div>
+                }
+
+                <!-- Load more indicator -->
+                @if (facade.isLoadingSchedules() && facade.schedules().length > 0) {
+                  <div class="flex items-center justify-center gap-2 py-3 text-xs text-text-muted">
+                    <fa-icon [icon]="faSpinner" class="animate-spin text-primary"></fa-icon>
+                    <span>جاري تحميل المزيد...</span>
+                  </div>
+                } @else if (facade.hasMoreSchedules()) {
+                  <div
+                    class="flex items-center justify-center py-2 text-xs text-primary/70 select-none"
+                  >
+                    <span>مرر لأسفل لتحميل المزيد</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          @if (
+            bookingForm.doctorScheduleId().touched() && bookingForm.doctorScheduleId().errors();
+            as errors
+          ) {
+            @for (err of errors; track err.kind) {
+              <p class="mt-1 text-xs text-danger font-medium">{{ err.message }}</p>
+            }
           }
         }
       </div>
@@ -348,7 +400,10 @@
                   id="paymentMethod"
                   [value]="model().paymentMethod ?? ''"
                   (change)="onPaymentMethodChange($event)"
-                  [class.border-danger]="paymentMethodError() || (bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid())"
+                  [class.border-danger]="
+                    paymentMethodError() ||
+                    (bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid())
+                  "
                   class="w-full appearance-none rounded-xl border border-primary/20 bg-main-bg px-4 py-2.5 pl-10 pr-10 text-sm font-medium text-text transition focus:border-primary focus:bg-surface focus:outline-none focus:ring-4 focus:ring-primary/10 cursor-pointer"
                   aria-label="اختر طريقة الدفع"
                 >
@@ -368,23 +423,35 @@
                   <fa-icon [icon]="faChevronDown" class="text-xs"></fa-icon>
                 </div>
               </div>
-              @if (paymentMethodError() || (bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid())) {
-                <p class="mt-1 text-xs text-danger font-semibold flex items-center gap-1" role="alert">
-                  <span>{{ paymentMethodError() || bookingForm.paymentMethod().errors()[0]?.message }}</span>
+              @if (
+                paymentMethodError() ||
+                (bookingForm.paymentMethod().touched() && bookingForm.paymentMethod().invalid())
+              ) {
+                <p
+                  class="mt-1 text-xs text-danger font-semibold flex items-center gap-1"
+                  role="alert"
+                >
+                  <span>{{
+                    paymentMethodError() || bookingForm.paymentMethod().errors()[0]?.message
+                  }}</span>
                 </p>
               }
             </div>
           } @else {
-            <div class="flex items-center justify-center p-3.5 rounded-xl border border-dashed border-primary/15 bg-main-bg/50">
+            <div
+              class="flex items-center justify-center p-3.5 rounded-xl border border-dashed border-primary/15 bg-main-bg/50"
+            >
               <span class="text-xs text-text-muted text-center">
-                <fa-icon [icon]="faCreditCard" class="mb-1 text-primary/30 text-lg block mx-auto"></fa-icon>
+                <fa-icon
+                  [icon]="faCreditCard"
+                  class="mb-1 text-primary/30 text-lg block mx-auto"
+                ></fa-icon>
                 فعّل «تم استلام المبلغ» لاختيار طريقة الدفع
               </span>
             </div>
           }
         </div>
       </div>
-
     </div>
     <div class="mt-5 relative">
       <!-- Optional Materials / Services Section Toggle -->
@@ -425,10 +492,7 @@
           >
             <!-- Total Materials Cost -->
             <div>
-              <label
-                for="totalMaterialsCost"
-                class="block text-sm font-semibold text-text mb-1.5"
-              >
+              <label for="totalMaterialsCost" class="block text-sm font-semibold text-text mb-1.5">
                 تكلفة المستلزمات / الخدمات
                 <span class="text-xs font-normal text-text-muted">(اختياري)</span>
               </label>

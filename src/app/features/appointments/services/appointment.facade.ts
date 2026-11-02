@@ -43,6 +43,10 @@ export class AppointmentFacade {
   readonly isLoadingDoctors = signal<boolean>(false);
   readonly isLoadingDoctorClinics = signal<boolean>(false);
   readonly isLoadingSchedules = signal<boolean>(false);
+  /** True when more schedules exist and can be loaded via infinite scroll */
+  readonly hasMoreSchedules = signal<boolean>(false);
+  /** Current page size that grows by 5 each time the user scrolls to the bottom */
+  readonly schedulesPageSize = signal<number>(5);
   readonly isSubmitting = signal<boolean>(false);
   readonly bookingSuccess = signal<boolean>(false);
   readonly lastBookedAppointment = signal<CreateAppointments | null>(null);
@@ -273,22 +277,52 @@ export class AppointmentFacade {
 
   loadDoctorSchedules(doctorId: string): void {
     this.isLoadingSchedules.set(true);
+    // Reset pagination when loading fresh for a new doctor
+    this.schedulesPageSize.set(5);
+    this.hasMoreSchedules.set(false);
+    this.schedules.set([]);
+    this._fetchSchedules(doctorId, 5);
+  }
+
+  /** Load the next batch of schedules (called on scroll to bottom) */
+  loadMoreSchedules(): void {
+    const doctorId = this.selectedDoctorId();
+    if (!doctorId || this.isLoadingSchedules() || !this.hasMoreSchedules()) return;
+    const nextSize = this.schedulesPageSize() + 5;
+    this.schedulesPageSize.set(nextSize);
+    this._fetchSchedules(doctorId, nextSize);
+  }
+
+  private _fetchSchedules(doctorId: string, pageSize: number): void {
+    this.isLoadingSchedules.set(true);
     this._scheduleApiService
-      .getDoctorScheduleByDoctorId(doctorId, undefined, undefined, true, true)
+      .getDoctorScheduleByDoctorId(doctorId, 1, pageSize, true, false)
       .subscribe({
         next: (res) => {
           this.isLoadingSchedules.set(false);
           if (res.isSuccess && res.data) {
-            const schedules = Array.isArray(res.data) ? res.data : (res.data.items ?? []);
-            this.schedules.set(schedules);
+            if (!Array.isArray(res.data) && 'items' in res.data) {
+              // Paginated response
+              const paginated = res.data as { items: DoctorSchedule[]; totalCount: number; totalPages: number };
+              this.schedules.set(paginated.items ?? []);
+              this.hasMoreSchedules.set((paginated.totalCount ?? 0) > pageSize);
+            } else if (Array.isArray(res.data)) {
+              this.schedules.set(res.data);
+              this.hasMoreSchedules.set(false);
+            } else {
+              this.schedules.set([]);
+              this.hasMoreSchedules.set(false);
+            }
           } else {
             this.schedules.set([]);
+            this.hasMoreSchedules.set(false);
             this._toast.addErrorMessage(res.message || 'لا توجد مواعيد متاحة لهذا الطبيب');
           }
         },
         error: (err) => {
           this.isLoadingSchedules.set(false);
           this.schedules.set([]);
+          this.hasMoreSchedules.set(false);
           this._toast.addErrorMessage(
             err.error?.message || 'حدث خطأ أثناء الاتصال بالخادم لجلب مواعيد الطبيب',
           );
