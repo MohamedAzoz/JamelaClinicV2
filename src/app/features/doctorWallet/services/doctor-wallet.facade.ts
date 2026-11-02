@@ -56,7 +56,7 @@ export class DoctorWalletFacade {
   readonly actionLoading = signal(false);
   readonly actionTarget = signal<WalletActionTarget | null>(null);
   readonly doctorIdFilter = signal('');
-  readonly periodFilter = signal<Period | null>(Period.Today);
+  readonly periodFilter = signal<Period | null>(null);
   readonly fromDateFilter = signal('');
   readonly toDateFilter = signal('');
   readonly pageNumber = signal(1);
@@ -68,7 +68,7 @@ export class DoctorWalletFacade {
     const hasCustomDates = Boolean(this.fromDateFilter() || this.toDateFilter());
     return {
       DoctorId: this.isDoctor() ? this.identity.userId() : this.doctorIdFilter() || undefined,
-      Period: hasCustomDates ? undefined : (this.periodFilter() ?? Period.Today),
+      Period: hasCustomDates ? undefined : this.periodFilter() || null,
       FromDate: this.fromDateFilter() || undefined,
       ToDate: this.toDateFilter() || undefined,
       PageNumber: this.pageNumber(),
@@ -98,7 +98,8 @@ export class DoctorWalletFacade {
       if (!response.isSuccess) throw new Error(response.message);
       this.doctors.set(response.data ?? []);
     } catch (error: any) {
-      if (!this.destroyRef.destroyed) this.doctorsError.set(error.error.message || 'تعذر تحميل قائمة الأطباء');
+      if (!this.destroyRef.destroyed)
+        this.doctorsError.set(error.error.message || 'تعذر تحميل قائمة الأطباء');
     } finally {
       if (!this.destroyRef.destroyed) this.loadingDoctors.set(false);
     }
@@ -145,9 +146,11 @@ export class DoctorWalletFacade {
       if (requestId !== this.transactionDetailsRequestId || this.destroyRef.destroyed) return;
       if (!response.isSuccess || !response.data) throw new Error(response.message);
       this.transactionDetails.set(response.data);
-    } catch(error: any) {
+    } catch (error: any) {
       if (requestId !== this.transactionDetailsRequestId || this.destroyRef.destroyed) return;
-      this.transactionDetailsError.set(error.error.message || 'تعذر تحميل تفاصيل الحركة. تحقق من الرقم وحاول مرة أخرى.');
+      this.transactionDetailsError.set(
+        error.error.message || 'تعذر تحميل تفاصيل الحركة. تحقق من الرقم وحاول مرة أخرى.',
+      );
     } finally {
       if (requestId === this.transactionDetailsRequestId && !this.destroyRef.destroyed) {
         this.loadingTransactionDetails.set(false);
@@ -165,7 +168,7 @@ export class DoctorWalletFacade {
       if (requestId !== this.summaryRequestId || this.destroyRef.destroyed) return;
       if (!response.isSuccess) throw new Error(response.message);
       this.summary.set(response.data ?? null);
-    } catch(error: any) {
+    } catch (error: any) {
       if (requestId !== this.summaryRequestId || this.destroyRef.destroyed) return;
       this.summary.set(null);
       this.summaryError.set(error.error.message || 'تعذر تحميل ملخص الحسابات. حاول مرة أخرى.');
@@ -200,7 +203,7 @@ export class DoctorWalletFacade {
 
   resetFilters(): void {
     this.doctorIdFilter.set('');
-    this.periodFilter.set(Period.Today);
+    this.periodFilter.set(null);
     this.fromDateFilter.set('');
     this.toDateFilter.set('');
     this.applyFilters();

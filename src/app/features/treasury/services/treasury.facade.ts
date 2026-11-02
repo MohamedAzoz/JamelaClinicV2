@@ -29,7 +29,7 @@ export class TreasuryFacade {
   readonly loading = computed(() => this.isLoadingReport() || this.isLoadingSummary());
   readonly actionLoading = signal(false);
   readonly typeFilter = signal<TreasuryType | null>(null);
-  readonly periodFilter = signal<TreasuryPeriod | null>(TreasuryPeriod.Today);
+  readonly periodFilter = signal<TreasuryPeriod | null>(null);
   readonly fromDateFilter = signal('');
   readonly toDateFilter = signal('');
   readonly pageNumber = signal(1);
@@ -38,7 +38,7 @@ export class TreasuryFacade {
     const hasCustomDates = Boolean(this.fromDateFilter() || this.toDateFilter());
     return {
       Type: this.typeFilter() ?? undefined,
-      Period: hasCustomDates ? undefined : (this.periodFilter() ?? TreasuryPeriod.Today),
+      Period: hasCustomDates ? undefined : this.periodFilter() || null,
       FromDate: this.fromDateFilter() || undefined,
       ToDate: this.toDateFilter() || undefined,
       PageNumber: this.pageNumber(),
@@ -129,7 +129,7 @@ export class TreasuryFacade {
   }
 
   setPeriodFilter(period: TreasuryPeriod | null): void {
-    this.periodFilter.set(period ?? TreasuryPeriod.Today);
+    this.periodFilter.set(period || null);
     if (period !== null) {
       this.fromDateFilter.set('');
       this.toDateFilter.set('');
@@ -166,7 +166,7 @@ export class TreasuryFacade {
 
   resetAllFilters(): void {
     this.typeFilter.set(null);
-    this.periodFilter.set(TreasuryPeriod.Today);
+    this.periodFilter.set(null);
     this.fromDateFilter.set('');
     this.toDateFilter.set('');
     this.pageNumber.set(1);
@@ -248,4 +248,3 @@ export class TreasuryFacade {
     });
   }
 }
-
